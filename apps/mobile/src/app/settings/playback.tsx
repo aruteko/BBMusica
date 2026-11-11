@@ -2,7 +2,7 @@ import { Orpheus } from '@bbplayer/orpheus'
 import { useRouter } from 'expo-router'
 import { useState } from 'react'
 import { ScrollView, StyleSheet, View } from 'react-native'
-import { Appbar, Text, useTheme } from 'react-native-paper'
+import { Appbar, Text, TouchableRipple, useTheme } from 'react-native-paper'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { MenuView } from '@/components/common/FunctionalMenu'
@@ -26,6 +26,10 @@ export default function PlaybackSettingsPage() {
 	const defaultPlayerMode = useAppStore(
 		(state) => state.settings.defaultPlayerMode,
 	)
+	const autoPlayRecommendations = useAppStore(
+		// 旧版本保存的设置里没有这个字段，视为开启
+		(state) => state.settings.autoPlayRecommendations !== false,
+	)
 	const setSettings = useAppStore((state) => state.setSettings)
 
 	const [enablePersistCurrentPosition, setEnablePersistCurrentPosition] =
@@ -42,12 +46,12 @@ export default function PlaybackSettingsPage() {
 
 	const menuActions = useMenuActions([
 		{
-			title: '音乐',
+			title: '音楽',
 			state: defaultPlayerMode === 'music' ? 'on' : 'off',
 			onPress: () => setDefaultPlayerMode('music'),
 		},
 		{
-			title: '播客',
+			title: 'ポッドキャスト',
 			state: defaultPlayerMode === 'podcast' ? 'on' : 'off',
 			onPress: () => setDefaultPlayerMode('podcast'),
 		},
@@ -57,7 +61,7 @@ export default function PlaybackSettingsPage() {
 		<View style={[styles.container, { backgroundColor: colors.background }]}>
 			<Appbar.Header>
 				<Appbar.BackAction onPress={() => router.back()} />
-				<Appbar.Content title='播放设置' />
+				<Appbar.Content title='再生設定' />
 			</Appbar.Header>
 			<ScrollView
 				style={styles.scrollView}
@@ -67,14 +71,14 @@ export default function PlaybackSettingsPage() {
 				]}
 			>
 				<SettingsSectionTitle
-					title='播放行为'
+					title='再生の動作'
 					first
 				/>
 				<View style={styles.settingRow}>
 					<View style={{ flexShrink: 1 }}>
-						<Text>默认播放器</Text>
+						<Text>デフォルトのプレーヤー</Text>
 						<Text variant='bodySmall'>
-							仅影响之后开始的播放，歌单可单独设置偏好。
+							これから始める再生にのみ影響します。プレイリストごとに個別の設定もできます。
 						</Text>
 					</View>
 					<MenuView {...menuActions}>
@@ -85,7 +89,7 @@ export default function PlaybackSettingsPage() {
 					</MenuView>
 				</View>
 				<View style={styles.settingRow}>
-					<Text>响度均衡（实验性）</Text>
+					<Text>音量の自動調整（実験的）</Text>
 					<UniversalSwitch
 						value={enableLoudnessNormalization}
 						onValueChange={() => {
@@ -93,7 +97,7 @@ export default function PlaybackSettingsPage() {
 								Orpheus.loudnessNormalizationEnabled =
 									!enableLoudnessNormalization
 							} catch (e) {
-								toastAndLogError('设置失败', e, 'Settings')
+								toastAndLogError('設定に失敗しました', e, 'Settings')
 								return
 							}
 							setEnableLoudnessNormalization(!enableLoudnessNormalization)
@@ -101,7 +105,7 @@ export default function PlaybackSettingsPage() {
 					/>
 				</View>
 				<View style={styles.settingRow}>
-					<Text>允许与其他软件同时播放</Text>
+					<Text>他のアプリと同時に再生を許可</Text>
 					<UniversalSwitch
 						value={allowSimultaneousPlayback}
 						onValueChange={(value) => {
@@ -110,9 +114,36 @@ export default function PlaybackSettingsPage() {
 					/>
 				</View>
 
-				<SettingsSectionTitle title='启动时行为' />
 				<View style={styles.settingRow}>
-					<Text>在应用启动时恢复上次播放进度</Text>
+					<View style={{ flexShrink: 1, paddingRight: 12 }}>
+						<Text>キュー終了時におすすめを自動再生</Text>
+						<Text variant='bodySmall'>
+							再生リストが最後まで終わったら、似た曲を続けて再生します。
+						</Text>
+					</View>
+					<UniversalSwitch
+						value={autoPlayRecommendations}
+						onValueChange={(value) => {
+							setSettings({ autoPlayRecommendations: value })
+						}}
+					/>
+				</View>
+				<TouchableRipple
+					onPress={() => router.navigate('/settings/equalizer')}
+					accessibilityLabel='イコライザー'
+				>
+					<View style={styles.settingRow}>
+						<Text>イコライザー</Text>
+						<IconButton
+							icon='chevron-right'
+							size={20}
+						/>
+					</View>
+				</TouchableRipple>
+
+				<SettingsSectionTitle title='起動時の動作' />
+				<View style={styles.settingRow}>
+					<Text>アプリ起動時に前回の再生位置を復元</Text>
 					<UniversalSwitch
 						value={enablePersistCurrentPosition}
 						onValueChange={() => {
@@ -120,7 +151,7 @@ export default function PlaybackSettingsPage() {
 								Orpheus.restorePlaybackPositionEnabled =
 									!enablePersistCurrentPosition
 							} catch (e) {
-								toastAndLogError('设置失败', e, 'Settings')
+								toastAndLogError('設定に失敗しました', e, 'Settings')
 								return
 							}
 							setEnablePersistCurrentPosition(!enablePersistCurrentPosition)
@@ -128,14 +159,14 @@ export default function PlaybackSettingsPage() {
 					/>
 				</View>
 				<View style={styles.settingRow}>
-					<Text>软件启动时自动播放（易社死）</Text>
+					<Text>アプリ起動時に自動で再生（周囲に注意）</Text>
 					<UniversalSwitch
 						value={enableAutostartPlayOnStart}
 						onValueChange={() => {
 							try {
 								Orpheus.autoplayOnStartEnabled = !enableAutostartPlayOnStart
 							} catch (e) {
-								toastAndLogError('设置失败', e, 'Settings')
+								toastAndLogError('設定に失敗しました', e, 'Settings')
 								return
 							}
 							setEnableAutostartPlayOnStart(!enableAutostartPlayOnStart)

@@ -15,6 +15,7 @@ import { PlaylistError } from '@/features/playlist/remote/components/PlaylistErr
 import { PlaylistHeader } from '@/features/playlist/remote/components/PlaylistHeader'
 import { TrackList } from '@/features/playlist/remote/components/RemoteTrackList'
 import { usePlaylistMenu } from '@/features/playlist/remote/hooks/usePlaylistMenu'
+import { startStation } from '@/lib/player/station'
 import { useRemotePlaylist } from '@/features/playlist/remote/hooks/useRemotePlaylist'
 import { useTrackSelection } from '@/features/playlist/remote/hooks/useTrackSelection'
 import { PlaylistPageSkeleton } from '@/features/playlist/skeletons/PlaylistSkeleton'
@@ -269,10 +270,18 @@ export default function UploaderPage() {
 						/>
 					</>
 				) : (
-					<Appbar.Action
-						icon={startSearch ? 'close' : 'magnify'}
-						onPress={() => setStartSearch((prev) => !prev)}
-					/>
+					<>
+						<Appbar.Action
+							icon='radio-tower'
+							accessibilityLabel='この投稿者のステーション'
+							disabled={tracks.length === 0}
+							onPress={() => void startStation(tracks.slice(0, 5))}
+						/>
+						<Appbar.Action
+							icon={startSearch ? 'close' : 'magnify'}
+							onPress={() => setStartSearch((prev) => !prev)}
+						/>
+					</>
 				)}
 			</Appbar.Header>
 

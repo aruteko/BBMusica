@@ -10,11 +10,16 @@ import {
 	useHomeRecommendations,
 	usePopularMusic,
 } from '@/hooks/queries/recommendations'
-import { useMostPlayedTracks } from '@/hooks/queries/playHistory'
+import {
+	useMostPlayedTracks,
+	useRecentlyPlayedTracks,
+} from '@/hooks/queries/playHistory'
 import { queryClient } from '@/lib/config/queryClient'
 import { startStation } from '@/lib/player/station'
+import { persistTracksToLocal } from '@/lib/services/recommendationService'
 import type { Track } from '@/types/core/media'
 import { addToQueue } from '@/utils/player'
+import toast from '@/utils/toast'
 
 const CARD_SIZE = 128
 
@@ -75,13 +80,21 @@ const TrackSection = memo(function TrackSection({
 
 	const handlePress = useCallback(
 		(track: Track) => {
-			void addToQueue({
-				tracks,
-				playNow: true,
-				clearQueue: true,
-				startFromKey: track.uniqueKey,
-				playNext: false,
-			})
+			void (async () => {
+				// 先入库再入队：否则播放器按 uniqueKey 读取当前曲目时会 TrackNotFound
+				const persisted = await persistTracksToLocal(tracks)
+				if (!persisted.some((t) => t.uniqueKey === track.uniqueKey)) {
+					toast.error('曲情報の保存に失敗しました')
+					return
+				}
+				await addToQueue({
+					tracks: persisted,
+					playNow: true,
+					clearQueue: true,
+					startFromKey: track.uniqueKey,
+					playNext: false,
+				})
+			})()
 		},
 		[tracks],
 	)
@@ -138,6 +151,7 @@ export default function HomeRecommendations() {
 	const { colors } = useTheme()
 	const [stationLoading, setStationLoading] = useState(false)
 
+	const recent = useRecentlyPlayedTracks(20)
 	const frequent = useMostPlayedTracks(30, 12)
 	const recommendations = useHomeRecommendations()
 	const popular = usePopularMusic()
@@ -204,6 +218,10 @@ export default function HomeRecommendations() {
 				</Button>
 			</View>
 
+			<TrackSection
+				title='最近聴いた曲'
+				tracks={recent.data ?? []}
+			/>
 			<TrackSection
 				title='よく聴いている曲'
 				tracks={frequentTracks}

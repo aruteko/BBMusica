@@ -28,6 +28,23 @@ export enum ResumeStrategy {
 	PODCAST = 1,
 }
 
+export interface EqualizerBand {
+	index: number
+	/** 中心频率，单位 Hz */
+	centerFreq: number
+	/** 当前增益，单位 millibel */
+	level: number
+}
+
+export interface EqualizerInfo {
+	available: boolean
+	enabled: boolean
+	minLevel?: number
+	maxLevel?: number
+	bands?: EqualizerBand[]
+	presets?: string[]
+}
+
 export interface Track {
 	id: string
 	url: string
@@ -429,6 +446,19 @@ declare class NativeOrpheusModule extends NativeModule<OrpheusEvents> {
 	setPlaybackSpeed(speed: number): Promise<void>
 	/** 返回当前原生播放倍速。 */
 	getPlaybackSpeed(): Promise<number>
+	/**
+	 * 返回均衡器状态（仅 Android）。均衡器绑定在播放器的音频会话上，
+	 * 尚未播放过时 `available` 为 false。
+	 */
+	getEqualizerInfo(): Promise<EqualizerInfo>
+	/** 开关均衡器；状态会持久化。 */
+	setEqualizerEnabled(enabled: boolean): Promise<void>
+	/** 设置某个频段的增益，单位 millibel（1/100 dB），会被限制在设备支持的范围内。 */
+	setEqualizerBandLevel(band: number, level: number): Promise<void>
+	/** 应用设备内置预设（索引对应 `EqualizerInfo.presets`）。 */
+	applyEqualizerPreset(index: number): Promise<void>
+	/** 把所有频段重置为 0。 */
+	resetEqualizer(): Promise<void>
 	/**
 	 * 触发原生播放错误路径，用于调试错误处理。
 	 *

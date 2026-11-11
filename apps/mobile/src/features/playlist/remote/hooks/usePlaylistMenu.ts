@@ -3,6 +3,7 @@ import { usePathname, useRouter } from 'expo-router'
 import { useCallback } from 'react'
 
 import { useModalStore } from '@/hooks/stores/useModalStore'
+import { startStation } from '@/lib/player/station'
 import type { BilibiliTrack } from '@/types/core/media'
 import toast from '@/utils/toast'
 
@@ -24,6 +25,11 @@ const ADD_TO_PLAYLIST_ICON = Icon.select({
 const ARTIST_ICON = Icon.select({
 	ios: 'person.crop.circle',
 	android: import('@expo/material-symbols/person.xml'),
+})
+
+const RADIO_ICON = Icon.select({
+	ios: 'dot.radiowaves.left.and.right',
+	android: import('@expo/material-symbols/radio.xml'),
 })
 
 export function usePlaylistMenu(
@@ -55,6 +61,13 @@ export function usePlaylistMenu(
 						pathname: '/playlist/remote/multipage/[bvid]',
 						params: { bvid: item.bilibiliMetadata.bvid },
 					})
+				},
+			},
+			{
+				title: 'この曲からステーション',
+				leadingIcon: RADIO_ICON,
+				onPress: () => {
+					void startStation(item)
 				},
 			},
 			{

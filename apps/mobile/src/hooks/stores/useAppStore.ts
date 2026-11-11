@@ -141,6 +141,7 @@ export const useAppStore = create<AppState>()(
 					enableMinimalistMode: false,
 					allowSimultaneousPlayback: false,
 					expandMultiPageOnSync: null,
+					autoPlayRecommendations: true,
 					hideStarPrompt: false,
 				},
 				bilibiliUserInfo: null,

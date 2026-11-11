@@ -96,6 +96,7 @@ class ExpoOrpheusModule : Module() {
             )
         )
     }
+    private val equalizerManager = expo.modules.orpheus.manager.EqualizerManager()
     private var tempBuffer: FloatArray? = null
 
     private val ioScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
@@ -163,6 +164,7 @@ class ExpoOrpheusModule : Module() {
             )
 
             if (isPlaying) {
+                player?.let { equalizerManager.ensureAttached(it.audioSessionId) }
                 startSpectrumVisualizerIfEnabled()
             } else {
                 spectrumManager.stop()
@@ -174,9 +176,11 @@ class ExpoOrpheusModule : Module() {
         override fun onAudioSessionIdChanged(audioSessionId: Int) {
             if (audioSessionId == C.AUDIO_SESSION_ID_UNSET) {
                 spectrumManager.stop()
+                equalizerManager.release()
                 return
             }
 
+            equalizerManager.ensureAttached(audioSessionId)
             startSpectrumVisualizerIfEnabled(audioSessionId)
         }
 
@@ -329,6 +333,7 @@ class ExpoOrpheusModule : Module() {
                 OrpheusMusicService.removeOnServiceReadyListener { }
                 player = null
                 spectrumManager.stop()
+                equalizerManager.release()
                 ioScope.cancel()
                 Log.d("Orpheus", "Destroy media controller")
             }
@@ -1205,6 +1210,29 @@ class ExpoOrpheusModule : Module() {
 
         AsyncFunction("getPlaybackSpeed") Coroutine { ->
             withPlayerOnMainThread { it.playbackParameters.speed }
+        }
+
+        // ---- 均衡器 ----
+        AsyncFunction("getEqualizerInfo") Coroutine { ->
+            withPlayerOnMainThread { equalizerManager.ensureAttached(it.audioSessionId) }
+            equalizerManager.info()
+        }
+
+        AsyncFunction("setEqualizerEnabled") Coroutine { enabled: Boolean ->
+            withPlayerOnMainThread { equalizerManager.ensureAttached(it.audioSessionId) }
+            equalizerManager.setEnabled(enabled)
+        }
+
+        AsyncFunction("setEqualizerBandLevel") Coroutine { band: Int, level: Int ->
+            equalizerManager.setBandLevel(band, level)
+        }
+
+        AsyncFunction("applyEqualizerPreset") Coroutine { index: Int ->
+            equalizerManager.usePreset(index)
+        }
+
+        AsyncFunction("resetEqualizer") Coroutine { ->
+            equalizerManager.reset()
         }
 
         Function("getLruCachedUris") { uris: List<String> ->

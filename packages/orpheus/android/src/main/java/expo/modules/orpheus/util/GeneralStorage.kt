@@ -34,6 +34,8 @@ object GeneralStorage {
     private const val KEY_DESKTOP_LYRICS_HIGHLIGHT_COLOR = "config_desktop_lyrics_highlight_color"
     private const val KEY_DESKTOP_LYRICS_TEXT_SIZE = "config_desktop_lyrics_text_size"
     private const val KEY_DESKTOP_LYRICS_Y = "config_desktop_lyrics_y"
+    private const val KEY_EQUALIZER_ENABLED = "config_equalizer_enabled"
+    private const val KEY_EQUALIZER_LEVELS = "config_equalizer_levels"
 
 
     @Synchronized
@@ -103,6 +105,33 @@ object GeneralStorage {
             safeKv.encode(KEY_SPECTRUM_VISUALIZER_ENABLED, enabled)
         } catch (e: Exception) {
             Log.e("MediaItemStorer", "Failed to set spectrum visualizer enabled", e)
+        }
+    }
+
+    fun isEqualizerEnabled(): Boolean {
+        return safeKv.decodeBool(KEY_EQUALIZER_ENABLED, false)
+    }
+
+    fun setEqualizerEnabled(enabled: Boolean) {
+        try {
+            safeKv.encode(KEY_EQUALIZER_ENABLED, enabled)
+        } catch (e: Exception) {
+            Log.e("MediaItemStorer", "Failed to set equalizer enabled", e)
+        }
+    }
+
+    /** 各频段增益（单位 millibel），以逗号分隔保存。 */
+    fun getEqualizerLevels(): List<Int> {
+        val raw = safeKv.decodeString(KEY_EQUALIZER_LEVELS, "") ?: ""
+        if (raw.isBlank()) return emptyList()
+        return raw.split(",").mapNotNull { it.trim().toIntOrNull() }
+    }
+
+    fun setEqualizerLevels(levels: List<Int>) {
+        try {
+            safeKv.encode(KEY_EQUALIZER_LEVELS, levels.joinToString(","))
+        } catch (e: Exception) {
+            Log.e("MediaItemStorer", "Failed to set equalizer levels", e)
         }
     }
 

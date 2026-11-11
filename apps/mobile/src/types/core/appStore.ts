@@ -16,6 +16,9 @@ interface Settings {
 	enableMinimalistMode: boolean
 	allowSimultaneousPlayback: boolean
 	expandMultiPageOnSync: boolean | null // null = 用户尚未选择过（首次同步时询问）
+	/** 播放队列放完时，自动接着播放相似的推荐曲目 */
+	/** 未设置（旧版本保存的设置）时视为开启 */
+	autoPlayRecommendations?: boolean
 	hideStarPrompt: boolean // 用户是否点击过「不再显示」Star 提示
 }
 

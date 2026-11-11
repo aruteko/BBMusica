@@ -1,4 +1,5 @@
 import { bilibiliApi } from '@/lib/api/bilibili/api'
+import { syncFacade } from '@/lib/facades/syncBilibiliPlaylist'
 import { trackService } from '@/lib/services/trackService'
 import type { BilibiliFeedVideo } from '@/types/apis/bilibili'
 import type { BilibiliTrack, Track } from '@/types/core/media'
@@ -38,6 +39,24 @@ export function feedVideoToTrack(video: BilibiliFeedVideo): BilibiliTrack {
 			videoIsValid: true,
 		},
 	}
+}
+
+/**
+ * 把曲目录入本地数据库。
+ *
+ * 播放器（usePlayerStore）和播放记录都是按 uniqueKey 从数据库读取曲目的，
+ * 未入库的曲目会报 TrackNotFound。搜索结果的播放流程也是先入库再入队，这里保持一致。
+ * 入库失败的曲目会被丢弃（不会进入播放队列）。
+ */
+export async function persistTracksToLocal<T extends Track>(
+	tracks: T[],
+): Promise<T[]> {
+	const persisted: T[] = []
+	for (const track of tracks) {
+		const result = await syncFacade.addTrackToLocal(track)
+		if (result.isOk()) persisted.push(track)
+	}
+	return persisted
 }
 
 /** 从 uniqueKey（`bilibili::BVxxx` 或 `bilibili::BVxxx::cid`）里取出 bvid */

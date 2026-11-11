@@ -5,6 +5,7 @@ import { useCallback } from 'react'
 import { MULTIPAGE_VIDEO_KEYWORDS } from '@/features/playlist/remote/search-result/constants'
 import { useModalStore } from '@/hooks/stores/useModalStore'
 import { syncFacade } from '@/lib/facades/syncBilibiliPlaylist'
+import { startStation } from '@/lib/player/station'
 import type { BilibiliTrack } from '@/types/core/media'
 import { toastAndLogError } from '@/utils/error-handling'
 import { reportErrorToSentry } from '@/utils/log'
@@ -29,6 +30,11 @@ const ADD_TO_PLAYLIST_ICON = Icon.select({
 const ARTIST_ICON = Icon.select({
 	ios: 'person.crop.circle',
 	android: import('@expo/material-symbols/person.xml'),
+})
+
+const RADIO_ICON = Icon.select({
+	ios: 'dot.radiowaves.left.and.right',
+	android: import('@expo/material-symbols/radio.xml'),
 })
 
 export function useSearchInteractions() {
@@ -78,6 +84,13 @@ export function useSearchInteractions() {
 
 	const trackMenuItems = useCallback(
 		(item: BilibiliTrack) => [
+			{
+				title: 'この曲からステーション',
+				leadingIcon: RADIO_ICON,
+				onPress: () => {
+					void startStation(item)
+				},
+			},
 			{
 				title: '下一首播放',
 				leadingIcon: PLAY_NEXT_ICON,

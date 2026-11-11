@@ -1,12 +1,32 @@
 import { Orpheus, type Track as OrpheusTrack } from '@bbplayer/orpheus'
+import type { Result } from 'neverthrow'
 import { create } from 'zustand'
 
+import { ServiceError } from '@/lib/errors'
 import { trackService } from '@/lib/services/trackService'
 import type { Track } from '@/types/core/media'
 import { toastAndLogError } from '@/utils/error-handling'
 import log from '@/utils/log'
 
 const logger = log.extend('Store.Player')
+
+/**
+ * 队列里的曲目可能还没有录入本地数据库（例如旧版本遗留的播放队列）。
+ * 对 B 站曲目，从 B 站接口取回信息并录入，再继续使用；其它情况返回 undefined。
+ */
+async function recoverMissingBilibiliTrack(
+	uniqueKey: string,
+): Promise<Result<Track, unknown> | undefined> {
+	const [source, bvid, cid] = uniqueKey.split('::')
+	if (source !== 'bilibili' || !bvid) return undefined
+	// 动态 import：避免 store 与 facade 之间产生循环依赖
+	const { syncFacade } = await import('@/lib/facades/syncBilibiliPlaylist')
+	const parsedCid = cid ? Number(cid) : undefined
+	return syncFacade.addTrackFromBilibiliApi(
+		bvid,
+		parsedCid !== undefined && !Number.isNaN(parsedCid) ? parsedCid : undefined,
+	)
+}
 let syncRevision = 0
 let initialized = false
 
@@ -57,14 +77,23 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 			}
 
 			if (newTrackId !== currentInternalTrackId) {
-				const result = await trackService.getTrackByUniqueKey(currentTrack.id)
+				let result: Result<Track, unknown> =
+					await trackService.getTrackByUniqueKey(currentTrack.id)
+				if (
+					result.isErr() &&
+					result.error instanceof ServiceError &&
+					result.error.type === 'TrackNotFound'
+				) {
+					const recovered = await recoverMissingBilibiliTrack(currentTrack.id)
+					if (recovered) result = recovered
+				}
 
 				if (revision !== syncRevision || get().orpheusTrack?.id !== newTrackId)
 					return
 
 				if (result.isErr()) {
 					set({ internalTrack: null })
-					toastAndLogError('读取当前曲目信息失败', result.error, 'Store.Player')
+					toastAndLogError('現在の曲情報の取得に失敗しました', result.error, 'Store.Player')
 					return
 				}
 				set({ internalTrack: result.value })

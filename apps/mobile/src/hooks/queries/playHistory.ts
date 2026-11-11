@@ -10,6 +10,7 @@ export const playHistoryKeys = {
 	all: ['playHistory'] as const,
 	heatmap: () => [...playHistoryKeys.all, 'heatmap'] as const,
 	byDate: (date: string) => [...playHistoryKeys.all, 'byDate', date] as const,
+	recent: (limit: number) => [...playHistoryKeys.all, 'recent', limit] as const,
 	topPlayed: (days: number, limit: number) =>
 		[...playHistoryKeys.all, 'topPlayed', days, limit] as const,
 }
@@ -98,5 +99,43 @@ export const useMostPlayedTracks = (days: number, limit: number) => {
 		enabled: true,
 		networkMode: 'always',
 		staleTime: 60 * 1000,
+	})
+}
+
+/** 最近播放过的曲目（按最后播放时间倒序，同一首只出现一次） */
+async function fetchRecentlyPlayedTracks(limit: number): Promise<Track[]> {
+	const rows = await drizzleDb.query.playHistory.findMany({
+		with: {
+			track: {
+				with: {
+					artist: true,
+					bilibiliMetadata: true,
+					localMetadata: true,
+				},
+			},
+		},
+		orderBy: [desc(schema.playHistory.startTime)],
+		// 同一首歌可能重复出现，多取一些再去重
+		limit: limit * 5,
+	})
+
+	const seen = new Set<number>()
+	const tracks: Track[] = []
+	for (const row of rows) {
+		if (!row.track || seen.has(row.track.id)) continue
+		seen.add(row.track.id)
+		const track = trackService.formatTrack(row.track)
+		if (track) tracks.push(track)
+		if (tracks.length >= limit) break
+	}
+	return tracks
+}
+
+export const useRecentlyPlayedTracks = (limit: number) => {
+	return useQuery({
+		queryKey: playHistoryKeys.recent(limit),
+		queryFn: () => fetchRecentlyPlayedTracks(limit),
+		networkMode: 'always',
+		staleTime: 0,
 	})
 }

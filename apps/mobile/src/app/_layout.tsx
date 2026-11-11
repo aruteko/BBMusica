@@ -407,6 +407,10 @@ function RootLayout() {
 							options={{ headerShown: false }}
 						/>
 						<Stack.Screen
+							name='settings/equalizer'
+							options={{ headerShown: false }}
+						/>
+						<Stack.Screen
 							name='settings/lyrics'
 							options={{ headerShown: false }}
 						/>

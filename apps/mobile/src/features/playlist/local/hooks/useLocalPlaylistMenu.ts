@@ -7,10 +7,16 @@ import { useCallback } from 'react'
 import { alert } from '@/components/modals/AlertModal'
 import type { TrackMenuItem } from '@/features/playlist/local/components/LocalPlaylistItem'
 import { queryClient } from '@/lib/config/queryClient'
+import { startStation } from '@/lib/player/station'
 import type { Playlist, Track } from '@/types/core/media'
 import { toastAndLogError } from '@/utils/error-handling'
 import { addToQueue, getInternalPlayUri } from '@/utils/player'
 import toast from '@/utils/toast'
+
+const RADIO_ICON = Icon.select({
+	ios: 'dot.radiowaves.left.and.right',
+	android: import('@expo/material-symbols/radio.xml'),
+})
 
 const PLAY_NEXT_ICON = Icon.select({
 	ios: 'arrow.right.to.line.circle',
@@ -113,6 +119,13 @@ export function useLocalPlaylistMenu({
 		]
 		if (item.source === 'bilibili') {
 			menuItems.push(
+				{
+					title: 'この曲からステーション',
+					leadingIcon: RADIO_ICON,
+					onPress: () => {
+						void startStation(item)
+					},
+				},
 				{
 					title: '詳細を表示',
 					leadingIcon: INFO_ICON,
