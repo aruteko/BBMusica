@@ -25,11 +25,11 @@ export function PlayerHeader({
 		currentTrack?.uniqueKey ? [currentTrack.uniqueKey] : [],
 	)
 
-	const title = currentTrack?.title ?? '正在播放'
+	const title = currentTrack?.title ?? '再生中'
 	const statusText =
 		downloadStatus?.[currentTrack?.uniqueKey ?? ''] === DownloadState.COMPLETED
-			? '正在播放 (已缓存)'
-			: '正在播放'
+			? '再生中 (キャッシュ済み)'
+			: '再生中'
 
 	const { titleStyle, statusStyle } = usePlayerHeaderAnimation(index, scrollX)
 

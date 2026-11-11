@@ -27,7 +27,7 @@ export default function CreatePlaylistModal({
 
 	const handleConfirm = useCallback(() => {
 		if (title.trim().length === 0) {
-			toast.error('标题不能为空')
+			toast.error('タイトルを入力してください')
 			return
 		}
 		createNewPlaylist(
@@ -94,10 +94,10 @@ export default function CreatePlaylistModal({
 
 	return (
 		<>
-			<Dialog.Title>创建播放列表</Dialog.Title>
+			<Dialog.Title>プレイリストを作成</Dialog.Title>
 			<Dialog.Content style={styles.content}>
 				<TextInput
-					label='标题'
+					label='タイトル'
 					value={title}
 					onChangeText={setTitle}
 					mode='outlined'
@@ -106,7 +106,7 @@ export default function CreatePlaylistModal({
 					testID='create-playlist-title-input'
 				/>
 				<TextInput
-					label='描述'
+					label='説明'
 					onChangeText={setDescription}
 					value={description ?? undefined}
 					mode='outlined'
@@ -116,7 +116,7 @@ export default function CreatePlaylistModal({
 				/>
 				<View style={styles.coverUrlContainer}>
 					<TextInput
-						label='封面'
+						label='カバー'
 						onChangeText={setCoverUrl}
 						value={coverUrl ?? undefined}
 						mode='outlined'
@@ -133,12 +133,12 @@ export default function CreatePlaylistModal({
 				</View>
 			</Dialog.Content>
 			<Dialog.Actions>
-				<Button onPress={handleDismiss}>取消</Button>
+				<Button onPress={handleDismiss}>キャンセル</Button>
 				<Button
 					onPress={handleConfirm}
 					testID='create-playlist-confirm-button'
 				>
-					确定
+					OK
 				</Button>
 			</Dialog.Actions>
 		</>

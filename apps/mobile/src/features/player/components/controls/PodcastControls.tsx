@@ -29,27 +29,27 @@ export function PodcastControls({ compact = false }: { compact?: boolean }) {
 	const actions = [
 		{
 			icon: 'speedometer',
-			accessibilityLabel: `倍速，当前 ${speed} 倍`,
+			accessibilityLabel: `再生速度、現在 ${speed} 倍`,
 			onPress: () => useModalStore.getState().open('PlaybackSpeed', undefined),
 		},
 		{
 			icon: 'timer-outline',
 			accessibilityLabel:
 				remaining > 0
-					? `定时关闭，剩余 ${formatDurationToHHMMSS(remaining)}`
-					: '定时关闭',
+					? `スリープタイマー、残り ${formatDurationToHHMMSS(remaining)}`
+					: 'スリープタイマー',
 			onPress: () => useModalStore.getState().open('SleepTimer', undefined),
 		},
 		{
 			icon: 'book-open-page-variant-outline',
-			accessibilityLabel: '打开章节列表',
+			accessibilityLabel: 'チャプター一覧を開く',
 			onPress: () => {
 				void usePlayerChaptersSheetStore.getState().open()
 			},
 		},
 		{
 			icon: 'format-list-bulleted',
-			accessibilityLabel: '打开播放队列',
+			accessibilityLabel: '再生キューを開く',
 			onPress: () => {
 				void usePlayerQueueSheetStore.getState().open()
 			},

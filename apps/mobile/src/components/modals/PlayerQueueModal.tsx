@@ -142,7 +142,7 @@ const TrackItem = memo(
 									style={{ fontWeight: 'thin' }}
 									numberOfLines={1}
 								>
-									{track.artist ?? '未知作者'}
+									{track.artist ?? '不明なアーティスト'}
 								</Text>
 							</View>
 						</View>
@@ -179,15 +179,15 @@ function PlayerQueueModal({ sheetRef, ...props }: PlayerQueueModalProps) {
 
 	const clearQueue = () => {
 		dismissWithAction(() => {
-			alert('清空播放队列', '清空播放队列并停止播放？', [
-				{ text: '取消' },
+			alert('再生キューをクリア', '再生キューをクリアして再生を停止しますか？', [
+				{ text: 'キャンセル' },
 				{
-					text: '清空',
+					text: 'クリア',
 					onPress: () => {
 						setClearing(true)
 						void clearPlaybackQueue()
 							.catch((error: unknown) =>
-								toastAndLogError('清空播放队列失败', error, 'Player.Queue'),
+								toastAndLogError('キューのクリアに失敗しました', error, 'Player.Queue'),
 							)
 							.finally(() => setClearing(false))
 					},
@@ -364,7 +364,7 @@ function PlayerQueueModal({ sheetRef, ...props }: PlayerQueueModalProps) {
 		setDrag(null)
 		if (active && active.from !== active.to) {
 			void Orpheus.moveTrack(active.from, active.to).catch((error: unknown) =>
-				toastAndLogError('调整播放队列失败', error, 'Player.Queue'),
+				toastAndLogError('キューの並べ替えに失敗しました', error, 'Player.Queue'),
 			)
 		}
 	}, [stopAutoScroll])
@@ -421,7 +421,7 @@ function PlayerQueueModal({ sheetRef, ...props }: PlayerQueueModalProps) {
 
 	const menuActions = useMenuActions([
 		{
-			title: '反序剩余歌曲',
+			title: '残りの曲を逆順にする',
 			image: REVERSE_QUEUE_ICON,
 			onPress: () => {
 				void reverseRemainingQueueHandler()
@@ -432,13 +432,13 @@ function PlayerQueueModal({ sheetRef, ...props }: PlayerQueueModalProps) {
 			},
 		},
 		{
-			title: '保存为播放列表',
+			title: 'プレイリストとして保存',
 			image: SAVE_QUEUE_ICON,
 			onPress: saveQueueToPlaylistHandler,
 			attributes: { disabled: queue.length === 0 },
 		},
 		{
-			title: '清空播放队列',
+			title: '再生キューをクリア',
 			image: CLEAR_QUEUE_ICON,
 			onPress: clearQueue,
 			attributes: { disabled: clearing || queue.length === 0 },
@@ -487,7 +487,7 @@ function PlayerQueueModal({ sheetRef, ...props }: PlayerQueueModalProps) {
 								borderBottomColor: theme.colors.elevation.level2,
 							}}
 						>
-							<Text variant='titleMedium'>播放队列 ({queue.length})</Text>
+							<Text variant='titleMedium'>再生キュー ({queue.length})</Text>
 							<View style={{ flexDirection: 'row', alignItems: 'center' }}>
 								<MenuView {...menuActions}>
 									<IconButton
@@ -573,7 +573,7 @@ function PlayerQueueModal({ sheetRef, ...props }: PlayerQueueModalProps) {
 										variant='bodySmall'
 										numberOfLines={1}
 									>
-										{queue[drag.from].artist ?? '未知作者'}
+										{queue[drag.from].artist ?? '不明なアーティスト'}
 									</Text>
 								</Animated.View>
 							)}

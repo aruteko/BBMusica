@@ -96,7 +96,7 @@ const UpdateTrackLocalPlaylistsModal = memo(
 		)
 
 		const uniqueKey = generateUniqueTrackKey(track).unwrapOr(undefined)
-		if (!uniqueKey) toast.error('无法生成 uniqueKey')
+		if (!uniqueKey) toast.error('uniqueKeyを生成できません')
 		const {
 			data: playlistsContainingTrack,
 			isPending: isContainingTrackPending,
@@ -209,12 +209,12 @@ const UpdateTrackLocalPlaylistsModal = memo(
 					<>
 						<Dialog.Content>
 							<Text style={[styles.errorText, { color: colors.error }]}>
-								加载歌单列表失败
+								プレイリスト一覧の読み込みに失敗しました
 							</Text>
 						</Dialog.Content>
 						<Dialog.Actions>
-							<Button onPress={handleDismiss}>关闭</Button>
-							<Button onPress={handleRetry}>重试</Button>
+							<Button onPress={handleDismiss}>閉じる</Button>
+							<Button onPress={handleRetry}>再試行</Button>
 						</Dialog.Actions>
 					</>
 				)
@@ -231,7 +231,7 @@ const UpdateTrackLocalPlaylistsModal = memo(
 							recycleItems
 							ListEmptyComponent={
 								<View style={styles.emptyListContainer}>
-									<Text>你还没有创建任何歌单</Text>
+									<Text>まだプレイリストを作成していません</Text>
 								</View>
 							}
 						/>
@@ -247,21 +247,21 @@ const UpdateTrackLocalPlaylistsModal = memo(
 								open('CreatePlaylist', { redirectToNewPlaylist: false })
 							}
 						>
-							创建歌单
+							プレイリストを作成
 						</Button>
 						<View style={styles.rightActionsContainer}>
 							<Button
 								onPress={handleDismiss}
 								disabled={isMutating}
 							>
-								取消
+								キャンセル
 							</Button>
 							<Button
 								onPress={handleConfirm}
 								loading={isMutating}
 								disabled={isMutating}
 							>
-								确认
+								確認
 							</Button>
 						</View>
 					</Dialog.Actions>
@@ -271,7 +271,7 @@ const UpdateTrackLocalPlaylistsModal = memo(
 
 		return (
 			<>
-				<Dialog.Title>添加到歌单</Dialog.Title>
+				<Dialog.Title>プレイリストに追加</Dialog.Title>
 				{renderContent()}
 			</>
 		)

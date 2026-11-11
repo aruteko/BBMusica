@@ -29,7 +29,7 @@ export default function SaveQueueToPlaylistModal({
 
 		if (res.isErr()) {
 			toastAndLogError(
-				'保存播放列表失败',
+				'プレイリストの保存に失敗しました',
 				res.error,
 				'SaveQueueToPlaylistModal',
 			)
@@ -37,8 +37,8 @@ export default function SaveQueueToPlaylistModal({
 			return
 		}
 
-		logger.info('保存队列到播放列表成功', res.value)
-		toast.success('保存队列到播放列表成功')
+		logger.info('キューをプレイリストに保存しました', res.value)
+		toast.success('キューをプレイリストに保存しました')
 		await Promise.all([
 			queryClient.invalidateQueries({
 				queryKey: playlistKeys.playlistLists(),
@@ -56,10 +56,10 @@ export default function SaveQueueToPlaylistModal({
 
 	return (
 		<>
-			<Dialog.Title>保存队列到播放列表</Dialog.Title>
+			<Dialog.Title>キューをプレイリストに保存</Dialog.Title>
 			<Dialog.Content>
 				<TextInput
-					label='播放列表名称'
+					label='プレイリスト名'
 					value={name}
 					onChangeText={setName}
 					mode='outlined'
@@ -71,7 +71,7 @@ export default function SaveQueueToPlaylistModal({
 					onPress={() => close('SaveQueueToPlaylist')}
 					disabled={loading}
 				>
-					取消
+					キャンセル
 				</Button>
 				<Button
 					onPress={handleSave}

@@ -58,7 +58,7 @@ export function PlayerChaptersSheet() {
 			if (target !== null) void usePlayerChaptersSheetStore.getState().close()
 			setSeeking(false)
 		} catch (error) {
-			toastAndLogError('章节跳转失败', error, 'Player.Chapters')
+			toastAndLogError('チャプターへの移動に失敗しました', error, 'Player.Chapters')
 			setSeeking(false)
 		}
 	}
@@ -88,7 +88,7 @@ export function PlayerChaptersSheet() {
 						variant='titleMedium'
 						style={{ padding: 20 }}
 					>
-						章节
+						チャプター
 					</Text>
 					<View style={{ flex: 1, minHeight: 2 }}>
 						{data.chapters.length > 0 ? (
@@ -115,7 +115,7 @@ export function PlayerChaptersSheet() {
 										title={item.title}
 										titleNumberOfLines={3}
 										description={
-											chapterIndex === currentIndex ? '正在播放' : undefined
+											chapterIndex === currentIndex ? '再生中' : undefined
 										}
 										left={() => (
 											<Text
@@ -167,22 +167,22 @@ export function PlayerChaptersSheet() {
 								{data.isLoading ? (
 									<>
 										<ActivityIndicator />
-										<Text>正在加载章节…</Text>
+										<Text>チャプターを読み込み中…</Text>
 									</>
 								) : data.isError ? (
 									<>
-										<Text>章节加载失败，播放不受影响</Text>
+										<Text>チャプターの読み込みに失敗しました（再生には影響しません）</Text>
 										<Button
 											onPress={() => {
 												void data.retry()
 											}}
 										>
-											重试
+											再試行
 										</Button>
 									</>
 								) : (
 									<Text>
-										{data.isLocal ? '此音频暂无章节' : '此视频暂无章节'}
+										{data.isLocal ? 'この音声にはチャプターがありません' : 'この動画にはチャプターがありません'}
 									</Text>
 								)}
 							</View>

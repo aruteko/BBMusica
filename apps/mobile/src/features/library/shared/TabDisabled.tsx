@@ -14,7 +14,7 @@ export default function TabDisable() {
 				variant='titleMedium'
 				style={styles.text}
 			>
-				登录 bilibili 账号后才能查看合集
+				bilibiliアカウントにログインするとコレクションを確認できます
 			</Text>
 			<Button
 				mode='contained'
@@ -22,7 +22,7 @@ export default function TabDisable() {
 					router.navigate('/settings/bilibili-account/qrcode-login')
 				}
 			>
-				登录
+				ログイン
 			</Button>
 		</View>
 	)

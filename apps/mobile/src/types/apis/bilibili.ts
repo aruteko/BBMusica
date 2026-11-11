@@ -104,6 +104,26 @@ interface BilibiliVideoDetailsPage {
 }
 
 /**
+ * 排行榜 / 相关推荐等接口返回的轻量视频信息
+ */
+interface BilibiliFeedVideo {
+	aid: number
+	bvid: string
+	title: string
+	pic: string
+	pubdate: number
+	duration: number // 秒
+	owner: {
+		name: string
+		mid: number
+		face: string
+	}
+	cid?: number
+	/** 分区 id（tid），部分接口才会返回 */
+	tid?: number
+}
+
+/**
  * 收藏夹信息
  */
 interface BilibiliPlaylist {
@@ -717,6 +737,7 @@ export type {
 	BilibiliUserInfo,
 	BilibiliUserUploadedVideosResponse,
 	BilibiliVideoDetails,
+	BilibiliFeedVideo,
 	BilibiliWebPlayerInfo,
 }
 

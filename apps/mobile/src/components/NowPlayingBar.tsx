@@ -293,7 +293,7 @@ const NowPlayingBarContent = memo(function NowPlayingBarContent() {
 						testID='now-playing-bar'
 					>
 						<View style={styles.nowPlayingBarContent}>
-							{/* 触摸由外层手势处理（点按、上滑打开播放器，左右滑切歌）；这一层只给
+							{/* 触摸由外层手势处理（点按、上滑プレーヤーを開く，左右滑切歌）；这一层只给
 							    遥控器 / 键盘一个可以聚焦、按确认键打开播放器的位置。 */}
 							<Pressable
 								style={styles.nowPlayingBarOpener}
@@ -301,7 +301,7 @@ const NowPlayingBarContent = memo(function NowPlayingBarContent() {
 								testID='now-playing-open-player'
 								onPress={() => router.navigate('/player')}
 								accessibilityRole='button'
-								accessibilityLabel='打开播放器'
+								accessibilityLabel='プレーヤーを開く'
 							>
 								<Image
 									source={{
@@ -341,14 +341,14 @@ const NowPlayingBarContent = memo(function NowPlayingBarContent() {
 											numberOfLines={1}
 											style={{ color: colors.onSurface }}
 										>
-											{currentTrack.title ?? '未知曲目'}
+											{currentTrack.title ?? '不明な曲'}
 										</Text>
 										<Text
 											variant='bodySmall'
 											numberOfLines={1}
 											style={{ color: colors.onSurfaceVariant }}
 										>
-											{currentTrack.artist?.name ?? '未知'}
+											{currentTrack.artist?.name ?? '不明'}
 										</Text>
 									</Animated.View>
 
@@ -366,7 +366,7 @@ const NowPlayingBarContent = memo(function NowPlayingBarContent() {
 											numberOfLines={1}
 											style={{ color: colors.onSurface, fontWeight: 'bold' }}
 										>
-											上一首
+											前の曲
 										</Text>
 										<Text
 											variant='bodySmall'
@@ -390,7 +390,7 @@ const NowPlayingBarContent = memo(function NowPlayingBarContent() {
 											numberOfLines={1}
 											style={{ color: colors.onSurface, fontWeight: 'bold' }}
 										>
-											下一首
+											次の曲
 										</Text>
 										<Text
 											variant='bodySmall'

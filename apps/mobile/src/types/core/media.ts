@@ -73,6 +73,8 @@ export interface Playlist {
 	author: Artist | null // 本地播放列表不存在 author
 	description: string | null
 	coverUrl: string | null
+	/** 未指定 coverUrl 时，用于拼成 2×2 封面的曲目封面（最多 4 张） */
+	previewCovers?: string[]
 	itemCount: number
 	contents?: Track[]
 	type:

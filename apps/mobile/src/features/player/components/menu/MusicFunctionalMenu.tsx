@@ -2,6 +2,7 @@ import { Divider, List } from 'react-native-paper'
 
 import useCurrentTrack from '@/hooks/player/useCurrentTrack'
 import { useModalStore } from '@/hooks/stores/useModalStore'
+import { startStation } from '@/lib/player/station'
 
 import {
 	HighFreqButton,
@@ -23,14 +24,14 @@ export function MusicFunctionalMenu({
 			<HighFreqRow style={{ paddingBottom: 12 }}>
 				<HighFreqButton
 					icon='speedometer'
-					label='倍速'
+					label='再生速度'
 					onPress={() =>
 						handleAction(() => openModal('PlaybackSpeed', undefined))
 					}
 				/>
 				<HighFreqButton
 					icon='timer-outline'
-					label='定时关闭'
+					label='スリープタイマー'
 					onPress={() => handleAction(() => openModal('SleepTimer', undefined))}
 				/>
 				<PlayerDownloadButton onAction={handleAction} />
@@ -39,7 +40,22 @@ export function MusicFunctionalMenu({
 			<Divider />
 			<SharedTrackActions onAction={handleAction} />
 			<List.Item
-				title='搜索歌词'
+				title='ステーションを開始（この曲をもとに）'
+				left={(props) => (
+					<List.Icon
+						{...props}
+						icon='radio-tower'
+					/>
+				)}
+				onPress={() =>
+					handleAction(() => {
+						if (!currentTrack) return
+						void startStation(currentTrack)
+					})
+				}
+			/>
+			<List.Item
+				title='歌詞を検索'
 				left={(props) => (
 					<List.Icon
 						{...props}
@@ -57,7 +73,7 @@ export function MusicFunctionalMenu({
 				}
 			/>
 			<List.Item
-				title='分享歌词'
+				title='歌詞を共有'
 				left={(props) => (
 					<List.Icon
 						{...props}

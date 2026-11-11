@@ -42,6 +42,7 @@ import {
 	type BilibiliFollowingGroup,
 	type BilibiliUserUploadedVideosResponse,
 	type BilibiliVideoDetails,
+	type BilibiliFeedVideo,
 } from '@/types/apis/bilibili'
 import type { BilibiliTrack } from '@/types/core/media'
 import log from '@/utils/log'
@@ -85,15 +86,34 @@ export class BilibiliApi {
 	}: {
 		partition: string
 		signal?: AbortSignal
-	}): ResultAsync<BilibiliVideoDetails[], BilibiliApiError> {
+	}): ResultAsync<BilibiliFeedVideo[], BilibiliApiError> {
 		return bilibiliApiClient
 			.get<{
-				list: BilibiliVideoDetails[]
+				list: BilibiliFeedVideo[]
 			} | null>({
 				endpoint: `/x/web-interface/ranking/v2?rid=${partition}`,
 				signal,
 			})
 			.map((response) => response?.list ?? [])
+	}
+
+	/**
+	 * 获取与指定视频相关的推荐视频（B 站「相关视频」）
+	 */
+	getRelatedVideos({
+		bvid,
+		signal,
+	}: {
+		bvid: string
+		signal?: AbortSignal
+	}): ResultAsync<BilibiliFeedVideo[], BilibiliApiError> {
+		return bilibiliApiClient
+			.get<BilibiliFeedVideo[] | null>({
+				endpoint: '/x/web-interface/archive/related',
+				params: { bvid },
+				signal,
+			})
+			.map((response) => response ?? [])
 	}
 
 	/**

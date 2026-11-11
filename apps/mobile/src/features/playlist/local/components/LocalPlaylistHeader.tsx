@@ -13,7 +13,7 @@ import {
 } from 'react-native-paper'
 
 import Button from '@/components/common/Button'
-import CoverWithPlaceHolder from '@/components/common/CoverWithPlaceHolder'
+import PlaylistCover from '@/components/common/PlaylistCover'
 import ExpandableText from '@/components/common/ExpandableText'
 import IconButton from '@/components/common/IconButton'
 import { alert } from '@/components/modals/AlertModal'
@@ -49,7 +49,7 @@ interface SubtitlePieces {
 	authorName?: string
 	authorClickable: boolean
 	countText: string
-	syncLine?: string // 带“最后同步：xxx”的整行
+	syncLine?: string // 带“最終同期：xxx”的整行
 }
 
 // 三元运算符过于难懂，还是用函数好一些
@@ -61,25 +61,25 @@ function buildSubtitlePieces(
 
 	const countRaw =
 		playlist.validTrackCount !== playlist.itemCount
-			? `${playlist.itemCount}\u2009首\u2009(\u2009${playlist.itemCount - playlist.validTrackCount}\u2009首失效) `
-			: `${playlist.itemCount}\u2009首`
+			? `${playlist.itemCount}\u2009曲\u2009(\u2009${playlist.itemCount - playlist.validTrackCount}\u2009曲が無効) `
+			: `${playlist.itemCount}\u2009曲`
 
-	let countText = `${countRaw}歌曲`
+	let countText = countRaw
 	if (totalDuration !== undefined) {
-		countText += `\u2009•\u2009共\u2009${formatDurationToText(totalDuration)}`
+		countText += `\u2009•\u2009合計\u2009${formatDurationToText(totalDuration)}`
 	}
 
 	const authorName = !isLocal
-		? (playlist.author?.name ?? '未知作者')
+		? (playlist.author?.name ?? '不明なアーティスト')
 		: undefined
 	const authorClickable =
 		!!authorName && !isLocal && playlist.author?.source === 'bilibili'
 
 	const syncLine = !isLocal
-		? `最后同步：${
+		? `最終同期：${
 				playlist.lastSyncedAt
 					? formatRelativeTime(playlist.lastSyncedAt)
-					: '未知'
+					: '不明'
 			}`
 		: undefined
 
@@ -87,7 +87,7 @@ function buildSubtitlePieces(
 }
 
 /**
- * 播放列表头部组件。
+ * プレイリスト头部组件。
  */
 export const PlaylistHeader = memo(function PlaylistHeader({
 	playlist,
@@ -126,7 +126,7 @@ export const PlaylistHeader = memo(function PlaylistHeader({
 		const tracksResult = await playlistService.getPlaylistTracks(playlist.id)
 		if (tracksResult.isErr()) {
 			toastAndLogError(
-				'获取播放列表内容失败',
+				'プレイリストの内容を取得できませんでした',
 				tracksResult.error,
 				'UI.Playlist.Local.Header',
 			)
@@ -164,9 +164,10 @@ export const PlaylistHeader = memo(function PlaylistHeader({
 		<View style={styles.container}>
 			{/* 顶部信息 */}
 			<View style={styles.headerContainer}>
-				<CoverWithPlaceHolder
+				<PlaylistCover
 					id={playlist.id}
 					cover={coverRef ?? playlist.coverUrl}
+					previewCovers={playlist.previewCovers}
 					title={playlist.title}
 					size={coverSize}
 				/>
@@ -177,9 +178,9 @@ export const PlaylistHeader = memo(function PlaylistHeader({
 						onLongPress={async () => {
 							const result = await Clipboard.setStringAsync(playlist.title)
 							if (!result) {
-								toast.error('复制失败')
+								toast.error('コピーに失敗しました')
 							} else {
-								toast.success('已复制标题到剪贴板')
+								toast.success('タイトルをクリップボードにコピーしました')
 							}
 						}}
 					>
@@ -203,10 +204,10 @@ export const PlaylistHeader = memo(function PlaylistHeader({
 									<>
 										<Text style={{ color: colors.primary, fontWeight: 'bold' }}>
 											{playlist.shareRole === 'owner'
-												? '所有者'
+												? 'オーナー'
 												: playlist.shareRole === 'editor'
-													? '编辑者'
-													: '订阅者'}
+													? '編集者'
+													: '購読者'}
 										</Text>
 										{'\n'}
 									</>
@@ -216,7 +217,7 @@ export const PlaylistHeader = memo(function PlaylistHeader({
 						) : (
 							<>
 								{/* 作者名 */}
-								{'创建者：'}
+								{'作成者：'}
 								<Text
 									variant='bodySmall'
 									onPress={
@@ -337,7 +338,7 @@ export const PlaylistHeader = memo(function PlaylistHeader({
 											variant='bodySmall'
 											style={{ marginLeft: 6, color: colors.onSurfaceVariant }}
 										>
-											{shareMembers.length} 位协作者
+											{shareMembers.length} 人の共同編集者
 										</Text>
 									</>
 								)}
@@ -363,7 +364,7 @@ export const PlaylistHeader = memo(function PlaylistHeader({
 						buttonColor={primaryButtonColor}
 						textColor={primaryButtonTextColor}
 					>
-						播放全部
+						すべて再生
 					</Button>
 
 					{playlist.type !== 'local' && playlist.type !== 'dynamic' && (
@@ -393,14 +394,14 @@ export const PlaylistHeader = memo(function PlaylistHeader({
 						size={20}
 						onPress={() =>
 							alert(
-								'下载全部？',
-								'是否要下载该播放列表内的全部歌曲？（已下载过的不会重新下载）',
+								'すべてダウンロードしますか？',
+								'このプレイリスト内のすべての曲をダウンロードしますか？（ダウンロード済みの曲は再ダウンロードされません）',
 								[
 									{
-										text: '取消',
+										text: 'キャンセル',
 									},
 									{
-										text: '确定',
+										text: 'OK',
 										onPress: onClickDownloadAll,
 									},
 								],
@@ -420,8 +421,8 @@ export const PlaylistHeader = memo(function PlaylistHeader({
 					<ExpandableText
 						text={playlist.description}
 						lines={3}
-						expandLabel='展开简介'
-						collapseLabel='收起简介'
+						expandLabel='概要を表示'
+						collapseLabel='概要を閉じる'
 					/>
 				</View>
 			)}

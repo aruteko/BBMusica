@@ -121,7 +121,7 @@ export default function TabLayout() {
 				disableAutomaticContentInsets
 				unstable_nativeProps={nativeIconProps(icons?.home, searchIcon, colors)}
 			>
-				<NativeTabs.Trigger.Label>搜索</NativeTabs.Trigger.Label>
+				<NativeTabs.Trigger.Label>ホーム</NativeTabs.Trigger.Label>
 				<NativeTabs.Trigger.Icon
 					src={iconSource(icons?.home, searchIcon)}
 					renderingMode={icons?.home.default ? 'original' : 'template'}
@@ -137,7 +137,7 @@ export default function TabLayout() {
 					colors,
 				)}
 			>
-				<NativeTabs.Trigger.Label>音乐库</NativeTabs.Trigger.Label>
+				<NativeTabs.Trigger.Label>ライブラリ</NativeTabs.Trigger.Label>
 				<NativeTabs.Trigger.Icon
 					src={iconSource(icons?.library, libraryIcon)}
 					renderingMode={icons?.library.default ? 'original' : 'template'}
@@ -153,7 +153,7 @@ export default function TabLayout() {
 					colors,
 				)}
 			>
-				<NativeTabs.Trigger.Label>我的</NativeTabs.Trigger.Label>
+				<NativeTabs.Trigger.Label>マイページ</NativeTabs.Trigger.Label>
 				<NativeTabs.Trigger.Icon
 					src={iconSource(icons?.settings, profileIcon)}
 					renderingMode={icons?.settings.default ? 'original' : 'template'}

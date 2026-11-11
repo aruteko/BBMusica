@@ -76,7 +76,7 @@ const LocalPlaylistListComponent = memo(() => {
 		return [
 			{
 				id: 1145141919810,
-				title: '稍后再看',
+				title: 'あとで見る',
 				author: null,
 				description: null,
 				coverUrl: null,
@@ -102,23 +102,23 @@ const LocalPlaylistListComponent = memo(() => {
 
 	const menuActions = useMenuActions([
 		{
-			title: '新建播放列表',
+			title: '新規プレイリスト',
 			image: CREATE_PLAYLIST_ICON,
 			onPress: () =>
 				openModal('CreatePlaylist', { redirectToNewPlaylist: true }),
 		},
 		{
-			title: '导入外部歌单',
+			title: '外部プレイリストをインポート',
 			image: IMPORT_PLAYLIST_ICON,
 			onPress: () => openModal('InputExternalPlaylistInfo', undefined),
 		},
 		{
-			title: '订阅共享歌单',
+			title: '共有プレイリストを購読',
 			image: SUBSCRIBE_PLAYLIST_ICON,
 			onPress: () => openModal('SubscribeToSharedPlaylist', undefined),
 		},
 		{
-			title: '动态合并歌单',
+			title: '動的マージプレイリスト',
 			image: MERGE_PLAYLIST_ICON,
 			onPress: () => openModal('MergePlaylists', undefined),
 		},
@@ -131,7 +131,7 @@ const LocalPlaylistListComponent = memo(() => {
 	if (playlistsIsError) {
 		return (
 			<DataFetchingError
-				text='加载失败'
+				text='読み込みに失敗しました'
 				onRetry={() => onRefresh()}
 			/>
 		)
@@ -144,24 +144,24 @@ const LocalPlaylistListComponent = memo(() => {
 					variant='titleMedium'
 					style={styles.headerTitle}
 				>
-					播放列表
+					プレイリスト
 				</Text>
 				<View style={styles.headerActionsContainer}>
 					<Text variant='bodyMedium'>
-						{playlists.length ?? 0}&thinsp;个播放列表
+						{playlists.length ?? 0}&thinsp;件のプレイリスト
 					</Text>
 					<MenuView {...menuActions}>
 						<IconButton
 							icon='plus'
 							testID='library-playlist-menu'
-							accessibilityLabel='播放列表操作'
+							accessibilityLabel='プレイリスト操作'
 							size={20}
 						/>
 					</MenuView>
 				</View>
 			</View>
 			<Searchbar
-				placeholder='搜索播放列表'
+				placeholder='プレイリストを検索'
 				testID='library-playlist-search'
 				onChangeText={setSearchQuery}
 				value={searchQuery}
@@ -195,7 +195,7 @@ const LocalPlaylistListComponent = memo(() => {
 							testID='library-playlist-empty'
 							style={styles.emptyList}
 						>
-							没有播放列表
+							プレイリストがありません
 						</Text>
 					}
 				/>

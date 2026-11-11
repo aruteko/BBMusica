@@ -163,7 +163,7 @@ export function PlayerSlider({
 				}
 				isSeeking.set(false)
 			} catch (error) {
-				toastAndLogError('跳转失败', error, 'Player.Slider')
+				toastAndLogError('シークに失敗しました', error, 'Player.Slider')
 				isSeeking.set(false)
 			}
 		},

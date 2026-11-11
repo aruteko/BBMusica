@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native'
 import { Touchable } from 'react-native-gesture-handler'
 import { Divider, Icon, Text, useTheme } from 'react-native-paper'
 
-import CoverWithPlaceHolder from '@/components/common/CoverWithPlaceHolder'
+import PlaylistCover from '@/components/common/PlaylistCover'
 import { LIST_ITEM_COVER_SIZE } from '@/theme/dimensions'
 import type { Playlist } from '@/types/core/media'
 
@@ -32,9 +32,10 @@ const LocalPlaylistItem = memo(
 				>
 					<View>
 						<View style={styles.itemContainer}>
-							<CoverWithPlaceHolder
+							<PlaylistCover
 								id={item.id}
 								cover={item.coverUrl}
+								previewCovers={item.previewCovers}
 								title={item.title}
 								size={LIST_ITEM_COVER_SIZE}
 							/>
@@ -43,8 +44,8 @@ const LocalPlaylistItem = memo(
 								<View style={styles.subtitleContainer}>
 									<Text variant='bodySmall'>
 										{item.isToView
-											? '与\u2009B\u2009站「稍后再看」同步'
-											: `${item.itemCount}\u2009首歌曲`}
+											? 'B站の「あとで見る」と同期'
+											: `${item.itemCount}\u2009曲`}
 									</Text>
 									{item.isPinned && (
 										<Icon

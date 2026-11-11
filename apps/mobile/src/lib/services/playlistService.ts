@@ -315,6 +315,71 @@ export class PlaylistService {
 		}
 	}
 
+	/**
+	 * 为没有手动指定封面的播放列表，附上最多 4 张曲目封面（去重），
+	 * 用于在列表/详情页拼成 2×2 的封面。已有 coverUrl 的列表不会查询。
+	 */
+	private async attachPreviewCovers<
+		T extends { id: number; type: string; coverUrl: string | null },
+	>(playlists: T[]): Promise<(T & { previewCovers: string[] })[]> {
+		const targets = playlists.filter((p) => !p.coverUrl)
+		const coverMap = new Map<number, string[]>()
+
+		const regularIds = targets.filter((p) => p.type !== 'dynamic').map((p) => p.id)
+		if (regularIds.length > 0) {
+			const rows = this.db.all<{ playlistId: number; coverUrl: string }>(sql`
+				SELECT playlist_id AS playlistId, cover_url AS coverUrl
+				FROM (
+					SELECT
+						playlist_id,
+						cover_url,
+						ROW_NUMBER() OVER (PARTITION BY playlist_id ORDER BY sk DESC) AS rn
+					FROM (
+						SELECT
+							pt.playlist_id AS playlist_id,
+							t.cover_url AS cover_url,
+							MAX(pt.sort_key) AS sk
+						FROM ${schema.playlistTracks} AS pt
+						JOIN ${schema.tracks} AS t ON t.id = pt.track_id
+						WHERE pt.playlist_id IN (${sql.join(
+							regularIds.map((id) => sql`${id}`),
+							sql`, `,
+						)})
+							AND t.cover_url IS NOT NULL
+							AND t.cover_url != ''
+						GROUP BY pt.playlist_id, t.cover_url
+					)
+				)
+				WHERE rn <= 4
+				ORDER BY playlist_id, rn
+			`)
+			for (const row of rows) {
+				const list = coverMap.get(row.playlistId) ?? []
+				list.push(row.coverUrl)
+				coverMap.set(row.playlistId, list)
+			}
+		}
+
+		for (const playlist of targets.filter((p) => p.type === 'dynamic')) {
+			const rows = await this.queryDynamicPlaylistTrackRows({
+				playlistId: playlist.id,
+				limit: 12,
+			})
+			const covers: string[] = []
+			for (const row of rows) {
+				const cover = row.track.coverUrl
+				if (cover && !covers.includes(cover)) covers.push(cover)
+				if (covers.length >= 4) break
+			}
+			coverMap.set(playlist.id, covers)
+		}
+
+		return playlists.map((p) => ({
+			...p,
+			previewCovers: coverMap.get(p.id) ?? [],
+		}))
+	}
+
 	private async getDynamicPlaylistCounts(playlistIds: number[]) {
 		const uniqueIds = Array.from(new Set(playlistIds))
 		if (uniqueIds.length === 0) return new Map<number, number>()
@@ -848,6 +913,7 @@ export class PlaylistService {
 	public getAllPlaylists(): ResultAsync<
 		(typeof schema.playlists.$inferSelect & {
 			author: typeof schema.artists.$inferSelect | null
+			previewCovers: string[]
 		})[],
 		DatabaseError
 	> {
@@ -873,13 +939,15 @@ export class PlaylistService {
 						.map((playlist) => playlist.id),
 				)
 
-				return playlists.map((playlist) => {
-					if (playlist.type !== 'dynamic') return playlist
-					return {
-						...playlist,
-						itemCount: countMap.get(playlist.id) ?? 0,
-					}
-				})
+				return this.attachPreviewCovers(
+					playlists.map((playlist) => {
+						if (playlist.type !== 'dynamic') return playlist
+						return {
+							...playlist,
+							itemCount: countMap.get(playlist.id) ?? 0,
+						}
+					}),
+				)
 			})(),
 			(e) => new DatabaseError('获取所有 playlists 失败', { cause: e }),
 		).andThen((playlists) => {
@@ -897,6 +965,7 @@ export class PlaylistService {
 		  } & {
 				validTrackCount: number
 				totalDuration: number
+				previewCovers: string[]
 		  })
 		| undefined,
 		DatabaseError
@@ -955,7 +1024,13 @@ export class PlaylistService {
 				}
 			})(),
 			(e) => new DatabaseError('获取 playlist 元数据失败', { cause: e }),
-		)
+		).andThen((metadata) => {
+			if (!metadata) return okAsync(undefined)
+			return ResultAsync.fromPromise(
+				this.attachPreviewCovers([metadata]).then((list) => list[0]),
+				(e) => new DatabaseError('获取 playlist 封面预览失败', { cause: e }),
+			)
+		})
 	}
 
 	/**
@@ -1250,6 +1325,7 @@ export class PlaylistService {
 	public searchPlaylists(query: string): ResultAsync<
 		(typeof schema.playlists.$inferSelect & {
 			author: typeof schema.artists.$inferSelect | null
+			previewCovers: string[]
 		})[],
 		DatabaseError
 	> {
@@ -1280,13 +1356,15 @@ export class PlaylistService {
 						.map((playlist) => playlist.id),
 				)
 
-				return playlists.map((playlist) => {
-					if (playlist.type !== 'dynamic') return playlist
-					return {
-						...playlist,
-						itemCount: countMap.get(playlist.id) ?? 0,
-					}
-				})
+				return this.attachPreviewCovers(
+					playlists.map((playlist) => {
+						if (playlist.type !== 'dynamic') return playlist
+						return {
+							...playlist,
+							itemCount: countMap.get(playlist.id) ?? 0,
+						}
+					}),
+				)
 			})(),
 			(e) => new DatabaseError('搜索播放列表失败', { cause: e }),
 		)

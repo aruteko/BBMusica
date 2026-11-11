@@ -34,7 +34,7 @@ export function PlaylistPlayerPreferenceDialog({
 		},
 		onError: (error) =>
 			toastAndLogError(
-				'保存播放器偏好失败',
+				'プレーヤー設定の保存に失敗しました',
 				error,
 				'Playlist.PlayerPreference',
 			),
@@ -45,10 +45,10 @@ export function PlaylistPlayerPreferenceDialog({
 				visible={visible}
 				onDismiss={onDismiss}
 			>
-				<Dialog.Title>播放器偏好</Dialog.Title>
+				<Dialog.Title>プレーヤー設定</Dialog.Title>
 				<Dialog.Content>
 					<Text variant='bodyMedium'>
-						仅影响从此歌单开始的新播放，不会切换当前播放器。
+						このプレイリストから始める新しい再生にのみ影響し、現在のプレーヤーは切り替わりません。
 					</Text>
 					<RadioButton.Group
 						value={playlist.playerPreference}
@@ -63,23 +63,23 @@ export function PlaylistPlayerPreferenceDialog({
 					>
 						<RadioButton.Item
 							disabled={mutation.isPending}
-							label={`跟随全局（${defaultMode === 'podcast' ? '播客' : '音乐'}）`}
+							label={`グローバル設定に従う（${defaultMode === 'podcast' ? 'ポッドキャスト' : '音楽'}）`}
 							value='inherit'
 						/>
 						<RadioButton.Item
 							disabled={mutation.isPending}
-							label='音乐'
+							label='音楽'
 							value='music'
 						/>
 						<RadioButton.Item
 							disabled={mutation.isPending}
-							label='播客'
+							label='ポッドキャスト'
 							value='podcast'
 						/>
 					</RadioButton.Group>
 				</Dialog.Content>
 				<Dialog.Actions>
-					<Button onPress={onDismiss}>取消</Button>
+					<Button onPress={onDismiss}>キャンセル</Button>
 				</Dialog.Actions>
 			</Dialog>
 		</Portal>

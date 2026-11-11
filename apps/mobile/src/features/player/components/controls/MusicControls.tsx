@@ -46,7 +46,7 @@ export function MusicControls({
 						try {
 							await setPlayerShuffleMode(!shuffleMode)
 						} catch (error) {
-							toastAndLogError('修改随机播放失败', error, 'Player.Controls')
+							toastAndLogError('シャッフルの変更に失敗しました', error, 'Player.Controls')
 							return
 						}
 						void analyticsService.logPlayerAction('shuffle', {
@@ -78,7 +78,7 @@ export function MusicControls({
 									? RepeatMode.QUEUE
 									: RepeatMode.OFF
 						void setPlayerRepeatMode(nextMode).catch((error: unknown) =>
-							toastAndLogError('修改循环模式失败', error, 'Player.Controls'),
+							toastAndLogError('リピートモードの変更に失敗しました', error, 'Player.Controls'),
 						)
 						void analyticsService.logPlayerAction('repeat', {
 							mode: nextMode,

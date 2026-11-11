@@ -7,8 +7,8 @@ export default function ExpandableText({
 	children,
 	lines,
 	variant = 'bodyMedium',
-	expandLabel = '展开',
-	collapseLabel = '收起',
+	expandLabel = 'もっと見る',
+	collapseLabel = '閉じる',
 }: {
 	text: string
 	children?: ReactNode

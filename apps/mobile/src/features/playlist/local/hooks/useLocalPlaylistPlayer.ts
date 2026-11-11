@@ -26,7 +26,7 @@ export function useLocalPlaylistPlayer(
 		async (startFromId?: string) => {
 			const tracksResult = await playlistService.getPlaylistTracks(playlistId)
 			if (tracksResult.isErr()) {
-				toastAndLogError('获取播放列表内容失败', tracksResult.error, SCOPE)
+				toastAndLogError('プレイリストの内容を取得できませんでした', tracksResult.error, SCOPE)
 				return
 			}
 			let tracks = tracksResult.value.filter((item) =>
@@ -68,11 +68,11 @@ export function useLocalPlaylistPlayer(
 				tracks = tracks.filter((t) => keys.has(t.uniqueKey))
 
 				if (tracks.length === 0) {
-					toast.show('当前离线，没有可播放的已缓存歌曲')
+					toast.show('オフラインのため、再生できるキャッシュ済みの曲がありません')
 					return
 				}
 				if (tracks.length < originalLength) {
-					toast.show('当前离线，仅添加可播放的已缓存歌曲到播放队列')
+					toast.show('オフラインのため、再生可能なキャッシュ済みの曲のみキューに追加しました')
 				}
 			}
 
@@ -90,7 +90,7 @@ export function useLocalPlaylistPlayer(
 					playNext: false,
 				})
 			} catch (error) {
-				toastAndLogError('播放全部失败', error, SCOPE)
+				toastAndLogError('すべて再生に失敗しました', error, SCOPE)
 			}
 		},
 		[playlistId, isOffline],
@@ -103,17 +103,17 @@ export function useLocalPlaylistPlayer(
 				playableOfflineKeys &&
 				!playableOfflineKeys.has(track.uniqueKey)
 			) {
-				toast.show('当前无网络，无法播放，请检查网络设置')
+				toast.show('ネットワークに接続されていないため再生できません。ネットワーク設定を確認してください')
 				return
 			}
 			if (!ignoreAlertReplacePlaylist) {
 				alert(
-					'替换播放列表',
-					'点击列表中的单曲会直接替换当前播放列表，是否继续？（下次不再提醒）',
+					'プレイリストを置き換え',
+					'リスト内の曲をタップすると、現在の再生リストが置き換えられます。続けますか？（次回から表示しない）',
 					[
-						{ text: '取消' },
+						{ text: 'キャンセル' },
 						{
-							text: '确定',
+							text: 'OK',
 							onPress: () => {
 								setIgnoreAlertReplacePlaylist(true)
 								void playAll(track.uniqueKey)

@@ -98,12 +98,12 @@ export function PlayerDownloadButton({ onAction }: PlayerMenuContentProps) {
 	)
 	const downloadHandler = useCallback(async () => {
 		if (!currentTrack) {
-			toast.error('为什么 currentTrack 不存在？')
+			toast.error('再生中の曲が見つかりません')
 			return
 		}
 		const url = getInternalPlayUri(currentTrack)
 		if (!url) {
-			toast.error('获取内部播放地址失败')
+			toast.error('内部再生URLを取得できませんでした')
 			return
 		}
 		const artistName = currentTrack.artist?.name
@@ -117,10 +117,10 @@ export function PlayerDownloadButton({ onAction }: PlayerMenuContentProps) {
 				artwork: artworkUrl,
 				duration: currentTrack.duration,
 			})
-			toast.success('已添加到下载队列')
+			toast.success('ダウンロードキューに追加しました')
 		} catch (e) {
 			toastAndLogError(
-				'下载音频失败',
+				'音声のダウンロードに失敗しました',
 				e,
 				'Features.Player.PlayerFunctionalMenu',
 			)
@@ -132,8 +132,8 @@ export function PlayerDownloadButton({ onAction }: PlayerMenuContentProps) {
 			icon='download'
 			label={
 				downloadStatus?.[trackId ?? ''] === DownloadState.COMPLETED
-					? '重新下载'
-					: '下载'
+					? '再ダウンロード'
+					: 'ダウンロード'
 			}
 			onPress={() => onAction(downloadHandler)}
 		/>
@@ -151,7 +151,7 @@ export function SharedTrackActions({
 		<>
 			{currentTrack?.source === 'bilibili' && (
 				<List.Item
-					title='添加到 bilibili 收藏夹'
+					title='bilibiliのお気に入りに追加'
 					left={(props) => (
 						<List.Icon
 							{...props}
@@ -169,7 +169,7 @@ export function SharedTrackActions({
 				/>
 			)}
 			<List.Item
-				title='添加到本地歌单'
+				title='ローカルプレイリストに追加'
 				left={(props) => (
 					<List.Icon
 						{...props}
@@ -184,7 +184,7 @@ export function SharedTrackActions({
 				}
 			/>
 			<List.Item
-				title='编辑信息'
+				title='情報を編集'
 				left={(props) => (
 					<List.Icon
 						{...props}
@@ -199,7 +199,7 @@ export function SharedTrackActions({
 				}
 			/>
 			<List.Item
-				title='查看作者'
+				title='投稿者を表示'
 				left={(props) => (
 					<List.Icon
 						{...props}
@@ -209,7 +209,7 @@ export function SharedTrackActions({
 				onPress={() =>
 					handleAction(() => {
 						if (!uploaderMid) {
-							toast.error('获取视频详细信息失败')
+							toast.error('動画の詳細を取得できませんでした')
 						} else {
 							router.navigate({
 								pathname: '/playlist/remote/uploader/[mid]',
@@ -221,7 +221,7 @@ export function SharedTrackActions({
 			/>
 			{currentTrack?.source === 'bilibili' && (
 				<List.Item
-					title='查看视频详情'
+					title='動画の詳細を表示'
 					left={(props) => (
 						<List.Icon
 							{...props}
@@ -250,7 +250,7 @@ export function ShareSongAction({
 	const openModal = useModalStore((state) => state.open)
 	return (
 		<List.Item
-			title='分享歌曲'
+			title='曲を共有'
 			left={(props) => (
 				<List.Icon
 					{...props}
@@ -270,7 +270,7 @@ export function ShareSongAction({
 export function PlayerModeSwitch({ onAction }: PlayerMenuContentProps) {
 	return (
 		<List.Item
-			title='切换播放器模式'
+			title='プレーヤーモードを切り替え'
 			left={(props) => (
 				<List.Icon
 					{...props}
@@ -281,18 +281,18 @@ export function PlayerModeSwitch({ onAction }: PlayerMenuContentProps) {
 				const currentMode = playbackContextStore$.context.mode.peek()
 				if (!currentMode) return
 				const mode = currentMode === 'podcast' ? 'music' : 'podcast'
-				const label = mode === 'podcast' ? '播客' : '音乐'
+				const label = mode === 'podcast' ? 'ポッドキャスト' : '音楽'
 				onAction(() =>
 					useModalStore.getState().open('Alert', {
-						title: `切换到${label}模式？`,
-						message: `仅在本次播放中使用${label}模式，不会更改歌单偏好或默认设置。重新开始播放时，将按歌单偏好或默认设置选择模式。`,
+						title: `${label}モードに切り替えますか？`,
+						message: `今回の再生のみ${label}モードを使用します。プレイリスト設定やデフォルト設定は変更されません。再生を開始し直すと、プレイリスト設定またはデフォルト設定に従ってモードが選ばれます。`,
 						buttons: [
-							{ text: '取消' },
+							{ text: 'キャンセル' },
 							{
-								text: '切换',
+								text: '切り替え',
 								onPress: () => {
 									void switchPlayerMode(mode).catch((error: unknown) =>
-										toastAndLogError('更新播放设置失败', error, 'Player.Mode'),
+										toastAndLogError('再生設定の更新に失敗しました', error, 'Player.Mode'),
 									)
 								},
 							},

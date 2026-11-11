@@ -87,7 +87,7 @@ export function useLocalPlaylistMenu({
 				clearQueue: false,
 				playNext: true,
 			})
-			if (added) toast.success('添加到下一首播放成功')
+			if (added) toast.success('次に再生に追加しました')
 		},
 		[playlistId],
 	)
@@ -99,13 +99,13 @@ export function useLocalPlaylistMenu({
 		if (!playlist) return []
 		const menuItems: TrackMenuItem[] = [
 			{
-				title: '下一首播放',
+				title: '次に再生',
 				leadingIcon: PLAY_NEXT_ICON,
 				onPress: () => playNext(item),
 				isHighFreq: true,
 			},
 			{
-				title: '添加到本地歌单',
+				title: 'ローカルプレイリストに追加',
 				leadingIcon: ADD_TO_PLAYLIST_ICON,
 				onPress: () => openAddToPlaylistModal(item),
 				isHighFreq: true,
@@ -114,7 +114,7 @@ export function useLocalPlaylistMenu({
 		if (item.source === 'bilibili') {
 			menuItems.push(
 				{
-					title: '查看详细信息',
+					title: '詳細を表示',
 					leadingIcon: INFO_ICON,
 					onPress: () =>
 						router.navigate({
@@ -123,7 +123,7 @@ export function useLocalPlaylistMenu({
 						}),
 				},
 				{
-					title: '查看 up 主作品',
+					title: '投稿者の動画を表示',
 					leadingIcon: ARTIST_ICON,
 					onPress: () => {
 						if (!item.artist?.remoteId) {
@@ -137,7 +137,7 @@ export function useLocalPlaylistMenu({
 				},
 				{
 					title:
-						downloadState === DownloadState.COMPLETED ? '删除缓存' : '缓存音频',
+						downloadState === DownloadState.COMPLETED ? 'キャッシュを削除' : '音声をキャッシュ',
 					leadingIcon:
 						downloadState === DownloadState.COMPLETED
 							? REMOVE_CACHE_ICON
@@ -145,7 +145,7 @@ export function useLocalPlaylistMenu({
 					onPress: async () => {
 						if (downloadState === DownloadState.COMPLETED) {
 							await Orpheus.removeDownload(item.uniqueKey)
-							toast.success('删除缓存成功')
+							toast.success('キャッシュを削除しました')
 							await queryClient.invalidateQueries({
 								queryKey: ['batchDownloadStatus'],
 							})
@@ -155,7 +155,7 @@ export function useLocalPlaylistMenu({
 						try {
 							const url = getInternalPlayUri(item)
 							if (!url) {
-								toastAndLogError('获取内部播放地址失败', '失败了！', SCOPE)
+								toastAndLogError('内部再生URLを取得できませんでした', '失敗しました！', SCOPE)
 								return
 							}
 							let artistName: string | undefined
@@ -176,9 +176,9 @@ export function useLocalPlaylistMenu({
 								duration: item.duration,
 							})
 
-							toast.success('已开始下载')
+							toast.success('ダウンロードを開始しました')
 						} catch (error) {
-							toastAndLogError('缓存音频失败', error, SCOPE)
+							toastAndLogError('音声のキャッシュに失敗しました', error, SCOPE)
 						}
 					},
 					isHighFreq: true,
@@ -187,33 +187,33 @@ export function useLocalPlaylistMenu({
 		}
 		menuItems.push(
 			{
-				title: '复制封面链接',
+				title: 'カバーURLをコピー',
 				leadingIcon: LINK_ICON,
 				onPress: () => {
 					void Clipboard.setStringAsync(item.coverUrl ?? '')
-					toast.success('已复制到剪贴板')
+					toast.success('クリップボードにコピーしました')
 				},
 			},
 			{
-				title: '编辑信息',
+				title: '情報を編集',
 				leadingIcon: EDIT_ICON,
 				onPress: () => openEditTrackModal(item),
 			},
 		)
 		if (playlist?.type === 'local' && !isReadOnly) {
 			menuItems.push({
-				title: '删除歌曲',
+				title: '曲を削除',
 				leadingIcon: DELETE_ICON,
 				onPress: () =>
 					alert(
-						'确定？',
-						'确定从列表中移除该歌曲？',
+						'確認',
+						'リストからこの曲を削除しますか？',
 						[
 							{
-								text: '取消',
+								text: 'キャンセル',
 							},
 							{
-								text: '确定',
+								text: 'OK',
 								onPress: () => deleteTrack(item.id),
 							},
 						],

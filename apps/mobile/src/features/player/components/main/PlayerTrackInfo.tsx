@@ -141,7 +141,7 @@ export function TrackInfo({
 									activeOpacity={0.8}
 									onPress={onPressCover}
 									accessibilityRole='button'
-									accessibilityLabel={podcast ? '查看字幕' : '查看歌词'}
+									accessibilityLabel={podcast ? '字幕を表示' : '歌詞を表示'}
 									style={{ width: coverSize, height: coverSize }}
 									testID='player-cover'
 								>
@@ -162,7 +162,7 @@ export function TrackInfo({
 												]}
 												testID='player-cover-placeholder'
 											>
-												<Text>{podcast ? '查看字幕' : '查看歌词'}</Text>
+												<Text>{podcast ? '字幕を表示' : '歌詞を表示'}</Text>
 											</View>
 										) : !coverRef ? (
 											<LinearGradient

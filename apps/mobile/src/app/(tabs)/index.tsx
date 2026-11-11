@@ -27,6 +27,7 @@ import ActivityIndicator from '@/components/common/ActivityIndicator'
 import { alert } from '@/components/modals/AlertModal'
 import NativeTabPage from '@/components/NativeTabPage'
 import SkinAppbarBackground from '@/components/navigation/SkinAppbarBackground'
+import HomeRecommendations from '@/features/home/HomeRecommendations'
 import SearchHistory, {
 	type SearchHistoryItem,
 } from '@/features/search/SearchHistory'
@@ -102,7 +103,7 @@ function SearchPageContent() {
 			try {
 				setSearchHistory(history)
 			} catch (error) {
-				toastAndLogError('保存搜索历史失败', error, 'UI.Search')
+				toastAndLogError('検索履歴の保存に失敗しました', error, 'UI.Search')
 			}
 		},
 		[setSearchHistory],
@@ -157,7 +158,7 @@ function SearchPageContent() {
 				}
 				setSearchQuery('')
 			} catch (error) {
-				toastAndLogError('搜索失败，请重试', error, 'UI.Search')
+				toastAndLogError('検索に失敗しました。もう一度お試しください', error, 'UI.Search')
 			} finally {
 				setIsLoading(false)
 			}
@@ -174,12 +175,12 @@ function SearchPageContent() {
 
 	const handleClearHistory = useCallback(() => {
 		alert(
-			'清空搜索历史？',
-			'确定要清空吗？',
+			'検索履歴を消去しますか？',
+			'すべて消去しますか？',
 			[
-				{ text: '取消' },
+				{ text: 'キャンセル' },
 				{
-					text: '确定',
+					text: 'OK',
 					onPress: () => {
 						setSearchHistory([])
 					},
@@ -194,12 +195,12 @@ function SearchPageContent() {
 			const item = searchHistory?.find((h) => h.id === id)
 			if (!item) return
 			alert(
-				'删除搜索历史？',
-				`确定要删除「${item.text}」吗？`,
+				'検索履歴を削除しますか？',
+				`「${item.text}」を削除しますか？`,
 				[
-					{ text: '取消' },
+					{ text: 'キャンセル' },
 					{
-						text: '确定',
+						text: 'OK',
 						onPress: () => {
 							const newHistory = searchHistory?.filter((h) => h.id !== id)
 							setSearchHistory(newHistory)
@@ -216,12 +217,12 @@ function SearchPageContent() {
 		if (resolvedSharedPayloads.length === 0) return
 		if (resolvedSharedPayloads.length > 1) {
 			if (Platform.OS === 'android') {
-				ToastAndroid.show('收到多个共享内容，已忽略', ToastAndroid.SHORT)
+				ToastAndroid.show('複数の共有コンテンツを受け取ったため、無視しました', ToastAndroid.SHORT)
 			} else {
 				alert(
-					'收到多个共享内容，已忽略',
-					'当前版本仅支持处理单个共享内容，已忽略其他内容',
-					[{ text: '确定' }],
+					'複数の共有コンテンツを受け取ったため、無視しました',
+					'現在のバージョンでは共有コンテンツを1件のみ処理できます。他の内容は無視しました',
+					[{ text: 'OK' }],
 				)
 			}
 		}
@@ -249,7 +250,7 @@ function SearchPageContent() {
 				<Pressable
 					style={StyleSheet.absoluteFill}
 					onPress={dismissPanel}
-					accessibilityLabel='收起搜索建议'
+					accessibilityLabel='検索候補を閉じる'
 					testID='search-panel-backdrop'
 					// 只用来点空白处收起；遥控器用返回键收起，焦点不能落在这层上。
 					focusable={false}
@@ -263,7 +264,7 @@ function SearchPageContent() {
 					variant='headlineSmall'
 					style={[styles.title, { color: headerForegroundColor }]}
 				>
-					搜索
+					ホーム
 				</Text>
 			</View>
 			<View
@@ -272,7 +273,7 @@ function SearchPageContent() {
 			>
 				<Searchbar
 					ref={searchBarRef}
-					placeholder='关键词 / b23.tv / 视频链接 / av / BV'
+					placeholder='キーワード / b23.tv / 動画リンク / av / BV'
 					value={searchQuery}
 					onChangeText={setSearchQuery}
 					onSubmitEditing={() => void handleEnter(searchQuery)}
@@ -307,6 +308,7 @@ function SearchPageContent() {
 							onRemoveHistoryItem={handleRemoveHistoryItem}
 							onDismiss={dismissPanel}
 							panelVisible={suggestionsVisible}
+							footer={<HomeRecommendations />}
 						/>
 						<View
 							pointerEvents='box-none'

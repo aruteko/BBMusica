@@ -83,20 +83,20 @@ function MyPageContent() {
 					variant='headlineSmall'
 					style={[styles.bold, { color: headerForegroundColor }]}
 				>
-					我的
+					マイページ
 				</Text>
 				<View style={styles.headerActions}>
 					{!hideStarPrompt && (
 						<IconButton
 							icon='star-outline'
-							accessibilityLabel='去 GitHub 点个 Star'
+							accessibilityLabel='GitHubでStarを付ける'
 							iconColor={headerForegroundColor}
 							onPress={() => openModal('StarPrompt', undefined)}
 						/>
 					)}
 					<IconButton
 						icon='cog-outline'
-						accessibilityLabel='设置'
+						accessibilityLabel='設定'
 						testID='profile-settings'
 						iconColor={headerForegroundColor}
 						onPress={() => router.navigate('/settings')}
@@ -114,7 +114,7 @@ function MyPageContent() {
 					<Touchable
 						accessibilityRole='button'
 						accessibilityLabel={
-							hasCookie ? '管理 Bilibili 账号' : '登录 Bilibili 账号'
+							hasCookie ? 'Bilibiliアカウントを管理' : 'Bilibiliアカウントにログイン'
 						}
 						style={[styles.profile, compact && styles.compactProfile]}
 						onPress={() => router.navigate('/settings/bilibili-account')}
@@ -156,23 +156,23 @@ function MyPageContent() {
 								numberOfLines={1}
 							>
 								{hasCookie
-									? (profile?.name ?? 'Bilibili 用户')
-									: '登录 Bilibili'}
+									? (profile?.name ?? 'Bilibiliユーザー')
+									: 'Bilibiliにログイン'}
 							</Text>
 							<Text
 								variant='bodyMedium'
 								style={{ color: colors.onSurfaceVariant }}
 							>
 								{hasCookie
-									? 'Bilibili 账号'
-									: '登录后使用收藏夹、关注与稍后再看'}
+									? 'Bilibiliアカウント'
+									: 'ログインするとお気に入り、フォロー、あとで見るを使えます'}
 							</Text>
 						</View>
 						{chevron()}
 					</Touchable>
 					<Touchable
 						accessibilityRole='button'
-						accessibilityLabel='BBPlayer 账号'
+						accessibilityLabel='BBPlayerアカウント'
 						style={[
 							styles.accountBar,
 							{ backgroundColor: colors.surfaceVariant },
@@ -188,27 +188,27 @@ function MyPageContent() {
 							variant='titleSmall'
 							style={{ color: colors.onSurfaceVariant }}
 						>
-							BBPlayer 账号
+							BBPlayerアカウント
 						</Text>
 						<Text
 							variant='bodySmall'
 							style={[styles.accountStatus, { color: colors.onSurfaceVariant }]}
 							numberOfLines={1}
 						>
-							{token ? (account?.name ?? '已登录') : '未登录'}
+							{token ? (account?.name ?? 'ログイン済み') : '未ログイン'}
 						</Text>
 						{chevron()}
 					</Touchable>
 				</View>
 				<ListeningRecordSection compact={compact} />
 				<SettingsSectionTitle
-					title='我的内容'
+					title='マイコンテンツ'
 					first
 				/>
 				<View>
 					{syncFailures.length > 0 && (
 						<List.Item
-							title='歌单同步失败'
+							title='プレイリスト同期失敗'
 							left={(props) => (
 								<List.Icon
 									{...props}
@@ -221,7 +221,7 @@ function MyPageContent() {
 						/>
 					)}
 					<List.Item
-						title='最近常听'
+						title='よく聴いている曲'
 						left={(props) => (
 							<List.Icon
 								{...props}
@@ -232,7 +232,7 @@ function MyPageContent() {
 						onPress={() => router.navigate('/playlist/recently')}
 					/>
 					<List.Item
-						title='我的关注'
+						title='フォロー中'
 						left={(props) => (
 							<List.Icon
 								{...props}
@@ -243,7 +243,7 @@ function MyPageContent() {
 						onPress={() => router.navigate('/following')}
 					/>
 					<List.Item
-						title='下载'
+						title='ダウンロード'
 						left={(props) => (
 							<List.Icon
 								{...props}
@@ -254,7 +254,7 @@ function MyPageContent() {
 						onPress={() => router.navigate('/downloaded')}
 					/>
 					<List.Item
-						title='稍后再看'
+						title='あとで見る'
 						left={(props) => (
 							<List.Icon
 								{...props}
@@ -271,7 +271,7 @@ function MyPageContent() {
 						}
 					/>
 					<List.Item
-						title='那月今日'
+						title='あの月の今日'
 						left={(props) => (
 							<List.Icon
 								{...props}

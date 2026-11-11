@@ -41,7 +41,7 @@ export const SharedPlaylistMembersSheet = forwardRef<TrueSheet, Props>(
 							variant='titleLarge'
 							style={styles.title}
 						>
-							协作者 {members ? `(${members.length})` : ''}
+							共同編集者 {members ? `(${members.length})` : ''}
 						</Text>
 
 						{isPending ? (
@@ -50,7 +50,7 @@ export const SharedPlaylistMembersSheet = forwardRef<TrueSheet, Props>(
 							</View>
 						) : isError || !members ? (
 							<View style={styles.center}>
-								<Text>加载失败</Text>
+								<Text>読み込みに失敗しました</Text>
 							</View>
 						) : (
 							<ScrollView
@@ -86,12 +86,12 @@ export const SharedPlaylistMembersSheet = forwardRef<TrueSheet, Props>(
 												style={{ color: theme.colors.onSurfaceVariant }}
 											>
 												{item.role === 'owner'
-													? '所有者'
+													? 'オーナー'
 													: item.role === 'editor'
-														? '编辑者'
-														: '订阅者'}
+														? '編集者'
+														: '購読者'}
 												{' • '}
-												{formatRelativeTime(item.joinedAt)}加入
+												{formatRelativeTime(item.joinedAt)}に参加
 											</Text>
 										</View>
 									</View>

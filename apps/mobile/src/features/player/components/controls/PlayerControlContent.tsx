@@ -37,7 +37,7 @@ interface MainPlaybackControlsProps {
 }
 
 /**
- * 主播放控制按钮：音乐切歌，播客前后跳转 15 秒。
+ * 主播放控制按钮：音乐切歌，ポッドキャスト前后跳转 15 秒。
  * 可在主播放器和歌词页面复用
  */
 export function MainPlaybackControls({
@@ -202,12 +202,12 @@ export function MainPlaybackControls({
 							void analyticsService.logPlayerAction('play')
 						}
 					} catch (e) {
-						toastAndLogError('播放操作失败', e, 'UI.Player.Controls')
+						toastAndLogError('再生操作に失敗しました', e, 'UI.Player.Controls')
 					}
 				}}
 				testID={debouncedIsPlaying ? 'player-pause' : 'player-play'}
 				accessibilityRole='button'
-				accessibilityLabel={debouncedIsPlaying ? '暂停' : '播放'}
+				accessibilityLabel={debouncedIsPlaying ? '一時停止' : '再生'}
 			>
 				{debouncedBuffering ? (
 					<ActivityIndicator
@@ -305,7 +305,7 @@ function PodcastSeekButton({
 			}}
 			testID={seconds < 0 ? 'player-rewind-15' : 'player-forward-15'}
 			accessibilityRole='button'
-			accessibilityLabel={seconds < 0 ? '后退 15 秒' : '前进 15 秒'}
+			accessibilityLabel={seconds < 0 ? '15秒戻る' : '15秒進む'}
 			accessibilityState={{ disabled: !canSeek }}
 			disabled={!canSeek}
 			onPress={() => {
@@ -315,7 +315,7 @@ function PodcastSeekButton({
 				onInteraction?.()
 				void Haptics.performHaptics(Haptics.AndroidHaptics.Context_Click)
 				void seekWithinTrack(trackId, seconds, true).catch((error: unknown) => {
-					toastAndLogError('跳转失败', error, 'Player.Controls')
+					toastAndLogError('シークに失敗しました', error, 'Player.Controls')
 				})
 			}}
 		>

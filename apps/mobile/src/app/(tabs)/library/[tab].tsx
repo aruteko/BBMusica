@@ -24,10 +24,10 @@ const renderScene = SceneMap({
 })
 
 const routes = [
-	{ key: 'local', title: '播放列表', testID: 'library-tab-local' },
-	{ key: 'favorite', title: '收藏夹' },
-	{ key: 'collection', title: '合集' },
-	{ key: 'multiPage', title: '分 p' },
+	{ key: 'local', title: 'プレイリスト', testID: 'library-tab-local' },
+	{ key: 'favorite', title: 'お気に入り' },
+	{ key: 'collection', title: 'コレクション' },
+	{ key: 'multiPage', title: 'マルチP' },
 ]
 
 export enum Tabs {
@@ -53,7 +53,7 @@ function LibraryContent() {
 		void markPerfInteractive()
 	}, [markInteractive])
 
-	// 仅在路由参数变化时定位分页，返回音乐库时保留用户当前选择。
+	// 仅在路由参数变化时定位分页，返回ライブラリ时保留用户当前选择。
 	useEffect(() => {
 		if (tab === undefined) return
 		const numTab = Number(tab)
@@ -79,7 +79,7 @@ function LibraryContent() {
 						variant='headlineSmall'
 						style={[styles.title, { color: headerForegroundColor }]}
 					>
-						音乐库
+						ライブラリ
 					</Text>
 				</View>
 				<TabView

@@ -46,7 +46,7 @@ interface LocalTrackListProps extends Omit<
 > {
 	/** 要显示的本地曲目数组 */
 	tracks: Track[]
-	/** 所属的播放列表信息 */
+	/** 所属的プレイリスト信息 */
 	playlist: Playlist
 	/** 点击曲目时的处理函数 */
 	handleTrackPress: (track: Track) => void
@@ -453,7 +453,7 @@ export function LocalTrackList({
 													style={{ opacity: 0.6 }}
 													numberOfLines={1}
 												>
-													{menuState.track.artist?.name ?? '未知艺术家'}
+													{menuState.track.artist?.name ?? '不明なアーティスト'}
 												</Text>
 											</View>
 										</View>

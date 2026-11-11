@@ -29,7 +29,7 @@ export function PodcastFunctionalMenu({ onAction }: PlayerMenuContentProps) {
 				<PlayerDownloadButton onAction={onAction} />
 				{currentTrack?.source === 'bilibili' && (
 					<HighFreqButton
-						label='评论区'
+						label='コメント'
 						icon='comment-text-outline'
 						onPress={() =>
 							onAction(() =>
@@ -52,7 +52,7 @@ export function PodcastFunctionalMenu({ onAction }: PlayerMenuContentProps) {
 }
 
 const report = (error: unknown) =>
-	toastAndLogError('更新播放设置失败', error, 'Player.Mode')
+	toastAndLogError('再生設定の更新に失敗しました', error, 'Player.Mode')
 
 function PodcastPlaybackSettings() {
 	const { shuffle, repeat } = usePlaybackOptions()
@@ -60,8 +60,8 @@ function PodcastPlaybackSettings() {
 	return (
 		<>
 			<List.Item
-				title='随机播放'
-				description={shuffle ? '开启' : '关闭'}
+				title='シャッフル'
+				description={shuffle ? 'オン' : 'オフ'}
 				left={(props) => (
 					<List.Icon
 						{...props}
@@ -74,13 +74,13 @@ function PodcastPlaybackSettings() {
 				}}
 			/>
 			<List.Item
-				title='循环模式'
+				title='リピートモード'
 				description={
 					repeat === RepeatMode.OFF
-						? '关闭循环'
+						? 'リピートなし'
 						: repeat === RepeatMode.TRACK
-							? '单曲循环'
-							: '队列循环'
+							? '1曲リピート'
+							: 'キューをリピート'
 				}
 				left={(props) => (
 					<List.Icon

@@ -20,10 +20,10 @@ import toast from '@/utils/toast'
 const SCOPE = 'SyncFailuresSheet'
 
 const OPERATION_INFO = {
-	add_tracks: { label: '添加曲目', icon: 'plus-circle-outline' },
-	remove_tracks: { label: '删除曲目', icon: 'minus-circle-outline' },
-	reorder_track: { label: '重新排序', icon: 'swap-vertical' },
-	update_metadata: { label: '更新元数据', icon: 'pencil-outline' },
+	add_tracks: { label: '曲を追加', icon: 'plus-circle-outline' },
+	remove_tracks: { label: '曲を削除', icon: 'minus-circle-outline' },
+	reorder_track: { label: '並べ替え', icon: 'swap-vertical' },
+	update_metadata: { label: 'メタデータ更新', icon: 'pencil-outline' },
 }
 
 // DEV ONLY: 假数据，用于直接预览 Sheet 样式，不写数据库
@@ -101,10 +101,10 @@ export const SyncFailuresSheet = forwardRef<TrueSheet, Props>(
 						),
 					)
 				playlistSyncWorker.triggerSync()
-				toast.success('已重新加入同步队列')
+				toast.success('同期キューに再追加しました')
 				success = true
 			} catch (error) {
-				toastAndLogError('重试同步失败', error, SCOPE)
+				toastAndLogError('同期の再試行に失敗しました', error, SCOPE)
 			}
 			setLoading(false)
 
@@ -134,7 +134,7 @@ export const SyncFailuresSheet = forwardRef<TrueSheet, Props>(
 								variant='titleLarge'
 								style={styles.title}
 							>
-								同步失败记录
+								同期失敗の記録
 							</Text>
 
 							{loading ? (
@@ -144,7 +144,7 @@ export const SyncFailuresSheet = forwardRef<TrueSheet, Props>(
 							) : rows.length === 0 ? (
 								<View style={styles.center}>
 									<Text style={{ color: colors.onSurfaceVariant }}>
-										暂无失败记录
+										失敗記録はありません
 									</Text>
 								</View>
 							) : (
@@ -195,7 +195,7 @@ export const SyncFailuresSheet = forwardRef<TrueSheet, Props>(
 									disabled={loading || rows.length === 0}
 									style={styles.retryButton}
 								>
-									全部重试
+									すべて再試行
 								</Button>
 							</View>
 						</View>

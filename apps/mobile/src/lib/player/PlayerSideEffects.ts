@@ -8,6 +8,7 @@ import { PermissionsAndroid, Platform } from 'react-native'
 
 import { lyricsQueryKeys } from '@/hooks/queries/lyrics'
 import { queryClient } from '@/lib/config/queryClient'
+import { refillStationIfNeeded } from '@/lib/player/station'
 import lyricService from '@/lib/services/lyricService'
 import log, { reportErrorToSentry } from '@/utils/log'
 import { isActuallyOffline } from '@/utils/network'
@@ -65,7 +66,7 @@ class PlayerSideEffects {
 		// 注册原生播放器 headless task
 		this.registerHeadlessTask()
 
-		// 设置播放器错误处理
+		// 設定播放器错误处理
 		this.setupErrorHandler()
 		this.setupSpectrumVisualizerErrorHandler()
 	}
@@ -78,6 +79,8 @@ class PlayerSideEffects {
 		registerOrpheusHeadlessTask(async (event) => {
 			if (event.eventName === 'onTrackStarted') {
 				await lyricService.pushLyricsToOverlays(event.trackId)
+				// 电台：队列快播完时自动追加推荐曲目（不阻塞其他处理）
+				void refillStationIfNeeded(event.trackId)
 			} else if (event.eventName === 'onTrackFinished') {
 				await finalizeAndRecordCurrentTrack(
 					event.trackId,
@@ -119,29 +122,29 @@ class PlayerSideEffects {
 
 			if (biliCode === '-412') {
 				return {
-					message: 'Bilibili 触发验证码，请尝试重新登录或稍后再试',
+					message: 'Bilibiliの認証(CAPTCHA)が必要です。再ログインするか、しばらくしてからお試しください',
 					shouldReport: false,
 				}
 			}
 			if (biliCode === '-101') {
-				return { message: 'Bilibili 账号未登录', shouldReport: false }
+				return { message: 'Bilibiliアカウントにログインしていません', shouldReport: false }
 			}
 			return {
-				message: `Bilibili API 错误: ${msg} (${biliCode})`,
+				message: `Bilibili APIエラー: ${msg} (${biliCode})`,
 				shouldReport: false,
 			}
 		}
 
 		if (rawMessage.includes('Bilibili API Logic Error')) {
 			return {
-				message: 'Bilibili 数据解析失败，请检查网络或稍后再试',
+				message: 'Bilibiliのデータ解析に失敗しました。ネットワークを確認するか、しばらくしてからお試しください',
 				shouldReport: false,
 			}
 		}
 
 		if (rawMessage.includes('AudioStreamError')) {
 			return {
-				message: '无法获取音频流，可能需要大会员或该歌曲已下架',
+				message: '音声ストリームを取得できません。大会員が必要か、曲が削除された可能性があります',
 				shouldReport: false,
 			}
 		}
@@ -149,7 +152,7 @@ class PlayerSideEffects {
 		if (rawMessage.includes('Bilibili API Http Error')) {
 			const codeMatch = rawMessage.match(/Http Error: (\d+)/)
 			return {
-				message: `Bilibili 网络请求失败: ${codeMatch ? codeMatch[1] : 'Unknown'}`,
+				message: `Bilibiliのネットワークリクエストに失敗しました: ${codeMatch ? codeMatch[1] : 'Unknown'}`,
 				shouldReport: false,
 			}
 		}
@@ -176,7 +179,7 @@ class PlayerSideEffects {
 				errorCode < 3000
 			) {
 				return {
-					message: '当前歌曲未缓存，离线状态下无法播放(或存在其他IO/网络问题)',
+					message: '現在の曲はキャッシュされておらず、オフラインでは再生できません（またはIO/ネットワークの問題があります）',
 					shouldReport: false,
 				}
 			}
@@ -186,7 +189,7 @@ class PlayerSideEffects {
 				offlinePlaybackErrorPattern.test(rootMessage)
 			) {
 				return {
-					message: '当前歌曲未缓存，离线状态下无法播放',
+					message: '現在の曲はキャッシュされておらず、オフラインでは再生できません',
 					shouldReport: false,
 				}
 			}
@@ -218,7 +221,7 @@ class PlayerSideEffects {
 			rawMessage.includes('failed to connect') ||
 			rawMessage === 'timeout'
 		) {
-			return { message: '网络连接失败，请检查网络设置', shouldReport: false }
+			return { message: 'ネットワーク接続に失敗しました。設定を確認してください', shouldReport: false }
 		}
 
 		// 错误码落在「用户 / 内容 / 设备侧」分段，或为 ExoPlayer 的通用
@@ -229,14 +232,14 @@ class PlayerSideEffects {
 			rawMessage.includes('Source error')
 		) {
 			return {
-				message: '无法播放该音频，音源或设备可能暂不支持',
+				message: 'この音声は再生できません。音源またはデバイスが対応していない可能性があります',
 				shouldReport: false,
 			}
 		}
 
 		return {
 			message:
-				('message' in event ? event.message : null) || '播放器发生未知错误',
+				('message' in event ? event.message : null) || 'プレーヤーで不明なエラーが発生しました',
 			shouldReport: true,
 		}
 	}
@@ -257,7 +260,7 @@ class PlayerSideEffects {
 	}
 
 	/**
-	 * 设置播放器错误监听处理
+	 * 設定播放器错误监听处理
 	 */
 	private setupErrorHandler() {
 		Orpheus.addListener('onPlayerError', async (event) => {
@@ -265,7 +268,7 @@ class PlayerSideEffects {
 
 			let playerErrorInfo = {
 				message:
-					('message' in event ? event.message : null) || '播放器发生未知错误',
+					('message' in event ? event.message : null) || 'プレーヤーで不明なエラーが発生しました',
 				shouldReport: true,
 			}
 
@@ -308,11 +311,11 @@ class PlayerSideEffects {
 						))
 
 					if (!hasPermission) {
-						toast.info('未获得麦克风权限，已关闭频谱显示')
+						toast.info('マイクの権限がないため、スペクトラム表示をオフにしました')
 						return
 					}
 
-					toast.error('当前设备或音频输出不支持系统频谱分析，已关闭频谱显示', {
+					toast.error('この端末または音声出力はシステムのスペクトラム解析に対応していないため、スペクトラム表示をオフにしました', {
 						description: event.message,
 					})
 				} catch (error) {

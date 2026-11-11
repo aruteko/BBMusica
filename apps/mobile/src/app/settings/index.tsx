@@ -22,7 +22,7 @@ export default function SettingsPage() {
 			<View style={styles.container}>
 				<Appbar.Header>
 					<Appbar.BackAction onPress={() => router.back()} />
-					<Appbar.Content title='设置' />
+					<Appbar.Content title='設定' />
 				</Appbar.Header>
 				<ScrollView
 					style={styles.scrollView}
@@ -34,12 +34,12 @@ export default function SettingsPage() {
 					persistentScrollbar // 我看哪个 b 还说看不见这是可滚动的？！
 				>
 					<SettingsSectionTitle
-						title='个性化'
+						title='パーソナライズ'
 						first
 					/>
 					<List.Item
-						title='外观与主题'
-						description='播放器样式、动态主题、启动动画'
+						title='外観とテーマ'
+						description='プレーヤーのスタイル、ダイナミックテーマ、起動アニメーション'
 						left={(props) => (
 							<List.Icon
 								{...props}
@@ -56,9 +56,9 @@ export default function SettingsPage() {
 					/>
 					<Divider style={styles.divider} />
 					<List.Item
-						title='播放'
+						title='再生'
 						testID='settings-playback'
-						description='播放行为、启动行为、音效'
+						description='再生動作、起動時の動作、サウンド効果'
 						left={(props) => (
 							<List.Icon
 								{...props}
@@ -75,8 +75,8 @@ export default function SettingsPage() {
 					/>
 					<Divider style={styles.divider} />
 					<List.Item
-						title='CDN 设置'
-						description='首选 CDN、节点测速'
+						title='CDN設定'
+						description='優先CDN、ノード速度テスト'
 						left={(props) => (
 							<List.Icon
 								{...props}
@@ -93,8 +93,8 @@ export default function SettingsPage() {
 					/>
 					<Divider style={styles.divider} />
 					<List.Item
-						title='歌词'
-						description='歌词源、桌面歌词、样式'
+						title='歌詞'
+						description='歌詞ソース、デスクトップ歌詞、スタイル'
 						left={(props) => (
 							<List.Icon
 								{...props}
@@ -110,10 +110,10 @@ export default function SettingsPage() {
 						onPress={() => router.navigate('/settings/lyrics')}
 					/>
 
-					<SettingsSectionTitle title='媒体库与存储' />
+					<SettingsSectionTitle title='ライブラリとストレージ' />
 					<List.Item
-						title='下载与存储'
-						description='下载并发、存储占用、缓存清理'
+						title='ダウンロードとストレージ'
+						description='同時ダウンロード数、ストレージ使用量、キャッシュ削除'
 						left={(props) => (
 							<List.Icon
 								{...props}
@@ -129,10 +129,10 @@ export default function SettingsPage() {
 						onPress={() => router.navigate('/settings/storage')}
 					/>
 
-					<SettingsSectionTitle title='数据' />
+					<SettingsSectionTitle title='データ' />
 					<List.Item
-						title='数据与备份'
-						description='本地备份、WebDAV 云端备份'
+						title='データとバックアップ'
+						description='ローカルバックアップ、WebDAVクラウドバックアップ'
 						left={(props) => (
 							<List.Icon
 								{...props}
@@ -148,10 +148,10 @@ export default function SettingsPage() {
 						onPress={() => router.navigate('/settings/backup')}
 					/>
 
-					<SettingsSectionTitle title='通用与关于' />
+					<SettingsSectionTitle title='一般と情報' />
 					<List.Item
-						title='通用'
-						description='更新、日志、调试'
+						title='一般'
+						description='アップデート、ログ、デバッグ'
 						left={(props) => (
 							<List.Icon
 								{...props}
@@ -169,8 +169,8 @@ export default function SettingsPage() {
 					/>
 					<Divider style={styles.divider} />
 					<List.Item
-						title='关于 BBPlayer'
-						description='版本、项目主页'
+						title='BBPlayerについて'
+						description='バージョン、プロジェクトページ'
 						left={(props) => (
 							<List.Icon
 								{...props}
@@ -187,8 +187,8 @@ export default function SettingsPage() {
 					/>
 					<Divider style={styles.divider} />
 					<List.Item
-						title='捐赠支持'
-						description='请开发者喝杯咖啡'
+						title='寄付で応援'
+						description='開発者にコーヒーをおごる'
 						left={(props) => (
 							<List.Icon
 								{...props}

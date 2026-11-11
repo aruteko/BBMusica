@@ -142,37 +142,37 @@ const deletePlaylistDialogPrompt = (
 	colors: MD3Theme['colors'],
 ) => {
 	if (!playlistMetadata || playlistMetadata.shareId === null)
-		return '确定要删除此播放列表吗？'
+		return 'このプレイリストを削除しますか？'
 	switch (playlistMetadata?.shareRole) {
 		case 'owner':
 			return (
 				<>
-					<Text>确定要删除此播放列表吗？</Text>
+					<Text>このプレイリストを削除しますか？</Text>
 					<Text style={{ color: colors.error }}>
-						同时所有订阅过该播放列表的人也会失去访问权限。
+						購読しているすべてのユーザーもアクセスできなくなります。
 					</Text>
 				</>
 			)
 		case 'editor':
 			return (
 				<>
-					<Text>确定要删除此播放列表吗？</Text>
+					<Text>このプレイリストを削除しますか？</Text>
 					<Text style={{ color: colors.error }}>
-						同时你也会失去访问权限，下次需要由共享歌单的人再次邀请。
+						あなたもアクセス権を失い、再度参加するには共有者からの招待が必要になります。
 					</Text>
 				</>
 			)
 		case 'subscriber':
 			return (
 				<>
-					<Text>确定要删除此播放列表吗？</Text>
+					<Text>このプレイリストを削除しますか？</Text>
 					<Text style={{ color: colors.error }}>
-						同时你也会失去访问权限，下次需要由共享歌单的人再次邀请。
+						あなたもアクセス権を失い、再度参加するには共有者からの招待が必要になります。
 					</Text>
 				</>
 			)
 	}
-	return <Text>确定要删除此播放列表吗？</Text>
+	return <Text>このプレイリストを削除しますか？</Text>
 }
 
 export default function LocalPlaylistPage() {
@@ -207,7 +207,7 @@ export default function LocalPlaylistPage() {
 
 	useEffect(() => {
 		if (!isPlaylistNotFound) return
-		toast.error('播放列表不存在或已被删除')
+		toast.error('プレイリストが存在しないか、削除されました')
 		if (router.canGoBack()) router.back()
 		else router.replace('/(tabs)')
 	}, [isPlaylistNotFound, router])
@@ -216,9 +216,9 @@ export default function LocalPlaylistPage() {
 	if (isPlaylistDataPending || isPlaylistMetadataPending || !isListReady)
 		return <PlaylistPageSkeleton animate={isListReady} />
 	if (isPlaylistDataError || isPlaylistMetadataError)
-		return <PlaylistError text='加载播放列表内容失败' />
+		return <PlaylistError text='プレイリストの内容を読み込めませんでした' />
 	if (!playlistData || !playlistMetadata)
-		return <PlaylistError text='播放列表不存在或已被删除' />
+		return <PlaylistError text='プレイリストが存在しないか、削除されました' />
 
 	return (
 		<LocalPlaylistContent
@@ -360,7 +360,7 @@ function LocalPlaylistContent({
 		}
 
 		if (isSearchError) {
-			toastAndLogError('搜索失败', searchError, SCOPE)
+			toastAndLogError('検索に失敗しました', searchError, SCOPE)
 			return []
 		}
 
@@ -486,7 +486,7 @@ function LocalPlaylistContent({
 
 	const handlePressShareMember = () => {
 		if (isSharedLoggedOut) {
-			toast.error('登陆 BBPlayer 账号后才能查看共享成员')
+			toast.error('BBPlayerアカウントにログインすると共有メンバーを確認できます')
 			return
 		}
 		if (playlistMetadata?.shareId) {
@@ -504,7 +504,7 @@ function LocalPlaylistContent({
 	const handleSync = () => {
 		if (!playlistMetadata || !playlistMetadata.remoteSyncId) {
 			toast.error(
-				'无法同步，因为未找到播放列表元数据或\u2009remoteSyncId\u2009为空',
+				'同期できません：プレイリストのメタデータが見つからないか、remoteSyncIdが空です',
 			)
 			return
 		}
@@ -542,7 +542,7 @@ function LocalPlaylistContent({
 		}
 
 		const toastId = 'sync-playlist'
-		toast.show('同步中...', { id: toastId, duration: Infinity })
+		toast.show('同期中...', { id: toastId, duration: Infinity })
 		syncPlaylist({
 			remoteSyncId: playlistMetadata.remoteSyncId,
 			type: playlistMetadata.type,
@@ -593,7 +593,7 @@ function LocalPlaylistContent({
 	const clearInvalidVideos = async () => {
 		const tracksResult = await playlistService.getPlaylistTracks(Number(id))
 		if (tracksResult.isErr()) {
-			toastAndLogError('获取播放列表歌曲失败', tracksResult.error, SCOPE)
+			toastAndLogError('プレイリストの曲を取得できませんでした', tracksResult.error, SCOPE)
 			return
 		}
 
@@ -604,7 +604,7 @@ function LocalPlaylistContent({
 			)
 			.map((track) => track.id)
 		if (invalidTrackIds.length === 0) {
-			toast.info('没有需要清除的失效视频')
+			toast.info('削除が必要な無効な動画はありません')
 			return
 		}
 
@@ -620,7 +620,7 @@ function LocalPlaylistContent({
 				? await playlistService.searchTrackInPlaylist(Number(id), deferredQuery)
 				: await playlistService.getPlaylistTracks(Number(id))
 		if (tracksResult.isErr()) {
-			toastAndLogError('获取播放列表歌曲失败', tracksResult.error, SCOPE)
+			toastAndLogError('プレイリストの曲を取得できませんでした', tracksResult.error, SCOPE)
 			return null
 		}
 		return tracksResult.value
@@ -667,7 +667,7 @@ function LocalPlaylistContent({
 		try {
 			const tracksResult = await playlistService.getPlaylistTracks(Number(id))
 			if (tracksResult.isErr()) {
-				toastAndLogError('获取播放列表歌曲失败', tracksResult.error, SCOPE)
+				toastAndLogError('プレイリストの曲を取得できませんでした', tracksResult.error, SCOPE)
 				setIsResolvingSelection(false)
 				return
 			}
@@ -727,7 +727,7 @@ function LocalPlaylistContent({
 						return
 					}
 					handledRemoteDeletionRef.current = true
-					toast.error('共享者已删除该歌单，已为你移除本地副本')
+					toast.error('共有元がプレイリストを削除したため、ローカルのコピーを削除しました')
 					deletePlaylist(
 						{ playlistId: Number(id) },
 						{ onSuccess: () => router.back() },
@@ -938,14 +938,14 @@ function LocalPlaylistContent({
 		const isLocal = playlistMetadata.type === 'local'
 
 		menu.add({
-			title: '播放器偏好',
+			title: 'プレーヤー設定',
 			image: PREFERRED_ICON,
 			onPress: () => setPlayerPreferenceVisible(true),
 		})
 
 		if (isLocal && !isSharedSubscriber) {
 			menu.add({
-				title: '排序',
+				title: '並べ替え',
 				image: SORT_ICON,
 				onPress: enterSelectMode,
 			})
@@ -953,7 +953,7 @@ function LocalPlaylistContent({
 
 		if (!isSharedSubscriber) {
 			menu.add({
-				title: '编辑播放列表信息',
+				title: 'プレイリスト情報を編集',
 				image: EDIT_ICON,
 				onPress: () => {
 					openModal('EditPlaylistMetadata', { playlist: playlistMetadata })
@@ -967,16 +967,16 @@ function LocalPlaylistContent({
 			!isSharedSubscriber
 		) {
 			menu.add({
-				title: '清除失效视频',
+				title: '無効な動画を削除',
 				image: DELETE_ICON,
 				attributes: { destructive: true },
 				onPress: () => {
 					alert(
-						'清除失效视频',
-						'确定从播放列表移除所有失效视频？',
+						'無効な動画を削除',
+						'プレイリストからすべての無効な動画を削除しますか？',
 						[
-							{ text: '取消' },
-							{ text: '确定', onPress: () => void clearInvalidVideos() },
+							{ text: 'キャンセル' },
+							{ text: 'OK', onPress: () => void clearInvalidVideos() },
 						],
 						{ cancelable: true },
 					)
@@ -990,7 +990,7 @@ function LocalPlaylistContent({
 			!isSharedSubscriber
 		) {
 			menu.add({
-				title: '同步到 B 站',
+				title: 'B站に同期',
 				image: SYNC_ICON,
 				onPress: () => {
 					openModal(
@@ -1004,7 +1004,7 @@ function LocalPlaylistContent({
 
 		if (isLocal && !playlistMetadata.shareId) {
 			menu.add({
-				title: '设为共享歌单',
+				title: '共有プレイリストにする',
 				image: SHARE_ICON,
 				onPress: () => {
 					openModal('EnableSharing', { playlistId: playlistMetadata.id })
@@ -1016,7 +1016,7 @@ function LocalPlaylistContent({
 
 		if (shareId) {
 			menu.add({
-				title: '共享设置',
+				title: '共有設定',
 				image: LINK_ICON,
 				onPress: () => {
 					openModal('EnableSharing', {
@@ -1029,7 +1029,7 @@ function LocalPlaylistContent({
 		}
 
 		menu.add({
-			title: playlistMetadata.isPinned ? '取消置顶' : '置顶',
+			title: playlistMetadata.isPinned ? 'ピン留め解除' : 'ピン留め',
 			image: playlistMetadata.isPinned ? UNPIN_ICON : PIN_ICON,
 			onPress: () => {
 				editPlaylistMetadata({
@@ -1042,14 +1042,14 @@ function LocalPlaylistContent({
 		})
 
 		menu.add({
-			title: '删除播放列表',
+			title: 'プレイリストを削除',
 			image: DELETE_ICON,
 			attributes: { destructive: true },
 			onPress: () => {
 				alert(
-					'删除播放列表',
+					'プレイリストを削除',
 					deletePlaylistDialogPrompt(playlistMetadata, colors),
-					[{ text: '取消' }, { text: '确定', onPress: onClickDeletePlaylist }],
+					[{ text: 'キャンセル' }, { text: 'OK', onPress: onClickDeletePlaylist }],
 					{ cancelable: true },
 				)
 			},
@@ -1071,7 +1071,7 @@ function LocalPlaylistContent({
 				<Appbar.Content
 					title={
 						selectMode
-							? `已选择\u2009${selected.size}\u2009首`
+							? `${selected.size}\u2009曲を選択中`
 							: playlistMetadata.title
 					}
 					onPress={handleDoubleTap}
@@ -1093,11 +1093,11 @@ function LocalPlaylistContent({
 								icon='trash-can'
 								onPress={() =>
 									alert(
-										'移除歌曲',
-										'确定从播放列表移除这些歌曲？',
+										'曲を削除',
+										'プレイリストからこれらの曲を削除しますか？',
 										[
-											{ text: '取消' },
-											{ text: '确定', onPress: deleteSelectedTracks },
+											{ text: 'キャンセル' },
+											{ text: 'OK', onPress: deleteSelectedTracks },
 										],
 										{ cancelable: true },
 									)
@@ -1117,7 +1117,7 @@ function LocalPlaylistContent({
 								icon='alert-circle'
 								color={colors.error}
 								onPress={presentSyncFailuresSheet}
-								accessibilityLabel='同步失败'
+								accessibilityLabel='同期失敗'
 							/>
 						)}
 						{isPullingShared && (
@@ -1134,7 +1134,7 @@ function LocalPlaylistContent({
 							<Appbar.Action
 								icon='dots-vertical'
 								testID='local-playlist-menu'
-								accessibilityLabel='播放列表操作'
+								accessibilityLabel='プレイリスト操作'
 							/>
 						</MenuView>
 					</>
@@ -1146,7 +1146,7 @@ function LocalPlaylistContent({
 				style={[styles.searchbarContainer, searchbarAnimatedStyle]}
 			>
 				<SearchBar
-					placeholder='搜索歌曲'
+					placeholder='曲を検索'
 					onChangeText={setSearchQuery}
 					value={searchQuery}
 				/>
@@ -1249,8 +1249,8 @@ function LocalPlaylistContent({
 										variant='bodyMedium'
 										style={{ color: colors.onSurfaceVariant }}
 									>
-										登录 BBPlayer
-										账号后才能使用共享同步功能。当前修改会保存在本地，并在下次登录后继续同步。
+										BBPlayerアカウントに
+										ログインすると共有同期機能を使えます。現在の変更はローカルに保存され、次回ログイン後に同期されます。
 									</Text>
 								</View>
 							)}
@@ -1265,7 +1265,7 @@ function LocalPlaylistContent({
 							size={32}
 							loading={isLocatingCurrentTrack}
 							onPress={locateCurrentTrack}
-							accessibilityLabel='定位到正在播放的歌曲'
+							accessibilityLabel='再生中の曲に移動'
 							testID='local-playlist-scroll-to-current'
 						/>
 					</View>

@@ -19,7 +19,7 @@ async function resolveInitialMode(playlistId?: number): Promise<PlayerMode> {
 	if (playlistId === undefined) return fallback
 	const result = await playlistService.getPlaylistMetadata(playlistId)
 	if (result.isErr()) throw result.error
-	if (!result.value) throw new Error('播放列表不存在')
+	if (!result.value) throw new Error('プレイリストが存在しません')
 	const preference = result.value.playerPreference
 	return preference === 'music' || preference === 'podcast'
 		? preference
@@ -35,14 +35,14 @@ interface QueueOptions {
 }
 
 async function submitTracks(options: QueueOptions, replace: boolean) {
-	if (!options.tracks.length) throw new Error('没有可播放的内容')
+	if (!options.tracks.length) throw new Error('再生できるコンテンツがありません')
 	if (options.playNext && options.tracks.length !== 1)
-		throw new Error('下一首播放只支持单个音频')
+		throw new Error('「次に再生」は単一の音声のみ対応しています')
 	if (
 		options.startFromKey &&
 		!options.tracks.some((track) => track.id === options.startFromKey)
 	) {
-		throw new Error('选中的音频当前无法播放')
+		throw new Error('選択した音声は現在再生できません')
 	}
 	assertPlaybackContextAvailable()
 	const queue = await Orpheus.getQueue()

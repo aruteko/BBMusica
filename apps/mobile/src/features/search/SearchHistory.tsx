@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { Keyboard, ScrollView, StyleSheet, View } from 'react-native'
 import { Chip, IconButton, Text, useTheme } from 'react-native-paper'
 
@@ -14,6 +15,8 @@ interface SearchHistoryProps {
 	onRemoveHistoryItem: (id: string) => void
 	onDismiss: () => void
 	panelVisible: boolean
+	/** 显示在搜索历史下方的内容（首页推荐等），与历史一起滚动 */
+	footer?: ReactNode
 }
 
 export default function SearchHistory({
@@ -23,6 +26,7 @@ export default function SearchHistory({
 	onRemoveHistoryItem,
 	onDismiss,
 	panelVisible,
+	footer,
 }: SearchHistoryProps) {
 	const { colors } = useTheme()
 	return (
@@ -37,12 +41,12 @@ export default function SearchHistory({
 					variant='titleMedium'
 					style={styles.historyTitle}
 				>
-					最近搜索
+					最近の検索
 				</Text>
 				{searchHistory && searchHistory.length > 0 && onClearHistory && (
 					<IconButton
 						icon='trash-can-outline'
-						accessibilityLabel='清空搜索历史'
+						accessibilityLabel='検索履歴を消去'
 						size={20}
 						onPress={onClearHistory}
 					/>
@@ -68,10 +72,11 @@ export default function SearchHistory({
 					<Text
 						style={[styles.noHistoryText, { color: colors.onSurfaceVariant }]}
 					>
-						暂无搜索历史
+						検索履歴はありません
 					</Text>
 				)}
 			</View>
+			{footer}
 		</ScrollView>
 	)
 }

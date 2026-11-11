@@ -58,7 +58,7 @@ interface TrackListItemProps {
 }
 
 /**
- * 可复用的播放列表项目组件。
+ * 可复用的プレイリスト项目组件。
  */
 export const TrackListItem = memo(function TrackListItem({
 	index,
@@ -217,7 +217,7 @@ export const TrackListItem = memo(function TrackListItem({
 										variant='bodySmall'
 										numberOfLines={1}
 									>
-										{data.artist.name ?? '未知'}
+										{data.artist.name ?? '不明'}
 									</VariantPlainText>
 									<VariantPlainText
 										style={styles.dotSeparator}

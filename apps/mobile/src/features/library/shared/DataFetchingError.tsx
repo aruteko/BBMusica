@@ -9,7 +9,7 @@ interface DataFetchingErrorProps {
 }
 
 export function DataFetchingError({
-	text = '加载失败',
+	text = '読み込みに失敗しました',
 	onRetry,
 }: DataFetchingErrorProps) {
 	const { colors } = useTheme()
@@ -26,7 +26,7 @@ export function DataFetchingError({
 					onPress={onRetry}
 					mode='contained'
 				>
-					重试
+					再試行
 				</Button>
 			)}
 		</View>
