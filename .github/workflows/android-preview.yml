@@ -6,6 +6,10 @@ name: Android Preview APK
 # 公式版と同時にインストールできる。
 
 on:
+  # このブランチに push すると自動でビルドが始まる（手動実行も可）
+  push:
+    branches:
+      - feature/station-home-collage-cover
   workflow_dispatch:
     inputs:
       variant:
@@ -24,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     env:
-      APP_VARIANT: ${{ inputs.variant }}
+      APP_VARIANT: ${{ inputs.variant || 'preview' }}
       ABI_FILTERS: arm64-v8a
       CI: '1'
       SENTRY_DISABLE_AUTO_UPLOAD: 'true'
@@ -74,7 +78,7 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: bbplayer-${{ inputs.variant }}-arm64-v8a
+          name: bbplayer-${{ inputs.variant || 'preview' }}-arm64-v8a
           path: ${{ steps.apk.outputs.path }}
           if-no-files-found: error
           retention-days: 14
