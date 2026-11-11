@@ -20,12 +20,16 @@ import { version } from './package.json'
 
 const IS_DEV = process.env.APP_VARIANT === 'development'
 const IS_PREVIEW = process.env.APP_VARIANT === 'preview'
+// 自分用フォーク「BBPlayerJP」。公式版と別パッケージで共存し、公式のOTA更新サーバーには接続しない
+const IS_JP = process.env.APP_VARIANT === 'jp'
 const UPDATE_SERVER_URL = 'https://updates.bbplayer.roitium.com'
 const UPDATE_CHANNEL = IS_DEV
 	? 'development'
 	: IS_PREVIEW
 		? 'preview'
-		: 'production'
+		: IS_JP
+			? 'jp'
+			: 'production'
 
 // 使用 git commit 数量作为 versionCode
 const getVersionCode = (): number => {
@@ -64,6 +68,10 @@ const getUniqueIdentifier = () => {
 		return 'com.roitium.bbplayer.preview'
 	}
 
+	if (IS_JP) {
+		return 'com.roitium.bbplayer.jp'
+	}
+
 	return 'com.roitium.bbplayer'
 }
 
@@ -74,6 +82,10 @@ const getAppName = () => {
 
 	if (IS_PREVIEW) {
 		return 'BBPlayer (Preview)'
+	}
+
+	if (IS_JP) {
+		return 'BBPlayerJP'
 	}
 
 	return 'BBPlayer'
@@ -308,7 +320,8 @@ export default ({ config }: ConfigContext): ExpoConfig => {
 			),
 		},
 		updates: {
-			enabled: true,
+			// JP 版は公式のOTA更新を受け取らない（自分の変更が上書きされないように）
+			enabled: !IS_JP,
 			url: `${UPDATE_SERVER_URL}/api/manifest`,
 			requestHeaders: {
 				'expo-channel-name': UPDATE_CHANNEL,

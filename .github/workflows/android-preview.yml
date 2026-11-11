@@ -15,8 +15,9 @@ on:
       variant:
         description: 'APP_VARIANT (preview = 公式版と共存 / production = 公式と同じパッケージ名)'
         type: choice
-        default: preview
+        default: jp
         options:
+          - jp
           - preview
           - production
 
@@ -28,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     env:
-      APP_VARIANT: ${{ inputs.variant || 'preview' }}
+      APP_VARIANT: ${{ inputs.variant || 'jp' }}
       ABI_FILTERS: arm64-v8a
       CI: '1'
       SENTRY_DISABLE_AUTO_UPLOAD: 'true'
@@ -78,7 +79,7 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: bbplayer-${{ inputs.variant || 'preview' }}-arm64-v8a
+          name: bbplayer-${{ inputs.variant || 'jp' }}-arm64-v8a
           path: ${{ steps.apk.outputs.path }}
           if-no-files-found: error
           retention-days: 14

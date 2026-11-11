@@ -61,6 +61,25 @@
 					"other_platform_oauth_client": []
 				}
 			}
+		},
+		{
+			"client_info": {
+				"mobilesdk_app_id": "1:123456789012:android:mockandroidappid04",
+				"android_client_info": {
+					"package_name": "com.roitium.bbplayer.jp"
+				}
+			},
+			"oauth_client": [],
+			"api_key": [
+				{
+					"current_key": "AIzaSyMockKeyForAndroidBBPlayerJP1234567890"
+				}
+			],
+			"services": {
+				"appinvite_service": {
+					"other_platform_oauth_client": []
+				}
+			}
 		}
 	],
 	"configuration_version": "1"

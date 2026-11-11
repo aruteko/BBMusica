@@ -1,3 +1,4 @@
+import * as Application from 'expo-application'
 import { useEffect } from 'react'
 
 import { useModalStore } from '@/hooks/stores/useModalStore'
@@ -8,6 +9,10 @@ export default function useCheckUpdate() {
 	const open = useModalStore((state) => state.open)
 	useEffect(() => {
 		if (__DEV__) {
+			return
+		}
+		// JP 版は公式リリースの更新通知（公式APKへの誘導）を出さない
+		if (Application.applicationId === 'com.roitium.bbplayer.jp') {
 			return
 		}
 		let isMounted = true
