@@ -50,50 +50,59 @@ const TrackCard = memo(function TrackCard({
 	const menuRef = useRef<MenuComponentRef>(null)
 	const hasMenu = !!menuItems && menuItems.length > 0
 
-	const card = (
-		<TouchableRipple
-			onPress={() => onPress(track)}
-			// 子の TouchableRipple がタッチを先に受け取るため、MenuView 側の長押しは届かない。
-			// 長押しはここで受けて、メニューを直接開く。
-			onLongPress={hasMenu ? () => menuRef.current?.show() : undefined}
-			style={styles.card}
-			borderless
-			accessibilityLabel={`${track.title} を再生`}
-		>
-			<View>
-				<CoverWithPlaceHolder
-					id={track.uniqueKey}
-					cover={track.coverUrl}
-					title={track.title}
-					size={CARD_SIZE}
-				/>
-				<Text
-					variant='bodyMedium'
-					numberOfLines={2}
-					style={styles.cardTitle}
-				>
-					{track.title}
-				</Text>
-				<Text
-					variant='bodySmall'
-					numberOfLines={1}
-					style={styles.cardSubtitle}
-				>
-					{track.artist?.name ?? '不明なアーティスト'}
-				</Text>
-			</View>
-		</TouchableRipple>
-	)
-
-	if (!hasMenu) return card
 	return (
-		<MenuView
-			ref={menuRef}
-			{...menuActions}
-			shouldOpenOnLongPress
-		>
-			{card}
-		</MenuView>
+		<View style={styles.card}>
+			<TouchableRipple
+				onPress={() => onPress(track)}
+				// 長押しでも同じメニューを開く
+				onLongPress={hasMenu ? () => menuRef.current?.show() : undefined}
+				style={styles.cardTouchable}
+				borderless
+				accessibilityLabel={`${track.title} を再生`}
+			>
+				<View>
+					<CoverWithPlaceHolder
+						id={track.uniqueKey}
+						cover={track.coverUrl}
+						title={track.title}
+						size={CARD_SIZE}
+					/>
+					<Text
+						variant='bodyMedium'
+						numberOfLines={2}
+						style={styles.cardTitle}
+					>
+						{track.title}
+					</Text>
+					<Text
+						variant='bodySmall'
+						numberOfLines={1}
+						style={styles.cardSubtitle}
+					>
+						{track.artist?.name ?? '不明なアーティスト'}
+					</Text>
+				</View>
+			</TouchableRipple>
+
+			{/*
+			 * 長押しで開くメニュー。カード全体を MenuView で包むとうまく動かないため、
+			 * 見えない小さなアンカーだけを包み、長押しから ref 経由で開く。
+			 * アンカーはタッチを受けない（タップは再生に使う）。
+			 */}
+			{hasMenu && (
+				<View
+					style={styles.menuAnchorContainer}
+					pointerEvents='none'
+				>
+					<MenuView
+						ref={menuRef}
+						{...menuActions}
+					>
+						<View style={styles.menuAnchor} />
+					</MenuView>
+				</View>
+			)}
+		</View>
 	)
 })
 
@@ -301,7 +310,15 @@ const styles = StyleSheet.create({
 	},
 	sectionTitle: { fontWeight: 'bold' },
 	cardRow: { gap: 12 },
-	card: { width: CARD_SIZE, borderRadius: 12 },
+	card: { width: CARD_SIZE },
+	cardTouchable: { width: CARD_SIZE, borderRadius: 12 },
+	// カバー画像の中央あたり（メニューはここを基準に開く）
+	menuAnchorContainer: {
+		position: 'absolute',
+		top: CARD_SIZE / 2 - 12,
+		left: CARD_SIZE / 2 - 12,
+	},
+	menuAnchor: { width: 24, height: 24 },
 	cardTitle: { marginTop: 6 },
 	cardSubtitle: { opacity: 0.7 },
 	loading: { height: CARD_SIZE },
