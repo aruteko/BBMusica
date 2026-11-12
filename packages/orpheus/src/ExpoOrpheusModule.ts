@@ -196,6 +196,8 @@ declare class NativeOrpheusModule extends NativeModule<OrpheusEvents> {
 	 */
 	playbackResumeStrategy: ResumeStrategy
 	/** 是否显示并启用音频频谱分析。 */
+	/** 是否跳过曲目开头的静音（仅 Android，默认开启）。只影响之后开始的曲目。 */
+	isLeadingSilenceSkipEnabled: boolean
 	isSpectrumVisualizerEnabled: boolean
 	/** 原生存储中桌面悬浮歌词窗口当前是否标记为显示。 */
 	isDesktopLyricsShown: boolean

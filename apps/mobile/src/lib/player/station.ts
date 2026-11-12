@@ -13,6 +13,7 @@ import {
 import type { Track } from '@/types/core/media'
 import { toastAndLogError } from '@/utils/error-handling'
 import log from '@/utils/log'
+import { AndroidHaptics, performHaptics } from '@/utils/haptics'
 import { addToQueue } from '@/utils/player'
 import toast from '@/utils/toast'
 
@@ -41,6 +42,8 @@ export function isStationTrack(trackId: string) {
  * - 不传：以最近常听的曲目为种子；没有播放记录时使用音乐分区热门榜
  */
 export async function startStation(seed?: Track | Track[]): Promise<boolean> {
+	// 点击后立刻震动，之后取得推荐需要一点时间
+	void performHaptics(AndroidHaptics.Confirm)
 	try {
 		const seeds = Array.isArray(seed) ? seed : seed ? [seed] : []
 		const seedBvids: string[] = []
@@ -80,6 +83,8 @@ export async function startStation(seed?: Track | Track[]): Promise<boolean> {
 			playNow: true,
 			clearQueue: true,
 			playNext: false,
+			// 已在 startStation 开头震动过
+			haptic: false,
 		})
 		if (!ok) return false
 

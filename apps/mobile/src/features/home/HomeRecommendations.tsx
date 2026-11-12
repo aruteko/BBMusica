@@ -19,6 +19,7 @@ import { startStation } from '@/lib/player/station'
 import { persistTracksToLocal } from '@/lib/services/recommendationService'
 import type { Track } from '@/types/core/media'
 import { addToQueue } from '@/utils/player'
+import { AndroidHaptics, performHaptics } from '@/utils/haptics'
 import toast from '@/utils/toast'
 
 const CARD_SIZE = 128
@@ -80,6 +81,8 @@ const TrackSection = memo(function TrackSection({
 
 	const handlePress = useCallback(
 		(track: Track) => {
+			// 点击时立刻震动（入库需要一点时间，不能等到开始播放才震动）
+			void performHaptics(AndroidHaptics.Confirm)
 			void (async () => {
 				// 先入库再入队：否则播放器按 uniqueKey 读取当前曲目时会 TrackNotFound
 				const persisted = await persistTracksToLocal(tracks)
@@ -93,6 +96,7 @@ const TrackSection = memo(function TrackSection({
 					clearQueue: true,
 					startFromKey: track.uniqueKey,
 					playNext: false,
+					haptic: false,
 				})
 			})()
 		},

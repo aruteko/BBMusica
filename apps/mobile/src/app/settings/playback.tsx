@@ -36,6 +36,9 @@ export default function PlaybackSettingsPage() {
 		useState(Orpheus.restorePlaybackPositionEnabled)
 	const [enableLoudnessNormalization, setEnableLoudnessNormalization] =
 		useState(Orpheus.loudnessNormalizationEnabled)
+	const [enableLeadingSilenceSkip, setEnableLeadingSilenceSkip] = useState(
+		Orpheus.isLeadingSilenceSkipEnabled,
+	)
 	const [enableAutostartPlayOnStart, setEnableAutostartPlayOnStart] = useState(
 		Orpheus.autoplayOnStartEnabled,
 	)
@@ -101,6 +104,26 @@ export default function PlaybackSettingsPage() {
 								return
 							}
 							setEnableLoudnessNormalization(!enableLoudnessNormalization)
+						}}
+					/>
+				</View>
+				<View style={styles.settingRow}>
+					<View style={{ flexShrink: 1, paddingRight: 12 }}>
+						<Text>曲の冒頭の無音をスキップ</Text>
+						<Text variant='bodySmall'>
+							曲の始まりにある無音部分だけを飛ばします（最大6秒）。曲の途中の無音は飛ばしません。
+						</Text>
+					</View>
+					<UniversalSwitch
+						value={enableLeadingSilenceSkip}
+						onValueChange={() => {
+							try {
+								Orpheus.isLeadingSilenceSkipEnabled = !enableLeadingSilenceSkip
+							} catch (e) {
+								toastAndLogError('設定に失敗しました', e, 'Settings')
+								return
+							}
+							setEnableLeadingSilenceSkip(!enableLeadingSilenceSkip)
 						}}
 					/>
 				</View>

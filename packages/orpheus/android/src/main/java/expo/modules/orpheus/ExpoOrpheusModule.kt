@@ -374,6 +374,10 @@ class ExpoOrpheusModule : Module() {
             .get { TrackResumeStorage.getStrategy() }
             .set { strategy: Int -> TrackResumeStorage.setStrategy(strategy) }
 
+        Property("isLeadingSilenceSkipEnabled")
+            .get { GeneralStorage.isLeadingSilenceSkipEnabled() }
+            .set { enabled: Boolean -> GeneralStorage.setLeadingSilenceSkipEnabled(enabled) }
+
         Property("isSpectrumVisualizerEnabled")
             .get { GeneralStorage.isSpectrumVisualizerEnabled() }
             .set { enabled: Boolean ->

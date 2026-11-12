@@ -35,6 +35,7 @@ object GeneralStorage {
     private const val KEY_DESKTOP_LYRICS_TEXT_SIZE = "config_desktop_lyrics_text_size"
     private const val KEY_DESKTOP_LYRICS_Y = "config_desktop_lyrics_y"
     private const val KEY_EQUALIZER_ENABLED = "config_equalizer_enabled"
+    private const val KEY_LEADING_SILENCE_SKIP_ENABLED = "config_leading_silence_skip_enabled"
     private const val KEY_EQUALIZER_LEVELS = "config_equalizer_levels"
 
 
@@ -105,6 +106,19 @@ object GeneralStorage {
             safeKv.encode(KEY_SPECTRUM_VISUALIZER_ENABLED, enabled)
         } catch (e: Exception) {
             Log.e("MediaItemStorer", "Failed to set spectrum visualizer enabled", e)
+        }
+    }
+
+    /** 跳过曲目开头的静音（默认开启） */
+    fun isLeadingSilenceSkipEnabled(): Boolean {
+        return safeKv.decodeBool(KEY_LEADING_SILENCE_SKIP_ENABLED, true)
+    }
+
+    fun setLeadingSilenceSkipEnabled(enabled: Boolean) {
+        try {
+            safeKv.encode(KEY_LEADING_SILENCE_SKIP_ENABLED, enabled)
+        } catch (e: Exception) {
+            Log.e("MediaItemStorer", "Failed to set leading silence skip enabled", e)
         }
     }
 

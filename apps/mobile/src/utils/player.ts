@@ -14,6 +14,7 @@ import { trackService } from '@/lib/services/trackService'
 import type { Track } from '@/types/core/media'
 
 import { toastAndLogError } from './error-handling'
+import { AndroidHaptics, performHaptics } from './haptics'
 import log, { flatErrorMessage } from './log'
 
 const logger = log.extend('Utils.Player')
@@ -135,6 +136,7 @@ async function reportPlaybackHistory(
  * @param clearQueue 是否清空队列
  * @param startFromKey 从指定的 key 开始播放（并立即开始播放，无视 playNow）
  * @param playNext 是否插入到下一首播放
+ * @param haptic 开始播放时是否震动一下（默认是）。调用方已经在点击时震动过的话传 false
  * @returns
  */
 async function addToQueue({
@@ -144,6 +146,7 @@ async function addToQueue({
 	startFromKey,
 	playNext,
 	playlistId,
+	haptic = true,
 }: {
 	tracks: Track[]
 	playNow: boolean
@@ -151,7 +154,12 @@ async function addToQueue({
 	startFromKey?: string
 	playNext: boolean
 	playlistId?: number
+	haptic?: boolean
 }): Promise<boolean> {
+	// 点击曲目开始播放时，震动一下让用户知道点到了
+	if (haptic && !playNext && (playNow || startFromKey)) {
+		void performHaptics(AndroidHaptics.Confirm)
+	}
 	try {
 		const orpheusTracks: OrpheusTrack[] = []
 		for (const track of tracks) {

@@ -14,6 +14,8 @@ import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.DefaultRenderersFactory
+import androidx.media3.exoplayer.audio.AudioSink
+import androidx.media3.exoplayer.audio.DefaultAudioSink
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.session.CommandButton
@@ -26,6 +28,8 @@ import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import expo.modules.orpheus.R
+import expo.modules.orpheus.audio.LeadingSilenceSkipProcessor
+import expo.modules.orpheus.audio.OrpheusAudioProcessorChain
 import expo.modules.orpheus.manager.FloatingLyricsManager
 import expo.modules.orpheus.manager.LyricsConsumer
 import expo.modules.orpheus.manager.LyriconBackend
@@ -61,6 +65,7 @@ class OrpheusMusicService : MediaLibraryService() {
     private var sleepTimerManager: SleepTimeController? = null
     private var volumeFadeJob: Job? = null
     private var scope = MainScope()
+    private val leadingSilenceProcessor = LeadingSilenceSkipProcessor()
 
     lateinit var floatingLyricsManager: FloatingLyricsManager
     lateinit var statusBarLyricsManager: StatusBarLyricsManager
@@ -256,8 +261,21 @@ class OrpheusMusicService : MediaLibraryService() {
         val mediaSourceFactory = DefaultMediaSourceFactory(this)
             .setDataSourceFactory(dataSourceFactory)
 
-        val renderersFactory = DefaultRenderersFactory(this)
-            .experimentalSetMediaCodecAsyncCryptoFlagEnabled(false)
+        // 在默认处理链后追加「只跳过曲目开头静音」的处理器
+        val audioProcessorChain = OrpheusAudioProcessorChain(leadingSilenceProcessor)
+        val renderersFactory = object : DefaultRenderersFactory(this) {
+            override fun buildAudioSink(
+                context: android.content.Context,
+                enableFloatOutput: Boolean,
+                enableAudioTrackPlaybackParams: Boolean
+            ): AudioSink {
+                return DefaultAudioSink.Builder(context)
+                    .setEnableFloatOutput(enableFloatOutput)
+                    .setEnableAudioTrackPlaybackParams(enableAudioTrackPlaybackParams)
+                    .setAudioProcessorChain(audioProcessorChain)
+                    .build()
+            }
+        }.experimentalSetMediaCodecAsyncCryptoFlagEnabled(false)
 
         player = ExoPlayer.Builder(this, renderersFactory)
             .setMediaSourceFactory(mediaSourceFactory)
@@ -621,6 +639,15 @@ class OrpheusMusicService : MediaLibraryService() {
                     return
                 }
                 currentMediaId = mediaId
+
+                // 用户切歌 / 换列表导致换了一首歌，并且从头开始播放：
+                // 让「跳过开头静音」处理接下来的那条音频流（自动连播由处理器自己识别）
+                if ((reason == Player.MEDIA_ITEM_TRANSITION_REASON_SEEK ||
+                            reason == Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED) &&
+                    (player?.currentPosition ?: 0L) <= 1000L
+                ) {
+                    leadingSilenceProcessor.armForNextStream()
+                }
 
                 // 自然循环到同一音频：清除该音频断点，从头播放
                 if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT) {
