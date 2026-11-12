@@ -1,10 +1,13 @@
-import { memo, useCallback, useMemo, useState } from 'react'
+import { memo, useCallback, useMemo, useRef, useState } from 'react'
 import { ScrollView, StyleSheet, View } from 'react-native'
 import { IconButton, Text, TouchableRipple, useTheme } from 'react-native-paper'
 
 import ActivityIndicator from '@/components/common/ActivityIndicator'
 import Button from '@/components/common/Button'
 import CoverWithPlaceHolder from '@/components/common/CoverWithPlaceHolder'
+import { MenuView, type MenuComponentRef } from '@/components/common/FunctionalMenu'
+import type { TrackMenuItem } from '@/features/playlist/remote/components/PlaylistItem'
+import { useSearchInteractions } from '@/features/playlist/remote/search-result/hooks/useSearchInteractions'
 import {
 	recommendationKeys,
 	useHomeRecommendations,
@@ -15,6 +18,7 @@ import {
 	useRecentlyPlayedTracks,
 } from '@/hooks/queries/playHistory'
 import { queryClient } from '@/lib/config/queryClient'
+import { useMenuActions } from '@/hooks/ui/useMenuActions'
 import { startStation } from '@/lib/player/station'
 import { persistTracksToLocal } from '@/lib/services/recommendationService'
 import type { Track } from '@/types/core/media'
@@ -27,12 +31,31 @@ const CARD_SIZE = 128
 interface TrackCardProps {
 	track: Track
 	onPress: (track: Track) => void
+	/** 長押しで開くメニュー（検索結果の三点リーダーと同じ項目）。ない場合は長押しメニューなし */
+	menuItems?: TrackMenuItem[]
 }
 
-const TrackCard = memo(function TrackCard({ track, onPress }: TrackCardProps) {
-	return (
+const TrackCard = memo(function TrackCard({
+	track,
+	onPress,
+	menuItems,
+}: TrackCardProps) {
+	const menuActions = useMenuActions(
+		(menuItems ?? []).map(({ leadingIcon, ...item }) => ({
+			...item,
+			image: leadingIcon,
+		})),
+	)
+
+	const menuRef = useRef<MenuComponentRef>(null)
+	const hasMenu = !!menuItems && menuItems.length > 0
+
+	const card = (
 		<TouchableRipple
 			onPress={() => onPress(track)}
+			// 子の TouchableRipple がタッチを先に受け取るため、MenuView 側の長押しは届かない。
+			// 長押しはここで受けて、メニューを直接開く。
+			onLongPress={hasMenu ? () => menuRef.current?.show() : undefined}
 			style={styles.card}
 			borderless
 			accessibilityLabel={`${track.title} を再生`}
@@ -61,6 +84,17 @@ const TrackCard = memo(function TrackCard({ track, onPress }: TrackCardProps) {
 			</View>
 		</TouchableRipple>
 	)
+
+	if (!hasMenu) return card
+	return (
+		<MenuView
+			ref={menuRef}
+			{...menuActions}
+			shouldOpenOnLongPress
+		>
+			{card}
+		</MenuView>
+	)
 })
 
 interface SectionProps {
@@ -78,6 +112,7 @@ const TrackSection = memo(function TrackSection({
 	onRefresh,
 }: SectionProps) {
 	const { colors } = useTheme()
+	const { trackMenuItems } = useSearchInteractions()
 
 	const handlePress = useCallback(
 		(track: Track) => {
@@ -140,6 +175,9 @@ const TrackSection = memo(function TrackSection({
 							key={track.uniqueKey}
 							track={track}
 							onPress={handlePress}
+							menuItems={
+								track.source === 'bilibili' ? trackMenuItems(track) : undefined
+							}
 						/>
 					))}
 				</ScrollView>
