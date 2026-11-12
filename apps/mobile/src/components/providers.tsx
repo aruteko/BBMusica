@@ -64,18 +64,18 @@ function ShakeProfiler() {
 			promptVisibleRef.current = true
 
 			alert(
-				'记录性能分析',
-				'是否记录接下来 10 秒的性能分析？完成后会保存到 Downloads 文件夹。',
+				'パフォーマンス分析を記録',
+				'今後10秒間のパフォーマンス分析を記録しますか？完了後、Downloadsフォルダーに保存されます。',
 				[
 					{
-						text: '取消',
+						text: 'キャンセル',
 						onPress: () => {
 							promptVisibleRef.current = false
 							useModalStore.getState().close('Alert')
 						},
 					},
 					{
-						text: '开始记录',
+						text: '記録を開始',
 						onPress: () => {
 							promptVisibleRef.current = false
 							void captureProfiling(PROFILING_DURATION_MS)

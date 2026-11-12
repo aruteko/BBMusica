@@ -56,7 +56,7 @@ export default function AppPrivateDataPage() {
 		if (path) {
 			list.push({
 				key: '..',
-				name: '上级目录',
+				name: '親フォルダー',
 				parent: true,
 				path: path.includes('/') ? path.slice(0, path.lastIndexOf('/')) : '',
 				isDirectory: true,
@@ -80,7 +80,7 @@ export default function AppPrivateDataPage() {
 		<View style={[styles.container, { backgroundColor: colors.background }]}>
 			<Appbar.Header>
 				<Appbar.BackAction onPress={handleBack} />
-				<Appbar.Content title='应用私有目录' />
+				<Appbar.Content title='アプリ専用フォルダー' />
 			</Appbar.Header>
 			<View style={styles.header}>
 				<Text
@@ -94,7 +94,7 @@ export default function AppPrivateDataPage() {
 					variant='bodySmall'
 					style={{ color: colors.onSurfaceVariant }}
 				>
-					只读 · 应用私有目录
+					読み取り専用 · アプリ専用フォルダー
 				</Text>
 			</View>
 			<FlatList
@@ -149,7 +149,7 @@ export default function AppPrivateDataPage() {
 								variant='bodyMedium'
 								style={{ color: colors.onSurfaceVariant }}
 							>
-								{isError ? '读取失败' : '此目录为空'}
+								{isError ? '読み込みに失敗しました' : 'このフォルダーは空です'}
 							</Text>
 						</View>
 					)
@@ -161,7 +161,7 @@ export default function AppPrivateDataPage() {
 								variant='bodyMedium'
 								style={{ color: colors.onSurfaceVariant }}
 							>
-								计算中...
+								計算中...
 							</Text>
 						</View>
 					) : undefined

@@ -234,7 +234,7 @@ export function buildExpandedTracksMap(
 			return err(
 				createFacadeError(
 					'SyncFavoriteFailed',
-					'展开分 P 失败：缺少视频元数据',
+					'分割Pの展開に失敗しました：動画の情報がありません',
 				),
 			)
 		}

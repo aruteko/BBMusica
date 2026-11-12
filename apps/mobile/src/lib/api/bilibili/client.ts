@@ -18,14 +18,14 @@ export interface ReqResponse<T> {
 const toRequestError = (error: unknown) => {
 	if (error instanceof Error && error.name === 'AbortError') {
 		return new BilibiliApiError({
-			message: '请求被取消',
+			message: 'リクエストがキャンセルされました',
 			type: 'RequestAborted',
 			cause: error,
 		})
 	}
 
 	return new BilibiliApiError({
-		message: `请求失败: ${error instanceof Error ? error.message : String(error)}`,
+		message: `リクエストに失敗しました: ${error instanceof Error ? error.message : String(error)}`,
 		type: 'RequestFailed',
 		cause: error,
 	})
@@ -83,7 +83,7 @@ class ApiClient {
 				if (!response.ok) {
 					return errAsync(
 						new BilibiliApiError({
-							message: `请求 bilibili API 失败: ${response.status} ${response.statusText}`,
+							message: `Bilibili APIへのリクエストに失敗しました: ${response.status} ${response.statusText}`,
 							msgCode: response.status,
 							type: 'RequestFailed',
 						}),
@@ -214,7 +214,7 @@ class ApiClient {
 			if (!response.ok) {
 				return errAsync(
 					new BilibiliApiError({
-						message: `请求 bilibili API 失败: ${response.status} ${response.statusText}`,
+						message: `Bilibili APIへのリクエストに失敗しました: ${response.status} ${response.statusText}`,
 						msgCode: response.status,
 						type: 'RequestFailed',
 					}),

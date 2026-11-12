@@ -23,7 +23,7 @@ const CoverDownloadProgressModal = memo(function CoverDownloadProgressModal() {
 		total: 0,
 		failed: 0,
 		stage: 'pending',
-		message: '准备中...',
+		message: '準備中...',
 	})
 	const hasStarted = useRef(false)
 
@@ -44,9 +44,9 @@ const CoverDownloadProgressModal = memo(function CoverDownloadProgressModal() {
 						stage: isLast ? 'completed' : 'downloading',
 						message: isLast
 							? failed > 0
-								? `完成，${event.total - failed} 个成功，${failed} 个失败`
-								: `全部 ${event.total} 个封面下载完成`
-							: `正在下载 ${event.current}/${event.total}...`,
+								? `完了：${event.total - failed} 件成功、${failed} 件失敗`
+								: `${event.total} 件のカバーをすべてダウンロードしました`
+							: `ダウンロード中 ${event.current}/${event.total}...`,
 					}
 				})
 			},
@@ -60,16 +60,16 @@ const CoverDownloadProgressModal = memo(function CoverDownloadProgressModal() {
 						total: 0,
 						failed: 0,
 						stage: 'completed',
-						message: '所有封面已完整，无需下载',
+						message: 'すべてのカバーがそろっているため、ダウンロードは不要です',
 					})
 				}
 			})
 			.catch((e: unknown) => {
-				toastAndLogError('下载缺失封面失败', e, 'Modal.CoverDownloadProgress')
+				toastAndLogError('不足しているカバーのダウンロードに失敗しました', e, 'Modal.CoverDownloadProgress')
 				setProgress((prev) => ({
 					...prev,
 					stage: 'error',
-					message: '启动下载失败',
+					message: 'ダウンロードを開始できませんでした',
 				}))
 			})
 
@@ -87,10 +87,10 @@ const CoverDownloadProgressModal = memo(function CoverDownloadProgressModal() {
 		<>
 			<Dialog.Title>
 				{progress.stage === 'completed'
-					? '下载完成'
+					? 'ダウンロードが完了しました'
 					: progress.stage === 'error'
-						? '下载失败'
-						: '正在下载缺失封面'}
+						? 'ダウンロードに失敗しました'
+						: '不足しているカバーをダウンロード中'}
 			</Dialog.Title>
 			<Dialog.Content>
 				<View style={styles.content}>
@@ -112,7 +112,7 @@ const CoverDownloadProgressModal = memo(function CoverDownloadProgressModal() {
 					onPress={() => close('CoverDownloadProgress')}
 					disabled={!isFinished}
 				>
-					{isFinished ? '关闭' : '请稍候'}
+					{isFinished ? '閉じる' : 'お待ちください'}
 				</Button>
 			</Dialog.Actions>
 		</>

@@ -31,9 +31,9 @@ export default function EditLyricsModal({
 
 	const [index, setIndex] = useState(0)
 	const [routes] = useState([
-		{ key: 'lrc', title: '主歌词' },
-		{ key: 'tlyric', title: '翻译' },
-		{ key: 'romalrc', title: '罗马音' },
+		{ key: 'lrc', title: 'メイン歌詞' },
+		{ key: 'tlyric', title: '翻訳' },
+		{ key: 'romalrc', title: 'ローマ字' },
 	])
 
 	const renderScene = ({ route }: { route: { key: string } }) => {
@@ -42,14 +42,14 @@ export default function EditLyricsModal({
 				return (
 					<View style={styles.inputContainer}>
 						<TextInput
-							label='主歌词'
+							label='メイン歌詞'
 							value={lrc}
 							onChangeText={setLrc}
 							mode='outlined'
 							multiline
 							style={styles.textInput}
 							textAlignVertical='top'
-							placeholder='在此输入 LRC 格式歌词'
+							placeholder='LRC形式の歌詞を入力'
 						/>
 					</View>
 				)
@@ -57,14 +57,14 @@ export default function EditLyricsModal({
 				return (
 					<View style={styles.inputContainer}>
 						<TextInput
-							label='翻译'
+							label='翻訳'
 							value={tlyric}
 							onChangeText={setTlyric}
 							mode='outlined'
 							multiline
 							style={styles.textInput}
 							textAlignVertical='top'
-							placeholder='在此输入翻译歌词'
+							placeholder='翻訳の歌詞を入力'
 						/>
 					</View>
 				)
@@ -72,14 +72,14 @@ export default function EditLyricsModal({
 				return (
 					<View style={styles.inputContainer}>
 						<TextInput
-							label='罗马音'
+							label='ローマ字'
 							value={romalrc}
 							onChangeText={setRomalrc}
 							mode='outlined'
 							multiline
 							style={styles.textInput}
 							textAlignVertical='top'
-							placeholder='在此输入罗马音歌词'
+							placeholder='ローマ字の歌詞を入力'
 						/>
 					</View>
 				)
@@ -103,7 +103,7 @@ export default function EditLyricsModal({
 
 		if (result.isErr()) {
 			toastAndLogError(
-				'保存歌词失败',
+				'歌詞の保存に失敗しました',
 				result.error,
 				'Components.EditLyricsModal',
 			)
@@ -114,7 +114,7 @@ export default function EditLyricsModal({
 			lyricsQueryKeys.smartFetchLyrics(uniqueKey),
 			result.value,
 		)
-		toast.success('歌词保存成功')
+		toast.success('歌詞を保存しました')
 		close('EditLyrics')
 	}
 
@@ -124,17 +124,17 @@ export default function EditLyricsModal({
 			await saveLyrics()
 		} else {
 			alert(
-				'歌词格式错误',
-				`第 ${result.error.line} 行存在错误: ${result.error.message}`,
+				'歌詞の形式が正しくありません',
+				`${result.error.line} 行目にエラーがあります: ${result.error.message}`,
 				[
 					{
-						text: '取消',
+						text: 'キャンセル',
 						onPress: () => {
 							// do nothing
 						},
 					},
 					{
-						text: '仍要保存',
+						text: 'このまま保存',
 						onPress: saveLyrics,
 						afterModalHostClosed: false,
 					},
@@ -145,18 +145,18 @@ export default function EditLyricsModal({
 
 	const clearLyrics = () => {
 		alert(
-			'清除歌词？',
-			'清除后会标记该歌曲跳过自动歌词获取，并立即隐藏桌面歌词、状态栏歌词等歌词显示。',
+			'歌詞を消去しますか？',
+			'消去すると、この曲は歌詞の自動取得を行わなくなり、デスクトップ歌詞やステータスバー歌詞などの表示もすぐに隠れます。',
 			[
-				{ text: '取消' },
+				{ text: 'キャンセル' },
 				{
-					text: '清除',
+					text: '消去',
 					afterModalHostClosed: false,
 					onPress: async () => {
 						const result = await lyricService.skipLyric(uniqueKey)
 						if (result.isErr()) {
 							toastAndLogError(
-								'清除歌词失败',
+								'歌詞の消去に失敗しました',
 								result.error,
 								'Components.EditLyricsModal',
 							)
@@ -171,11 +171,11 @@ export default function EditLyricsModal({
 								tlyric: undefined,
 								romalrc: undefined,
 								manualSkip: true,
-								errorMessage: '已跳过歌词获取，但你可以重新搜索或编辑歌词',
+								errorMessage: '歌詞の取得をスキップしましたが、再検索や編集はできます',
 								misc: undefined,
 							},
 						)
-						toast.success('歌词已清除')
+						toast.success('歌詞を消去しました')
 						close('EditLyrics')
 					},
 				},
@@ -185,11 +185,11 @@ export default function EditLyricsModal({
 
 	return (
 		<>
-			<Dialog.Title>编辑歌词</Dialog.Title>
+			<Dialog.Title>歌詞を編集</Dialog.Title>
 			<Dialog.Content style={styles.content}>
 				<View style={styles.header}>
 					<Text style={{ color: theme.colors.onSurfaceVariant }}>
-						我们的歌词遵循 SPL(LRC) 规范，
+						歌詞はSPL(LRC)の仕様に従います。
 					</Text>
 					<Text
 						style={{
@@ -202,7 +202,7 @@ export default function EditLyricsModal({
 							)
 						}
 					>
-						点击查看规范详情
+						タップして仕様の詳細を見る
 					</Text>
 				</View>
 				<TabView
@@ -226,9 +226,9 @@ export default function EditLyricsModal({
 				/>
 			</Dialog.Content>
 			<Dialog.Actions>
-				<Button onPress={clearLyrics}>清除歌词</Button>
-				<Button onPress={() => close('EditLyrics')}>取消</Button>
-				<Button onPress={handleConfirm}>确定</Button>
+				<Button onPress={clearLyrics}>歌詞を消去</Button>
+				<Button onPress={() => close('EditLyrics')}>キャンセル</Button>
+				<Button onPress={handleConfirm}>OK</Button>
 			</Dialog.Actions>
 		</>
 	)

@@ -33,7 +33,7 @@ export default function DownloadPage() {
 	const header = (
 		<Appbar.Header elevated>
 			<Appbar.BackAction onPress={() => router.back()} />
-			<Appbar.Content title='下载任务' />
+			<Appbar.Content title='ダウンロードタスク' />
 		</Appbar.Header>
 	)
 
@@ -60,7 +60,7 @@ export default function DownloadPage() {
 					variant='bodyMedium'
 					style={{ color: colors.error, padding: 16 }}
 				>
-					加载下载任务失败: {error.message}
+					ダウンロードタスクの読み込みに失敗しました: {error.message}
 				</Text>
 			</View>
 		)

@@ -15,7 +15,7 @@ export default function DuplicateLocalPlaylistModal({
 	rawName: string
 }) {
 	const [duplicatePlaylistName, setDuplicatePlaylistName] = useState(
-		`${rawName}-副本`,
+		`${rawName}-コピー`,
 	)
 	const { mutate: duplicatePlaylist } = useDuplicatePlaylist()
 	const close = useModalStore((state) => state.close)
@@ -51,10 +51,10 @@ export default function DuplicateLocalPlaylistModal({
 
 	return (
 		<>
-			<Dialog.Title>复制播放列表</Dialog.Title>
+			<Dialog.Title>プレイリストを複製</Dialog.Title>
 			<Dialog.Content>
 				<TextInput
-					label='新播放列表名称'
+					label='新しいプレイリスト名'
 					value={duplicatePlaylistName}
 					onChangeText={setDuplicatePlaylistName}
 					mode='outlined'
@@ -64,8 +64,8 @@ export default function DuplicateLocalPlaylistModal({
 				/>
 			</Dialog.Content>
 			<Dialog.Actions>
-				<Button onPress={() => close('DuplicateLocalPlaylist')}>取消</Button>
-				<Button onPress={handleDuplicatePlaylist}>确定</Button>
+				<Button onPress={() => close('DuplicateLocalPlaylist')}>キャンセル</Button>
+				<Button onPress={handleDuplicatePlaylist}>OK</Button>
 			</Dialog.Actions>
 		</>
 	)

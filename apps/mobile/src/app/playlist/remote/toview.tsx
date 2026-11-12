@@ -127,13 +127,13 @@ export default function ToViewPage() {
 		const createIt = await syncFacade.addTrackToLocal(track)
 		if (createIt.isErr()) {
 			toastAndLogError(
-				'将 track 录入本地失败',
+				'曲のローカル登録に失敗しました',
 				createIt.error,
 				'UI.Playlist.Remote',
 			)
 			reportErrorToSentry(
 				createIt.error,
-				'将 track 录入本地失败',
+				'曲のローカル登録に失敗しました',
 				'UI.Playlist.Remote',
 			)
 			return
@@ -149,7 +149,7 @@ export default function ToViewPage() {
 
 	const handlePlayAll = useCallback(async () => {
 		if (!tracksData || tracksData.length === 0) {
-			toast.error('没有可播放的歌曲')
+			toast.error('再生できる曲がありません')
 			return
 		}
 
@@ -163,7 +163,7 @@ export default function ToViewPage() {
 
 	const menuActions = useMenuActions([
 		{
-			title: '清除所有已播放歌曲',
+			title: '再生済みの曲をすべて削除',
 			image: DELETE_ICON,
 			onPress: () => {
 				deleteToViewVideo({
@@ -173,19 +173,19 @@ export default function ToViewPage() {
 			},
 		},
 		{
-			title: '清除所有歌曲',
+			title: 'すべての曲を削除',
 			image: DELETE_ICON,
 			attributes: { destructive: true },
 			onPress: () => {
 				alert(
-					'清除所有稍后再看歌曲',
-					'确定要清除所有稍后再看的歌曲吗？',
+					'あとで見るの曲をすべて削除',
+					'あとで見るの曲をすべて削除しますか？',
 					[
 						{
-							text: '取消',
+							text: 'キャンセル',
 						},
 						{
-							text: '确定',
+							text: 'OK',
 							onPress: () => {
 								clearToViewVideoList()
 							},
@@ -202,7 +202,7 @@ export default function ToViewPage() {
 	}
 
 	if (isToViewDataError) {
-		return <PlaylistError text='加载失败' />
+		return <PlaylistError text='読み込みに失敗しました' />
 	}
 
 	return (
@@ -213,7 +213,7 @@ export default function ToViewPage() {
 			>
 				<Appbar.Content
 					title={
-						selectMode ? `已选择\u2009${selected.size}\u2009首` : '稍后再看'
+						selectMode ? `${selected.size}\u2009曲を選択中` : 'あとで見る'
 					}
 					onPress={handleDoubleTap}
 				/>
@@ -273,14 +273,14 @@ export default function ToViewPage() {
 					ListHeaderComponent={
 						<PlaylistHeader
 							cover={coverRef ?? undefined}
-							title={'稍后再看'}
-							subtitles={`有\u2009${tracksData.length}\u2009首待播放的歌曲`}
+							title={'あとで見る'}
+							subtitles={`再生待ちの曲が\u2009${tracksData.length}\u2009曲`}
 							description={undefined}
 							onClickMainButton={handlePlayAll}
 							mainButtonIcon={'play'}
 							linkedPlaylistId={undefined}
-							mainButtonText='播放全部'
-							id={'稍后再看'}
+							mainButtonText='すべて再生'
+							id={'あとで見る'}
 							primaryButtonColor={primaryButtonColor}
 							primaryButtonTextColor={primaryButtonTextColor}
 							secondaryButtonContainerColor={secondaryButtonContainerColor}

@@ -59,7 +59,7 @@ export function migratePlayHistory(): void {
 					}
 				}
 				logger.info(
-					`[play_history] 播放记录迁移完成，共处理 ${rows.length} 条歌曲记录`,
+					`[play_history] 播放记录迁移完了，共处理 ${rows.length} 条歌曲记录`,
 				)
 			}
 			migration.markAsApplied()

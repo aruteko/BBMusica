@@ -155,7 +155,7 @@ function SearchSubtitles({ store }: { store: SubtitleReaderStore }) {
 			viewabilityConfig={{ itemVisiblePercentThreshold: 1 }}
 			ListEmptyComponent={
 				<View style={styles.empty}>
-					<VariantPlainText>没有找到相关字幕，试试其他关键词</VariantPlainText>
+					<VariantPlainText>該当する字幕が見つかりません。別のキーワードをお試しください</VariantPlainText>
 				</View>
 			}
 			renderItem={({ item }) => (
@@ -231,7 +231,7 @@ export function SubtitleLocateButton({
 					Keyboard.dismiss()
 					store.resumeFollowing()
 				}}
-				accessibilityLabel='定位到正在播放的字幕'
+				accessibilityLabel='再生中の字幕に移動'
 				testID='subtitle-scroll-to-current'
 			/>
 		</View>

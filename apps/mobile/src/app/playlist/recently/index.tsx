@@ -72,7 +72,7 @@ export default function RecentlyPlayedPage() {
 
 	const handlePlayAll = useCallback(async () => {
 		if (!tracksData) {
-			toast.error('没有可播放的歌曲')
+			toast.error('再生できる曲がありません')
 			return
 		}
 		const playlistTracks = tracksData.map((item) => item.track)
@@ -95,7 +95,7 @@ export default function RecentlyPlayedPage() {
 	}
 
 	if (isError) {
-		return <PlaylistError text='加载失败' />
+		return <PlaylistError text='読み込みに失敗しました' />
 	}
 
 	const isEmpty = !tracksData || tracksData.length === 0
@@ -107,13 +107,13 @@ export default function RecentlyPlayedPage() {
 				style={{ backgroundColor: 'transparent' }}
 			>
 				<Appbar.BackAction onPress={() => router.back()} />
-				<Appbar.Content title='最近常听' />
+				<Appbar.Content title='よく聴いている曲' />
 			</Appbar.Header>
 
 			<View style={styles.listContainer}>
 				{isEmpty ? (
 					<View style={styles.emptyContainer}>
-						<Text variant='bodyLarge'>暂无播放记录</Text>
+						<Text variant='bodyLarge'>再生履歴がありません</Text>
 					</View>
 				) : (
 					<TrackList
@@ -123,11 +123,11 @@ export default function RecentlyPlayedPage() {
 						selection={selection}
 						ListHeaderComponent={
 							<PlaylistHeader
-								title='最近常听'
-								subtitles='最近14天最常播放的歌曲'
+								title='よく聴いている曲'
+								subtitles='直近14日でよく再生した曲'
 								description={undefined}
 								mainButtonIcon='play'
-								mainButtonText='播放全部'
+								mainButtonText='すべて再生'
 								id='recently-played'
 								onClickMainButton={handlePlayAll}
 								primaryButtonColor={primaryButtonColor}

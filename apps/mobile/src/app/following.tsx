@@ -93,13 +93,13 @@ export default function FollowingPage() {
 		<View style={[styles.container, { backgroundColor: colors.background }]}>
 			<Appbar.Header elevated>
 				<Appbar.BackAction onPress={() => router.back()} />
-				<Appbar.Content title='我的关注' />
+				<Appbar.Content title='フォロー中' />
 			</Appbar.Header>
 			{hasCookie && (
 				<View style={styles.filters}>
 					<Searchbar
 						mode='bar'
-						placeholder='搜索全部关注的 UP 主'
+						placeholder='フォロー中の投稿者を検索'
 						value={searchQuery}
 						onChangeText={setSearchQuery}
 						onClearIconPress={() => setSearchQuery('')}
@@ -118,7 +118,7 @@ export default function FollowingPage() {
 										selected={tagId === -20}
 										onPress={() => setSelectedTagId(-20)}
 									>
-										全部关注
+										すべてのフォロー
 										{totalFollowings !== undefined
 											? ` · ${totalFollowings}`
 											: ''}
@@ -138,7 +138,7 @@ export default function FollowingPage() {
 							)}
 							{groups.isError && (
 								<Button onPress={() => void refetchGroups()}>
-									分组加载失败，重试
+									グループの読み込みに失敗しました。再試行
 								</Button>
 							)}
 						</>
@@ -147,21 +147,21 @@ export default function FollowingPage() {
 			)}
 			{!hasCookie ? (
 				<View style={styles.state}>
-					<Text>登录 Bilibili 账号后查看我的关注</Text>
+					<Text>Bilibiliアカウントにログインするとフォロー中を確認できます</Text>
 					<Button
 						mode='contained'
 						onPress={() => router.navigate('/settings/bilibili-account')}
 					>
-						登录
+						ログイン
 					</Button>
 				</View>
 			) : !isListReady || isPending || isSearchPending ? (
 				<FollowingListSkeleton />
 			) : isError && !data ? (
 				<View style={styles.state}>
-					<Text>加载关注列表失败</Text>
+					<Text>フォロー一覧の読み込みに失敗しました</Text>
 					<Text style={styles.error}>{error.message}</Text>
-					<Button onPress={() => void refetch()}>重试</Button>
+					<Button onPress={() => void refetch()}>再試行</Button>
 				</View>
 			) : (
 				<LegendList
@@ -180,16 +180,16 @@ export default function FollowingPage() {
 					renderItem={({ item }) => <FollowingListItem user={item} />}
 					ListHeaderComponent={
 						isError && !isFetchNextPageError ? (
-							<Button onPress={() => void refetch()}>刷新失败，点击重试</Button>
+							<Button onPress={() => void refetch()}>更新に失敗しました。タップして再試行</Button>
 						) : null
 					}
 					ListEmptyComponent={
 						<Text style={styles.count}>
 							{keyword
-								? '没有找到匹配的 UP 主'
+								? '一致する投稿者が見つかりません'
 								: tagId === -20
-									? '还没有关注 UP 主'
-									: '该分组暂无 UP 主'}
+									? 'まだ投稿者をフォローしていません'
+									: 'このグループには投稿者がいません'}
 						</Text>
 					}
 					ListFooterComponent={
@@ -197,7 +197,7 @@ export default function FollowingPage() {
 							<ActivityIndicator style={styles.count} />
 						) : isFetchNextPageError ? (
 							<Button onPress={() => void fetchNextPage()}>
-								加载更多失败，重试
+								さらに読み込めませんでした。再試行
 							</Button>
 						) : null
 					}

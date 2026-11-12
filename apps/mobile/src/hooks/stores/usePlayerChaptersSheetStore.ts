@@ -27,7 +27,7 @@ export const usePlayerChaptersSheetStore = create<PlayerChaptersSheetState>(
 					await TrueSheet.present('playerChaptersSheet')
 				} catch (error) {
 					set({ isOpen: false })
-					toastAndLogError('打开章节失败', error, 'Player.Chapters')
+					toastAndLogError('チャプターを開けませんでした', error, 'Player.Chapters')
 				}
 			})
 			return transition
@@ -40,7 +40,7 @@ export const usePlayerChaptersSheetStore = create<PlayerChaptersSheetState>(
 				try {
 					await TrueSheet.dismiss('playerChaptersSheet')
 				} catch (error) {
-					toastAndLogError('关闭章节失败', error, 'Player.Chapters')
+					toastAndLogError('チャプターを閉じられませんでした', error, 'Player.Chapters')
 				}
 			})
 			return transition

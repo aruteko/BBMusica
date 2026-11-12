@@ -31,22 +31,22 @@ const mapSearchItem = (item: BilibiliGarbSearchItem): GarbSkinSearchResult => {
 		itemId: item.item_id || null,
 		kind: partId === 0 ? 'collection' : partId === 6 ? 'suit' : null,
 		lotteryId: Number(props.dlc_lottery_id) || null,
-		name: item.name || '未命名装扮',
+		name: item.name || '名称未設定の装扮',
 		partId: partId ?? null,
 	}
 }
 
 const confirmDownload = (item: GarbSkinSearchResult) => {
-	const label = item.kind === 'collection' ? '收藏集' : '主题装扮'
+	const label = item.kind === 'collection' ? 'コレクション' : 'テーマ装扮'
 	const openModal = useModalStore.getState().open
-	alert('下载主题资源包', `是否下载「${item.name}」${label}资产？`, [
-		{ text: '取消' },
+	alert('テーマ素材をダウンロード', `「${item.name}」の${label}素材をダウンロードしますか？`, [
+		{ text: 'キャンセル' },
 		{
-			text: '下载',
+			text: 'ダウンロード',
 			onPress: () => {
 				if (!item.kind) {
-					alert('暂时无法下载', '当前只支持下载收藏集和主题装扮。', [
-						{ text: '知道了' },
+					alert('ダウンロードできません', '現在は、コレクションとテーマ装扮のみダウンロードできます。', [
+						{ text: 'OK' },
 					])
 					return
 				}
@@ -89,10 +89,10 @@ const renderItem = ({
 					style={{ color: colors.onSurfaceVariant }}
 				>
 					{item.kind === 'collection'
-						? `收藏集 · act_id=${item.actId ?? '-'}`
+						? `コレクション · act_id=${item.actId ?? '-'}`
 						: item.kind === 'suit'
-							? `主题装扮 · item_id=${item.itemId}`
-							: '暂不支持的装扮类型'}
+							? `テーマ装扮 · item_id=${item.itemId}`
+							: '未対応の装扮の種類'}
 				</Text>
 			</View>
 		</Pressable>
@@ -127,13 +127,13 @@ export default function ThemeSkinSearchPage() {
 		<View style={[styles.container, { backgroundColor: colors.background }]}>
 			<Appbar.Header>
 				<Appbar.BackAction onPress={() => router.back()} />
-				<Appbar.Content title='添加主题' />
+				<Appbar.Content title='テーマを追加' />
 			</Appbar.Header>
 			<View style={[styles.content, { paddingBottom: insets.bottom + 16 }]}>
 				<View style={styles.searchRow}>
 					<TextInput
 						mode='outlined'
-						label='主题名称'
+						label='テーマ名'
 						value={bufferedInput}
 						onChangeText={setBufferedInput}
 						style={styles.searchInput}
@@ -145,7 +145,7 @@ export default function ThemeSkinSearchPage() {
 						loading={isFetching}
 						disabled={isFetching}
 					>
-						搜索
+						検索
 					</Button>
 				</View>
 
@@ -182,14 +182,14 @@ export default function ThemeSkinSearchPage() {
 								variant='bodyMedium'
 								style={[styles.empty, { color: colors.onSurfaceVariant }]}
 							>
-								没有找到相关装扮
+								該当する装扮が見つかりません
 							</Text>
 						) : (
 							<Text
 								variant='bodySmall'
 								style={[styles.empty, { color: colors.onSurfaceVariant }]}
 							>
-								输入主题名称搜索 B 站装扮
+								テーマ名を入力してBilibiliの装扮を検索
 							</Text>
 						)
 					}

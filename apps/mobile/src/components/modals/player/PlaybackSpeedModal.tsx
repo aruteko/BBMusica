@@ -45,7 +45,7 @@ const PlaybackSpeedModal = () => {
 			await Orpheus.setPlaybackSpeed(clampedSpeed)
 		} catch (e) {
 			setSpeed(committedSpeedRef.current)
-			toastAndLogError('设置播放速度失败', e, 'Modal.PlaybackSpeed')
+			toastAndLogError('再生速度の設定に失敗しました', e, 'Modal.PlaybackSpeed')
 		}
 	}
 
@@ -67,14 +67,14 @@ const PlaybackSpeedModal = () => {
 
 	return (
 		<>
-			<Dialog.Title>播放速度</Dialog.Title>
+			<Dialog.Title>再生速度</Dialog.Title>
 			<Dialog.Content>
 				<View style={styles.headerContainer}>
 					<Text
 						variant='headlineMedium'
 						style={styles.speedDisplay}
 					>
-						当前: {speed.toFixed(2)}x
+						現在: {speed.toFixed(2)}x
 					</Text>
 				</View>
 
@@ -95,8 +95,8 @@ const PlaybackSpeedModal = () => {
 				</View>
 			</Dialog.Content>
 			<Dialog.Actions>
-				<Button onPress={handleReset}>重置</Button>
-				<Button onPress={() => close('PlaybackSpeed')}>关闭</Button>
+				<Button onPress={handleReset}>リセット</Button>
+				<Button onPress={() => close('PlaybackSpeed')}>閉じる</Button>
 			</Dialog.Actions>
 		</>
 	)

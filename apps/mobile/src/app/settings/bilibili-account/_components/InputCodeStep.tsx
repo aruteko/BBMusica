@@ -42,7 +42,7 @@ export default function InputCodeStep({
 							variant='headlineLarge'
 							style={styles.title}
 						>
-							输入验证码
+							認証コードを入力
 						</Text>
 					</>
 				)}
@@ -50,20 +50,20 @@ export default function InputCodeStep({
 					variant={compact ? 'bodyMedium' : 'bodyLarge'}
 					style={[styles.subtitle, { color: colors.onSurfaceVariant }]}
 				>
-					验证码已发送至 +86 {tel}
+					認証コードを +86 {tel} に送信しました
 					<Text
 						onPress={onPrev}
 						style={{ color: colors.primary }}
 					>
 						{' '}
-						(修改)
+						(変更)
 					</Text>
 				</Text>
 			</View>
 
 			<View style={[styles.form, compact && { minHeight: 0 }]}>
 				<TextInput
-					label='短信验证码'
+					label='SMS認証コード'
 					value={smsCode}
 					onChangeText={(v) => {
 						setSmsCode(v)
@@ -95,7 +95,7 @@ export default function InputCodeStep({
 					contentStyle={styles.buttonContent}
 					labelStyle={styles.buttonLabel}
 				>
-					登录
+					ログイン
 				</Button>
 			</View>
 		</View>

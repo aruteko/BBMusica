@@ -97,7 +97,7 @@ export const HistoryListItem = memo(function HistoryListItem({
 									numberOfLines={1}
 									style={{ color: colors.onSurfaceVariant }}
 								>
-									{item.track.artist.name ?? '未知'}
+									{item.track.artist.name ?? '不明'}
 								</Text>
 								<Text
 									style={{
@@ -130,7 +130,7 @@ export const HistoryListItem = memo(function HistoryListItem({
 						variant='bodySmall'
 						style={{ color: colors.onSurfaceVariant }}
 					>
-						次播放
+						回再生
 					</Text>
 				</View>
 			</View>

@@ -14,11 +14,11 @@ import type { LyricSearchResult } from '@/types/player/lyrics'
 import { formatDurationToHHMMSS } from '@/utils/time'
 
 const SOURCE_MAP = {
-	netease: '网易云',
-	qqmusic: 'QQ 音乐',
-	kuwo: '酷我',
-	kugou: '酷狗',
-	baidu: '百度',
+	netease: 'NetEase Cloud Music',
+	qqmusic: 'QQ音楽',
+	kuwo: 'Kuwo',
+	kugou: 'KuGou',
+	baidu: 'Baidu',
 }
 
 const renderItem = ({
@@ -108,7 +108,7 @@ const ManualSearchLyricsModal = ({
 		if (!searchResult) {
 			return (
 				<View style={styles.centerContainer}>
-					<Text style={styles.centerText}>请修改搜索关键词并回车搜索</Text>
+					<Text style={styles.centerText}>検索キーワードを変更して、Enterで検索してください</Text>
 				</View>
 			)
 		}
@@ -138,7 +138,7 @@ const ManualSearchLyricsModal = ({
 		if (!isSearching && searchResult.length === 0) {
 			return (
 				<View style={styles.centerContainer}>
-					<Text style={styles.centerText}>没有找到匹配的歌词</Text>
+					<Text style={styles.centerText}>一致する歌詞が見つかりません</Text>
 				</View>
 			)
 		}
@@ -151,7 +151,7 @@ const ManualSearchLyricsModal = ({
 		<>
 			<Dialog.Title style={styles.dialogTitle}>
 				<View style={styles.titleContainer}>
-					<Text variant='headlineSmall'>手动搜索歌词</Text>
+					<Text variant='headlineSmall'>歌詞を手動で検索</Text>
 					{isSearching && (
 						<ActivityIndicator
 							size='small'
@@ -164,7 +164,7 @@ const ManualSearchLyricsModal = ({
 				<SearchBar
 					value={query}
 					onChangeText={setQuery}
-					placeholder='输入歌曲名'
+					placeholder='曲名を入力'
 					onSubmitEditing={() => searchIt(query)}
 				/>
 			</Dialog.Content>
@@ -176,7 +176,7 @@ const ManualSearchLyricsModal = ({
 					onPress={() => close('ManualSearchLyrics')}
 					disabled={isFetchingLyrics}
 				>
-					取消
+					キャンセル
 				</Button>
 			</Dialog.Actions>
 		</>

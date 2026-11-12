@@ -23,7 +23,7 @@ const openExternalLink = async (url: string) => {
 		await WebBrowser.openBrowserAsync(url)
 	} catch (e) {
 		await Clipboard.setStringAsync(url)
-		toast.error('无法调用浏览器打开网页，已将链接复制到剪贴板', {
+		toast.error('ブラウザを開けないため、リンクをクリップボードにコピーしました', {
 			description: String(e),
 		})
 	}
@@ -48,7 +48,7 @@ export default function AboutSettingsPage() {
 		<View style={[styles.container, { backgroundColor: colors.background }]}>
 			<Appbar.Header>
 				<Appbar.BackAction onPress={() => router.back()} />
-				<Appbar.Content title='关于 BBPlayer' />
+				<Appbar.Content title='BBPlayerについて' />
 			</Appbar.Header>
 			<ScrollView
 				style={styles.scrollView}
@@ -66,7 +66,7 @@ export default function AboutSettingsPage() {
 						variant='bodyLarge'
 						style={{ color: colors.onSurfaceVariant }}
 					>
-						又一个 Bilibili 音乐播放器
+						もう一つのBilibili音楽プレーヤー
 					</Text>
 					<Text
 						variant='bodySmall'
@@ -82,7 +82,7 @@ export default function AboutSettingsPage() {
 								void openExternalLink('https://bbplayer.roitium.com')
 							}
 						>
-							官网
+							公式サイト
 						</Button>
 						<Button
 							mode='outlined'
@@ -99,7 +99,7 @@ export default function AboutSettingsPage() {
 				</Surface>
 				<View style={styles.section}>
 					<List.Item
-						title='项目主页'
+						title='プロジェクトページ'
 						description='github.com/bbplayer-app/BBPlayer'
 						left={(props) => (
 							<List.Icon
@@ -119,7 +119,7 @@ export default function AboutSettingsPage() {
 					/>
 					<Divider />
 					<List.Item
-						title='官方网站'
+						title='公式サイト'
 						description='bbplayer.roitium.com'
 						left={(props) => (
 							<List.Icon

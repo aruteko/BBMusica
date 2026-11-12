@@ -28,7 +28,7 @@ function WelcomeSlide() {
 				variant='displaySmall'
 				style={[slideStyles.title, { color: colors.onSurface }]}
 			>
-				欢迎使用
+				ようこそ
 			</Text>
 			<Text
 				variant='headlineLarge'
@@ -40,7 +40,7 @@ function WelcomeSlide() {
 				variant='bodyLarge'
 				style={[slideStyles.desc, { color: colors.onSurfaceVariant }]}
 			>
-				你的 BiliBili 音乐伴侣{'\n'}开源 · 简洁 · 纯粹
+				あなたのBilibili音楽パートナー{'\n'}オープンソース · シンプル · ピュア
 			</Text>
 		</View>
 	)
@@ -59,20 +59,20 @@ function DisclaimerSlide() {
 				variant='displaySmall'
 				style={[slideStyles.title, { color: colors.onSurface }]}
 			>
-				安全提示
+				セキュリティに関するお知らせ
 			</Text>
 			<Text
 				variant='bodyLarge'
 				style={[slideStyles.desc, { color: colors.onSurfaceVariant }]}
 			>
-				虽然开发者尽力负责任地调用 BiliBili API，但
+				開発者はBilibili APIを責任をもって利用するよう努めていますが、
 				<Text style={{ fontWeight: '800', color: colors.error }}>
-					{' 仍不保证 '}
+					{' アカウントの安全性は '}
 				</Text>
-				您的账号安全无虞。{'\n\n'}
-				您可能会遇到包括但不限于：账号被风控、短期封禁乃至永久封禁等风险。请权衡利弊后再选择登录。
+				保証できません。{'\n\n'}
+				アカウントがリスク制御の対象になる、一時的な停止や永久停止になるなどの可能性があります。よく検討したうえでログインしてください。
 				{'\n\n'}
-				选择「游客模式」仍可使用本地播放列表、搜索、查看合集等大部分功能。
+				「ゲストモード」を選んでも、ローカルのプレイリスト、検索、コレクションの閲覧など、ほとんどの機能を使えます。
 			</Text>
 		</View>
 	)
@@ -99,7 +99,7 @@ function StartSlide({
 				variant='displaySmall'
 				style={[slideStyles.title, { color: colors.onSurface }]}
 			>
-				准备开始
+				始める準備
 			</Text>
 			<View style={slideStyles.startOptions}>
 				<Button
@@ -109,7 +109,7 @@ function StartSlide({
 					style={slideStyles.startButton}
 					contentStyle={slideStyles.startButtonContent}
 				>
-					扫码登录
+					QRコードでログイン
 				</Button>
 				<Button
 					mode='outlined'
@@ -118,7 +118,7 @@ function StartSlide({
 					style={slideStyles.startButton}
 					contentStyle={slideStyles.startButtonContent}
 				>
-					手机号登录
+					電話番号でログイン
 				</Button>
 				<Button
 					mode='outlined'
@@ -127,7 +127,7 @@ function StartSlide({
 					style={slideStyles.guestButton}
 					contentStyle={slideStyles.startButtonContent}
 				>
-					游客模式
+					ゲストモード
 				</Button>
 			</View>
 		</View>
@@ -241,7 +241,7 @@ export default function OnboardingPage() {
 						style={styles.actionButton}
 						contentStyle={styles.actionButtonContent}
 					>
-						继续
+						続ける
 					</Button>
 				)}
 			</View>

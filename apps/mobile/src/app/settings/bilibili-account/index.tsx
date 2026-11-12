@@ -45,17 +45,17 @@ export default function BilibiliAccountSettingsPage() {
 
 	const clearAccount = () => {
 		alert(
-			'退出 Bilibili 账号？',
-			'退出后收藏夹、稍后再看和播放记录上报等功能会暂停。',
+			'Bilibiliアカウントからログアウトしますか？',
+			'ログアウトすると、お気に入り、あとで見る、再生履歴の送信などの機能が停止します。',
 			[
-				{ text: '取消' },
+				{ text: 'キャンセル' },
 				{
-					text: '确定',
+					text: 'OK',
 					onPress: async () => {
 						clearBilibiliCookie()
 						await queryClient.cancelQueries()
 						queryClient.clear()
-						toast.success('Bilibili 账号已退出')
+						toast.success('Bilibiliアカウントからログアウトしました')
 					},
 				},
 			],
@@ -67,7 +67,7 @@ export default function BilibiliAccountSettingsPage() {
 		<View style={[styles.container, { backgroundColor: colors.background }]}>
 			<Appbar.Header>
 				<Appbar.BackAction onPress={() => router.back()} />
-				<Appbar.Content title='Bilibili 账号' />
+				<Appbar.Content title='Bilibiliアカウント' />
 			</Appbar.Header>
 			<ScrollView
 				style={styles.scrollView}
@@ -79,7 +79,7 @@ export default function BilibiliAccountSettingsPage() {
 				{hasBilibiliCookie ? (
 					<>
 						<SettingsSectionTitle
-							title='资料'
+							title='プロフィール'
 							first
 						/>
 						<Surface
@@ -123,20 +123,20 @@ export default function BilibiliAccountSettingsPage() {
 									style={{ color: colors.onSurfaceVariant }}
 									numberOfLines={1}
 								>
-									{profile?.mid ? `UID ${profile.mid}` : '已保存 Cookie'}
+									{profile?.mid ? `UID ${profile.mid}` : 'Cookieを保存済み'}
 								</Text>
 							</View>
 						</Surface>
-						<SettingsSectionTitle title='隐私' />
+						<SettingsSectionTitle title='プライバシー' />
 						<View style={styles.section}>
 							<View style={styles.settingRow}>
 								<View style={styles.settingText}>
-									<Text variant='bodyLarge'>上报观看进度</Text>
+									<Text variant='bodyLarge'>視聴の進み具合を送信</Text>
 									<Text
 										variant='bodySmall'
 										style={{ color: colors.onSurfaceVariant }}
 									>
-										播放 Bilibili 来源歌曲时同步观看记录
+										Bilibiliの曲を再生するときに、視聴履歴を同期します
 									</Text>
 								</View>
 								<UniversalSwitch
@@ -147,11 +147,11 @@ export default function BilibiliAccountSettingsPage() {
 								/>
 							</View>
 						</View>
-						<SettingsSectionTitle title='登录方式' />
+						<SettingsSectionTitle title='ログイン方法' />
 						<View style={styles.section}>
 							<List.Item
-								title='重新扫码登录'
-								description='适合在当前 Cookie 失效后重新授权'
+								title='QRコードで再ログイン'
+								description='Cookieが無効になったときの再認証に'
 								left={(props) => (
 									<List.Icon
 										{...props}
@@ -170,8 +170,8 @@ export default function BilibiliAccountSettingsPage() {
 							/>
 							<Divider />
 							<List.Item
-								title='手机号登录'
-								description='使用短信验证码登录 Bilibili'
+								title='電話番号でログイン'
+								description='SMSの認証コードでBilibiliにログインします'
 								left={(props) => (
 									<List.Icon
 										{...props}
@@ -190,8 +190,8 @@ export default function BilibiliAccountSettingsPage() {
 							/>
 							<Divider />
 							<List.Item
-								title='修改 Cookie'
-								description='手动粘贴或清空 Bilibili Cookie'
+								title='Cookieを編集'
+								description='BilibiliのCookieを手動で貼り付け、または消去します'
 								left={(props) => (
 									<List.Icon
 										{...props}
@@ -211,7 +211,7 @@ export default function BilibiliAccountSettingsPage() {
 							mode='outlined'
 							onPress={clearAccount}
 						>
-							退出 Bilibili 账号
+							Bilibiliアカウントからログアウト
 						</Button>
 					</>
 				) : (
@@ -232,16 +232,16 @@ export default function BilibiliAccountSettingsPage() {
 								) : null}
 							</View>
 							<View style={styles.loginHeroText}>
-								<Text variant='headlineSmall'>连接 Bilibili</Text>
+								<Text variant='headlineSmall'>Bilibiliに接続</Text>
 								<Text
 									variant='bodyMedium'
 									style={{ color: colors.onSurfaceVariant }}
 								>
-									登录后可以读取收藏夹、稍后再看、上传播放记录，并访问需要账号权限的内容。
+									ログインすると、お気に入りやあとで見るの読み込み、再生履歴の送信、アカウントが必要な内容の閲覧ができます。
 								</Text>
 							</View>
 						</View>
-						<SettingsSectionTitle title='登录方式' />
+						<SettingsSectionTitle title='ログイン方法' />
 						<View style={styles.loginActions}>
 							<Button
 								mode='contained'
@@ -250,7 +250,7 @@ export default function BilibiliAccountSettingsPage() {
 									router.navigate('/settings/bilibili-account/qrcode-login')
 								}
 							>
-								扫码登录
+								QRコードでログイン
 							</Button>
 							<Button
 								mode='outlined'
@@ -259,14 +259,14 @@ export default function BilibiliAccountSettingsPage() {
 									router.navigate('/settings/bilibili-account/phone-login')
 								}
 							>
-								手机号登录
+								電話番号でログイン
 							</Button>
 							<Button
 								mode='outlined'
 								icon='cookie'
 								onPress={() => openModal('CookieLogin', undefined)}
 							>
-								添加 Cookie
+								Cookieを追加
 							</Button>
 						</View>
 					</>

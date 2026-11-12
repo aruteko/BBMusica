@@ -12,13 +12,13 @@ export function useRemotePlaylist() {
 			const createIt = await syncFacade.addTrackToLocal(track)
 			if (createIt.isErr()) {
 				toastAndLogError(
-					'将 track 录入本地失败',
+					'曲のローカル登録に失敗しました',
 					createIt.error,
 					'UI.Playlist.Remote',
 				)
 				reportErrorToSentry(
 					createIt.error,
-					'将 track 录入本地失败',
+					'曲のローカル登録に失敗しました',
 					'UI.Playlist.Remote',
 				)
 				return

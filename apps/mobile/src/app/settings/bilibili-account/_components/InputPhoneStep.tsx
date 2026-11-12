@@ -39,7 +39,7 @@ export default function InputPhoneStep({
 							variant='headlineLarge'
 							style={styles.title}
 						>
-							手机号登录
+							電話番号でログイン
 						</Text>
 					</>
 				)}
@@ -47,13 +47,13 @@ export default function InputPhoneStep({
 					variant={compact ? 'bodyMedium' : 'bodyLarge'}
 					style={[styles.subtitle, { color: colors.onSurfaceVariant }]}
 				>
-					未注册的手机号验证后将自动创建账号
+					未登録の電話番号は、認証後にアカウントが自動で作成されます
 				</Text>
 			</View>
 
 			<View style={[styles.form, compact && { minHeight: 0 }]}>
 				<TextInput
-					label='请输入手机号'
+					label='電話番号を入力'
 					value={tel}
 					onChangeText={(v) => {
 						setTel(v)
@@ -85,7 +85,7 @@ export default function InputPhoneStep({
 					contentStyle={styles.buttonContent}
 					labelStyle={styles.buttonLabel}
 				>
-					获取验证码
+					認証コードを取得
 				</Button>
 			</View>
 		</View>

@@ -247,7 +247,7 @@ const UpdateTrackLocalPlaylistsModal = memo(
 								open('CreatePlaylist', { redirectToNewPlaylist: false })
 							}
 						>
-							プレイリストを作成
+							新規作成
 						</Button>
 						<View style={styles.rightActionsContainer}>
 							<Button
@@ -261,7 +261,7 @@ const UpdateTrackLocalPlaylistsModal = memo(
 								loading={isMutating}
 								disabled={isMutating}
 							>
-								確認
+								追加
 							</Button>
 						</View>
 					</Dialog.Actions>

@@ -40,7 +40,7 @@ export function MusicFunctionalMenu({
 			<Divider />
 			<SharedTrackActions onAction={handleAction} />
 			<List.Item
-				title='ステーションを開始（この曲をもとに）'
+				title='この曲からステーション'
 				left={(props) => (
 					<List.Icon
 						{...props}

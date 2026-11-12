@@ -49,7 +49,7 @@ export function usePlayerSubtitles(active: boolean) {
 		selected,
 		lines,
 		trackId: player.trackId,
-		title: player.track?.title ?? 'B 站字幕',
+		title: player.track?.title ?? 'Bilibiliの字幕',
 		isLocal: player.track?.source === 'local',
 		isLoading:
 			player.isLoading || (!!url && content.isPending && !content.isPaused),

@@ -457,7 +457,7 @@ export class PlaylistService {
 			(e) =>
 				e instanceof ServiceError
 					? e
-					: new DatabaseError('创建播放列表失败', { cause: e }),
+					: new DatabaseError('プレイリストの作成に失敗しました', { cause: e }),
 		).andThen((result) => {
 			return okAsync(result)
 		})
@@ -678,7 +678,7 @@ export class PlaylistService {
 
 				return inserted
 			})(),
-			(e) => new DatabaseError('批量添加歌曲到播放列表失败', { cause: e }),
+			(e) => new DatabaseError('曲をまとめてプレイリストに追加できませんでした', { cause: e }),
 		)
 	}
 
@@ -898,7 +898,7 @@ export class PlaylistService {
 				if (!t)
 					return errAsync(
 						new ServiceError(
-							`在格式化歌曲：${track.track.id} 时出错，可能是原数据不存在或 source & metadata 不匹配`,
+							`曲 ${track.track.id} の整形でエラーが発生しました。元のデータがないか、source と metadata が一致しません`,
 						),
 					)
 				newTracks.push(t)
@@ -1028,7 +1028,7 @@ export class PlaylistService {
 			if (!metadata) return okAsync(undefined)
 			return ResultAsync.fromPromise(
 				this.attachPreviewCovers([metadata]).then((list) => list[0]),
-				(e) => new DatabaseError('获取 playlist 封面预览失败', { cause: e }),
+				(e) => new DatabaseError('获取 playlist 封面プレビュー失败', { cause: e }),
 			)
 		})
 	}
@@ -1048,7 +1048,7 @@ export class PlaylistService {
 		if (!remoteSyncId || type === 'local' || type === 'dynamic') {
 			return errAsync(
 				createValidationError(
-					'无效的 remoteSyncId 或 type，调用 findOrCreateRemotePlaylist 时必须提供 remoteSyncId 和非 local 的 type',
+					'remoteSyncId または type が無効です。findOrCreateRemotePlaylist には remoteSyncId と、local 以外の type が必要です',
 				),
 			)
 		}
@@ -1090,7 +1090,7 @@ export class PlaylistService {
 			(e) =>
 				e instanceof ServiceError
 					? e
-					: new DatabaseError('查找或创建播放列表的事务失败', {
+					: new DatabaseError('查找或作成播放列表的事务失败', {
 							cause: e,
 						}),
 		)
@@ -1150,7 +1150,7 @@ export class PlaylistService {
 				return true as const
 			})(),
 			(e) =>
-				new DatabaseError(`设置播放列表歌曲失败 (ID: ${playlistId})`, {
+				new DatabaseError(`設定播放列表歌曲失败 (ID: ${playlistId})`, {
 					cause: e,
 				}),
 		)
@@ -1402,7 +1402,7 @@ export class PlaylistService {
 						const track = this.trackService.formatTrack(row.track)
 						if (!track) {
 							throw new ServiceError(
-								`在格式化歌曲：${row.track.id} 时出错，可能是原数据不存在或 source & metadata 不匹配`,
+								`曲 ${row.track.id} の整形でエラーが発生しました。元のデータがないか、source と metadata が一致しません`,
 							)
 						}
 						tracks.push(track)
@@ -1445,7 +1445,7 @@ export class PlaylistService {
 					const t = this.trackService.formatTrack(row.track)
 					if (!t)
 						throw new ServiceError(
-							`在格式化歌曲：${row.track.id} 时出错，可能是原数据不存在或 source & metadata 不匹配`,
+							`曲 ${row.track.id} の整形でエラーが発生しました。元のデータがないか、source と metadata が一致しません`,
 						)
 					newTracks.push(t)
 				}
@@ -1585,7 +1585,7 @@ export class PlaylistService {
 				if (!t) {
 					return errAsync(
 						new ServiceError(
-							`在格式化歌曲：${pt.track.id} 时出错，可能是原数据不存在或 source & metadata 不匹配`,
+							`曲 ${pt.track.id} の整形でエラーが発生しました。元のデータがないか、source と metadata が一致しません`,
 						),
 					)
 				}

@@ -67,16 +67,16 @@ export default function SubscribeToSharedPlaylistModal() {
 
 	return (
 		<>
-			<Dialog.Title>订阅共享歌单</Dialog.Title>
+			<Dialog.Title>共有プレイリストを購読</Dialog.Title>
 			<Dialog.Content style={styles.content}>
 				<Text
 					variant='bodyMedium'
 					style={styles.hint}
 				>
-					粘贴对方分享的链接或歌单 ID（UUID 格式）即可订阅。
+					相手が共有したリンクまたはプレイリストID（UUID形式）を貼り付けると購読できます。
 				</Text>
 				<TextInput
-					label='分享链接 / 歌单 ID'
+					label='共有リンク / プレイリストID'
 					value={input}
 					onChangeText={handleChangeInput}
 					mode='outlined'
@@ -86,7 +86,7 @@ export default function SubscribeToSharedPlaylistModal() {
 					error={input.trim().length > 0 && !isValidId}
 				/>
 				<TextInput
-					label='编辑者邀请码（可选）'
+					label='編集者の招待コード（任意）'
 					value={inviteCode}
 					onChangeText={setInviteCode}
 					mode='outlined'
@@ -94,7 +94,7 @@ export default function SubscribeToSharedPlaylistModal() {
 					autoCorrect={false}
 					style={styles.input}
 					placeholder={
-						parsed.inviteCode ? `已从链接填充：${parsed.inviteCode}` : ''
+						parsed.inviteCode ? `リンクから入力しました：${parsed.inviteCode}` : ''
 					}
 				/>
 				{input.trim().length > 0 && !isValidId && (
@@ -102,7 +102,7 @@ export default function SubscribeToSharedPlaylistModal() {
 						variant='bodySmall'
 						style={styles.errorText}
 					>
-						未能识别有效的歌单 ID，请检查链接是否完整。
+						有効なプレイリストIDを認識できません。リンクが完全かどうか確認してください。
 					</Text>
 				)}
 			</Dialog.Content>
@@ -111,14 +111,14 @@ export default function SubscribeToSharedPlaylistModal() {
 					onPress={() => close('SubscribeToSharedPlaylist')}
 					mode='text'
 				>
-					取消
+					キャンセル
 				</Button>
 				<Button
 					onPress={handleSubscribe}
 					disabled={!isValidId}
 					mode='text'
 				>
-					订阅
+					購読
 				</Button>
 			</Dialog.Actions>
 		</>

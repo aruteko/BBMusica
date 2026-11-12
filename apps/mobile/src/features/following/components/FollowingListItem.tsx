@@ -16,7 +16,7 @@ export function FollowingListItem({
 		<List.Item
 			title={user.uname}
 			titleNumberOfLines={1}
-			description={user.sign || '查看投稿'}
+			description={user.sign || '投稿を見る'}
 			descriptionNumberOfLines={1}
 			style={styles.row}
 			left={() => (

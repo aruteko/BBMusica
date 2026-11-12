@@ -31,9 +31,9 @@ export function useTestWebDavConnectionMutation() {
 			await client.ensureDirectory(config.directory)
 			await client.checkConnection(config.directory)
 		},
-		onSuccess: () => toast.success('WebDAV 连接成功'),
+		onSuccess: () => toast.success('WebDAVに接続しました'),
 		onError: (error) =>
-			toastAndLogError('WebDAV 连接失败', error, 'UI.Settings.Backup'),
+			toastAndLogError('WebDAVへの接続に失敗しました', error, 'UI.Settings.Backup'),
 	})
 }
 
@@ -61,13 +61,13 @@ export function useCloudBackupMutation() {
 			}
 		},
 		onSuccess: async () => {
-			toast.success('云端备份完成')
+			toast.success('クラウドバックアップが完了しました')
 			await queryClient.invalidateQueries({
 				queryKey: webDavBackupQueryKeys.all,
 			})
 		},
 		onError: (error) =>
-			toastAndLogError('云端备份失败', error, 'UI.Settings.Backup'),
+			toastAndLogError('クラウドバックアップに失敗しました', error, 'UI.Settings.Backup'),
 	})
 }
 
@@ -94,6 +94,6 @@ export function useCloudRestoreMutation(onSuccess: () => void) {
 		},
 		onSuccess,
 		onError: (error) =>
-			toastAndLogError('恢复云端备份失败', error, 'UI.Settings.Backup'),
+			toastAndLogError('クラウドバックアップの復元に失敗しました', error, 'UI.Settings.Backup'),
 	})
 }

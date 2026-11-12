@@ -35,7 +35,7 @@ export default function CookieLoginModal() {
 				clearBilibiliCookie()
 				await queryClient.cancelQueries()
 				queryClient.clear()
-				toast.success('Cookie 已清除')
+				toast.success('Cookieを消去しました')
 				close()
 				setIsLoading(false)
 				return
@@ -53,7 +53,7 @@ export default function CookieLoginModal() {
 				setIsLoading(false)
 				return
 			}
-			toast.success('Cookie 已更新')
+			toast.success('Cookieを更新しました')
 			await queryClient.cancelQueries()
 			await queryClient.invalidateQueries({
 				queryKey: favoriteListQueryKeys.all,
@@ -61,7 +61,7 @@ export default function CookieLoginModal() {
 			await queryClient.invalidateQueries({ queryKey: userQueryKeys.all })
 			close()
 		} catch (error) {
-			toastAndLogError('操作失败', error, 'Components.CookieLoginModal')
+			toastAndLogError('操作に失敗しました', error, 'Components.CookieLoginModal')
 		}
 		setIsLoading(false)
 	}
@@ -73,7 +73,7 @@ export default function CookieLoginModal() {
 
 	return (
 		<>
-			<Dialog.Title>设置 Bilibili Cookie</Dialog.Title>
+			<Dialog.Title>BilibiliのCookieを設定</Dialog.Title>
 			<Dialog.Content>
 				<TextInput
 					label='Cookie'
@@ -91,18 +91,18 @@ export default function CookieLoginModal() {
 					variant='bodySmall'
 					style={styles.cookieDescription}
 				>
-					请在此处粘贴您的{'\u2009Bilibili\u2009Cookie\u2009'}以使用完整
-					{'\u2009BBPlayer\u2009'}功能。
+					{'\u2009BBPlayer\u2009'}のすべての機能を使うには、{'\u2009Bilibili\u2009Cookie\u2009'}をここに貼り付けてください。
+					
 				</Text>
 				<Divider style={styles.divider} />
 			</Dialog.Content>
 			<Dialog.Actions>
-				<Button onPress={handleDismiss}>取消</Button>
+				<Button onPress={handleDismiss}>キャンセル</Button>
 				<Button
 					onPress={handleConfirm}
 					testID='cookie-login-confirm'
 				>
-					确定
+					OK
 				</Button>
 			</Dialog.Actions>
 		</>

@@ -9,7 +9,7 @@ interface PlaylistErrorProps {
 }
 
 export function PlaylistError({
-	text = '加载失败',
+	text = '読み込みに失敗しました',
 	onRetry,
 }: PlaylistErrorProps) {
 	const { colors } = useTheme()
@@ -26,7 +26,7 @@ export function PlaylistError({
 					onPress={onRetry}
 					mode='contained'
 				>
-					重试
+					再試行
 				</Button>
 			)}
 		</View>

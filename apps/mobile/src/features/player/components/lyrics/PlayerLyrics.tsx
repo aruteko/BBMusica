@@ -201,7 +201,7 @@ const Lyrics = memo(function Lyrics({
 				track.uniqueKey,
 			)
 			if (saveResult.isErr()) {
-				toastAndLogError('保存歌词偏移量失败', saveResult.error, 'Lyrics')
+				toastAndLogError('歌詞のずれの保存に失敗しました', saveResult.error, 'Lyrics')
 			}
 		})
 	}
@@ -238,7 +238,7 @@ const Lyrics = memo(function Lyrics({
 					variant='bodyMedium'
 					style={styles.errorText}
 				>
-					歌词加载失败：{error.message}
+					歌詞の読み込みに失敗しました：{error.message}
 				</Text>
 			</ScrollView>
 		)
@@ -278,9 +278,9 @@ const Lyrics = memo(function Lyrics({
 						variant='bodyMedium'
 						style={styles.rawLyricsText}
 					>
-						{lyrics ? '原始歌词：' : ''}
+						{lyrics ? '元の歌詞：' : ''}
 						{lyrics.lrc}
-						{lyrics.tlyric ? `\n\n翻译歌词：${lyrics.tlyric}` : ''}
+						{lyrics.tlyric ? `\n\n翻訳の歌詞：${lyrics.tlyric}` : ''}
 					</Text>
 				</Animated.ScrollView>
 			)

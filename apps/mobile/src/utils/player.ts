@@ -37,7 +37,7 @@ function convertToOrpheusTrack(
 
 	// 如果没有有效的 URL，返回错误
 	if (!url) {
-		const errorMsg = '没有找到有效的音频流 URL'
+		const errorMsg = '有効な音声ストリームのURLが見つかりません'
 		logger.warning(errorMsg, track)
 		return err(
 			createPlayerError('AudioUrlNotFound', `${errorMsg}: ${track.id}`),
@@ -176,7 +176,7 @@ async function addToQueue({
 		})
 		return true
 	} catch (error) {
-		toastAndLogError('添加到播放队列失败', error, 'Utils.Player')
+		toastAndLogError('再生キューへの追加に失敗しました', error, 'Utils.Player')
 		return false
 	}
 }

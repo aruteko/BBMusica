@@ -183,7 +183,7 @@ export const downloadManifestAssets = ({
 
 					onProgress?.({
 						completed,
-						label: `下载 ${label}`,
+						label: `${label} をダウンロード中`,
 						progress: total > 0 ? completed / total : 0,
 						total,
 					})
@@ -202,7 +202,7 @@ export const downloadManifestAssets = ({
 
 					onProgress?.({
 						completed,
-						label: `已下载 ${label}`,
+						label: `${label} をダウンロードしました`,
 						progress: total > 0 ? completed / total : 0,
 						total: Math.max(1, total),
 					})

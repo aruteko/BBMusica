@@ -155,7 +155,7 @@ export default function SearchSuggestions({
 						<Text
 							style={[styles.noHistoryText, { color: colors.onSurfaceVariant }]}
 						>
-							没有搜索建议，可直接提交搜索
+							検索候補がありません。そのまま検索できます
 						</Text>
 					}
 					data={parsedItems ?? []}

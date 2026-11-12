@@ -47,7 +47,7 @@ export function migrateSortKeysV3(): void {
 			}
 			migration.markAsApplied()
 			logger.info(
-				`[v3] 非 local 播放列表 sort_key 翻转迁移完成，共处理 ${totalUpdated} 行`,
+				`[v3] 非 local 播放列表 sort_key 翻转迁移完了，共处理 ${totalUpdated} 行`,
 			)
 		})
 	} catch (error) {

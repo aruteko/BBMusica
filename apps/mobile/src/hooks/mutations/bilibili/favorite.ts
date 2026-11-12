@@ -30,10 +30,10 @@ export const useDealFavoriteForOneVideo = () => {
 				}),
 			),
 		onSuccess: async (_data, _value) => {
-			toast.success('操作成功', {
+			toast.success('操作しました', {
 				description:
 					_data.toast_msg.length > 0
-						? `api 返回消息：${_data.toast_msg}`
+						? `APIからのメッセージ：${_data.toast_msg}`
 						: undefined,
 			})
 			// 只刷新当前显示的收藏夹
@@ -43,16 +43,16 @@ export const useDealFavoriteForOneVideo = () => {
 			})
 		},
 		onError: (error) => {
-			let errorMessage = '删除失败，请稍后重试'
+			let errorMessage = '削除に失敗しました。しばらくしてからお試しください'
 			if (error instanceof BilibiliApiError) {
 				if (error.type === 'CsrfError') {
-					errorMessage = '删除失败：csrf token 过期，请检查 cookie 后重试'
+					errorMessage = '削除に失敗しました：csrfトークンの有効期限が切れています。Cookieを確認してから、もう一度お試しください'
 				} else {
-					errorMessage = `删除失败：${error.message} (${error.data.msgCode})`
+					errorMessage = `削除に失敗しました：${error.message} (${error.data.msgCode})`
 				}
 			}
 
-			toast.error('操作失败', {
+			toast.error('操作に失敗しました', {
 				description: errorMessage,
 				duration: Number.POSITIVE_INFINITY,
 			})
@@ -76,7 +76,7 @@ export const useBatchDeleteFavoriteListContents = () => {
 				}),
 			),
 		onSuccess: async (_data, variables) => {
-			toast.success('删除成功')
+			toast.success('削除しました')
 			await queryClient.refetchQueries({
 				queryKey: favoriteListQueryKeys.infiniteFavoriteList(
 					variables.favoriteId,
@@ -84,12 +84,12 @@ export const useBatchDeleteFavoriteListContents = () => {
 			})
 		},
 		onError: (error) => {
-			let errorMessage = '删除失败，请稍后重试'
+			let errorMessage = '削除に失敗しました。しばらくしてからお試しください'
 			if (error instanceof BilibiliApiError) {
 				if (error.type === 'CsrfError') {
-					errorMessage = '删除失败：csrf token 过期，请检查 cookie 后重试'
+					errorMessage = '削除に失敗しました：csrfトークンの有効期限が切れています。Cookieを確認してから、もう一度お試しください'
 				} else {
-					errorMessage = `删除失败：${error.message} (${error.data.msgCode})`
+					errorMessage = `削除に失敗しました：${error.message} (${error.data.msgCode})`
 				}
 			}
 

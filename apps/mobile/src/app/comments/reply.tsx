@@ -53,7 +53,7 @@ export default function ReplyCommentsPage() {
 	if (!bvid || !rpid) {
 		return (
 			<View style={styles.center}>
-				<Text>参数错误</Text>
+				<Text>パラメーターが正しくありません</Text>
 			</View>
 		)
 	}
@@ -62,7 +62,7 @@ export default function ReplyCommentsPage() {
 	if (isNaN(rpidNumber)) {
 		return (
 			<View style={styles.center}>
-				<Text>无效的评论ID</Text>
+				<Text>無効なコメントIDです</Text>
 			</View>
 		)
 	}
@@ -72,7 +72,7 @@ export default function ReplyCommentsPage() {
 			style={[styles.container, { backgroundColor: theme.colors.background }]}
 		>
 			<Appbar.Header elevated>
-				<Appbar.Content title={'评论区'} />
+				<Appbar.Content title={'コメント'} />
 				<Appbar.BackAction onPress={() => router.back()} />
 			</Appbar.Header>
 			{isLoading ? (

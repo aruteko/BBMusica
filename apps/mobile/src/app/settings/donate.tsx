@@ -17,7 +17,7 @@ export default function DonateSettingsPage() {
 		<View style={[styles.container, { backgroundColor: colors.background }]}>
 			<Appbar.Header>
 				<Appbar.BackAction onPress={() => router.back()} />
-				<Appbar.Content title='捐赠支持' />
+				<Appbar.Content title='寄付で応援' />
 			</Appbar.Header>
 			<ScrollView
 				style={styles.scrollView}
@@ -31,13 +31,13 @@ export default function DonateSettingsPage() {
 						variant='bodyMedium'
 						style={styles.introText}
 					>
-						如果觉得好用的话，欢迎给 Roitium 打赏！您的所有打赏都将用于让
-						Roitium 吃顿疯狂星期四或是买一部 GalGame！
+						気に入っていただけたら、開発者のRoitiumに投げ銭をお願いします！いただいた分は、
+						Roitiumの食事代やゲーム代に使われます！
 					</Text>
 				</View>
 				<List.Item
-					title='微信支付'
-					description='点击显示收款码'
+					title='WeChat Pay'
+					description='タップして支払い用QRコードを表示'
 					left={(props) => (
 						<List.Icon
 							{...props}
@@ -53,8 +53,8 @@ export default function DonateSettingsPage() {
 					onPress={() => openModal('DonationQR', { type: 'wechat' })}
 				/>
 				<List.Item
-					title='支付宝'
-					description='点击显示收款码'
+					title='Alipay'
+					description='タップして支払い用QRコードを表示'
 					left={(props) => (
 						<List.Icon
 							{...props}

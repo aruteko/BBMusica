@@ -358,7 +358,7 @@ export class BilibiliApi {
 			(e) => {
 				if (e instanceof Error && e.name === 'AbortError') {
 					return new BilibiliApiError({
-						message: '请求被取消',
+						message: 'リクエストがキャンセルされました',
 						type: 'RequestAborted',
 					})
 				}
@@ -372,7 +372,7 @@ export class BilibiliApi {
 				if (!response.ok) {
 					return errAsync(
 						new BilibiliApiError({
-							message: `请求 bilibili API 失败: ${response.status} ${response.statusText}`,
+							message: `Bilibili APIへのリクエストに失敗しました: ${response.status} ${response.statusText}`,
 							msgCode: response.status,
 							type: 'RequestFailed',
 						}),
@@ -394,7 +394,7 @@ export class BilibiliApi {
 				if (data.code !== 0) {
 					return errAsync(
 						new BilibiliApiError({
-							message: `获取搜索建议失败: ${data.code}`,
+							message: `検索候補の取得に失敗しました: ${data.code}`,
 							msgCode: data.code,
 							type: 'RequestFailed',
 						}),
@@ -453,7 +453,7 @@ export class BilibiliApi {
 				if (!durl?.[0]) {
 					return errAsync(
 						new BilibiliApiError({
-							message: '请求到的流数据不包含 dash 或 durl 任一字段',
+							message: '取得したストリームのデータに dash も durl もありません',
 							type: 'AudioStreamError',
 						}),
 					)
@@ -494,7 +494,7 @@ export class BilibiliApi {
 				logger.error('未找到有效的音频流数据', { response })
 				return errAsync(
 					new BilibiliApiError({
-						message: '未找到有效的音频流数据',
+						message: '有効な音声ストリームのデータが見つかりません',
 						type: 'AudioStreamError',
 					}),
 				)
@@ -539,7 +539,7 @@ export class BilibiliApi {
 				logger.error('未能确定任何可用的音频流', { response })
 				return errAsync(
 					new BilibiliApiError({
-						message: '未能确定 any 可用的音频流',
+						message: '利用できる音声ストリームを特定できませんでした',
 						type: 'AudioStreamError',
 					}),
 				)
@@ -583,7 +583,7 @@ export class BilibiliApi {
 				if (!url) {
 					return errAsync(
 						new BilibiliApiError({
-							message: '未找到视频播放地址',
+							message: '動画の再生アドレスが見つかりません',
 							type: 'AudioStreamError',
 						}),
 					)
@@ -1042,7 +1042,7 @@ export class BilibiliApi {
 				error instanceof BilibiliApiError
 					? error
 					: new BilibiliApiError({
-							message: `获取系列失败: ${String(error)}`,
+							message: `シリーズの取得に失敗しました: ${String(error)}`,
 							type: 'RequestFailed',
 							cause: error,
 						}),
@@ -1287,7 +1287,7 @@ export class BilibiliApi {
 			)
 			if (!response.ok) {
 				throw new BilibiliApiError({
-					message: `请求 bilibili API 失败: ${response.status} ${response.statusText}`,
+					message: `Bilibili APIへのリクエストに失敗しました: ${response.status} ${response.statusText}`,
 					msgCode: response.status,
 					type: 'RequestFailed',
 				})
@@ -1298,7 +1298,7 @@ export class BilibiliApi {
 			}
 			if (data.code !== 0) {
 				throw new BilibiliApiError({
-					message: `获取二维码登录状态失败: ${data.code}`,
+					message: `QRコードのログイン状態の取得に失敗しました: ${data.code}`,
 					msgCode: data.code,
 					rawData: data,
 					type: 'ResponseFailed',
@@ -1314,7 +1314,7 @@ export class BilibiliApi {
 			const combinedCookieHeader = response.headers.get('Set-Cookie')
 			if (!combinedCookieHeader) {
 				throw new BilibiliApiError({
-					message: '未获取到 Set-Cookie 头信息',
+					message: 'Set-Cookieヘッダーを取得できませんでした',
 					msgCode: 0,
 					rawData: null,
 					type: 'ResponseFailed',
@@ -1363,7 +1363,7 @@ export class BilibiliApi {
 			if (!response.ok) {
 				return errAsync(
 					new BilibiliApiError({
-						message: `请求 b23.tv 短链接失败: ${response.status} ${response.statusText}`,
+						message: `b23.tv 短縮リンクへのリクエストに失敗しました: ${response.status} ${response.statusText}`,
 						msgCode: response.status,
 						type: 'RequestFailed',
 					}),
@@ -1375,7 +1375,7 @@ export class BilibiliApi {
 				response.text(),
 				() =>
 					new BilibiliApiError({
-						message: '解析响应体失败',
+						message: 'レスポンスの解析に失敗しました',
 						type: 'ResponseFailed',
 					}),
 			).andThen((html) => {
@@ -1392,7 +1392,7 @@ export class BilibiliApi {
 				if (!responseUrl || responseUrl.includes('b23.tv')) {
 					return errAsync(
 						new BilibiliApiError({
-							message: '未获取到 b23.tv 短链接的解析结果',
+							message: 'b23.tv 短縮リンクの解析結果を取得できませんでした',
 							msgCode: 0,
 							rawData: null,
 							type: 'ResponseFailed',
@@ -1519,7 +1519,7 @@ export class BilibiliApi {
 			})(),
 			(cause) =>
 				new BilibiliApiError({
-					message: cause instanceof Error ? cause.message : '字幕加载失败',
+					message: cause instanceof Error ? cause.message : '字幕の読み込みに失敗しました',
 					type: 'RequestFailed',
 					cause,
 				}),
@@ -1555,7 +1555,7 @@ export class BilibiliApi {
 		if (deleteAllViewed && avid) {
 			return errAsync(
 				new BilibiliApiError({
-					message: '只能指定一个值',
+					message: '指定できる値は1つだけです',
 					type: 'InvalidArgument',
 				}),
 			)
@@ -1563,7 +1563,7 @@ export class BilibiliApi {
 		if (!deleteAllViewed && !avid) {
 			return errAsync(
 				new BilibiliApiError({
-					message: '你没提供任何参数',
+					message: 'パラメーターが指定されていません',
 					type: 'InvalidArgument',
 				}),
 			)
@@ -1611,7 +1611,7 @@ export class BilibiliApi {
 			)
 			if (!response.ok) {
 				throw new BilibiliApiError({
-					message: `获取验证码 token 失败: ${response.status} ${response.statusText}`,
+					message: `認証コードを取得 token 失败: ${response.status} ${response.statusText}`,
 					msgCode: response.status,
 					type: 'RequestFailed',
 				})
@@ -1623,7 +1623,7 @@ export class BilibiliApi {
 			}
 			if (data.code !== 0) {
 				throw new BilibiliApiError({
-					message: `获取验证码 token 失败: ${data.message ?? data.code}`,
+					message: `認証コードを取得 token 失败: ${data.message ?? data.code}`,
 					msgCode: data.code,
 					rawData: data,
 					type: 'ResponseFailed',
@@ -1695,7 +1695,7 @@ export class BilibiliApi {
 			)
 			if (!response.ok) {
 				throw new BilibiliApiError({
-					message: `发送短信验证码失败: ${response.status} ${response.statusText}`,
+					message: `SMS認証コードの送信に失敗しました: ${response.status} ${response.statusText}`,
 					msgCode: response.status,
 					type: 'RequestFailed',
 				})
@@ -1707,7 +1707,7 @@ export class BilibiliApi {
 			}
 			if (data.code !== 0) {
 				throw new BilibiliApiError({
-					message: `发送短信验证码失败: ${data.message ?? data.code}`,
+					message: `SMS認証コードの送信に失敗しました: ${data.message ?? data.code}`,
 					msgCode: data.code,
 					rawData: data,
 					type: 'ResponseFailed',
@@ -1773,7 +1773,7 @@ export class BilibiliApi {
 			)
 			if (!response.ok) {
 				throw new BilibiliApiError({
-					message: `短信验证码登录失败: ${response.status} ${response.statusText}`,
+					message: `SMS認証コードでのログインに失敗しました: ${response.status} ${response.statusText}`,
 					msgCode: response.status,
 					type: 'RequestFailed',
 					cause: undefined,
@@ -1786,7 +1786,7 @@ export class BilibiliApi {
 			}
 			if (data.code !== 0) {
 				throw new BilibiliApiError({
-					message: `短信验证码登录失败: ${data.message ?? data.code}`,
+					message: `SMS認証コードでのログインに失敗しました: ${data.message ?? data.code}`,
 					msgCode: data.code,
 					rawData: data,
 					type: 'ResponseFailed',
@@ -1795,7 +1795,7 @@ export class BilibiliApi {
 			const combinedCookieHeader = response.headers.get('Set-Cookie')
 			if (!combinedCookieHeader) {
 				throw new BilibiliApiError({
-					message: '登录成功但未获取到 Set-Cookie 头信息',
+					message: 'ログインしましたが、Set-Cookieヘッダーを取得できませんでした',
 					msgCode: 0,
 					rawData: null,
 					type: 'ResponseFailed',

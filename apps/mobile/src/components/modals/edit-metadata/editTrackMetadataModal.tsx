@@ -25,7 +25,7 @@ export default function EditTrackMetadataModal({ track }: { track: Track }) {
 	const handleConfirm = () => {
 		const normalizedTitle = title.trim()
 		if (!normalizedTitle) {
-			toast.error('标题不能为空')
+			toast.error('タイトルを入力してください')
 			return
 		}
 		const normalizedCoverUrl = coverUrl?.trim() ? coverUrl.trim() : null
@@ -76,10 +76,10 @@ export default function EditTrackMetadataModal({ track }: { track: Track }) {
 
 	return (
 		<>
-			<Dialog.Title>编辑歌曲信息</Dialog.Title>
+			<Dialog.Title>曲の情報を編集</Dialog.Title>
 			<Dialog.Content style={styles.content}>
 				<TextInput
-					label='标题'
+					label='タイトル'
 					value={title}
 					onChangeText={setTitle}
 					mode='outlined'
@@ -88,7 +88,7 @@ export default function EditTrackMetadataModal({ track }: { track: Track }) {
 				/>
 				<View style={styles.coverUrlContainer}>
 					<TextInput
-						label='封面'
+						label='カバー'
 						value={coverUrl ?? undefined}
 						onChangeText={setCoverUrl}
 						mode='outlined'
@@ -105,8 +105,8 @@ export default function EditTrackMetadataModal({ track }: { track: Track }) {
 				</View>
 			</Dialog.Content>
 			<Dialog.Actions>
-				<Button onPress={handleDismiss}>取消</Button>
-				<Button onPress={handleConfirm}>确定</Button>
+				<Button onPress={handleDismiss}>キャンセル</Button>
+				<Button onPress={handleConfirm}>OK</Button>
 			</Dialog.Actions>
 		</>
 	)

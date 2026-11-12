@@ -6,9 +6,9 @@ import type {
 } from '@/types/apis/bilibili'
 
 export function subtitleKind(track: BilibiliSubtitleTrack) {
-	if (track.ai_type === 1) return '机翻'
-	if (track.lan.startsWith('ai-')) return '自动生成'
-	return '人工字幕'
+	if (track.ai_type === 1) return '機械翻訳'
+	if (track.lan.startsWith('ai-')) return '自動生成'
+	return '人が作成した字幕'
 }
 
 export function subtitleLabel(track: BilibiliSubtitleTrack) {

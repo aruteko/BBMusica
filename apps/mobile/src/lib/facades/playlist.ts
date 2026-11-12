@@ -53,7 +53,7 @@ export class PlaylistFacade {
 				const playlistMetadata = playlist.value
 
 				if (!playlistMetadata)
-					throw createValidationError(`未找到播放列表：${playlistId}`)
+					throw createValidationError(`プレイリストが見つかりません：${playlistId}`)
 
 				logger.debug('step1: 获取播放列表', playlistMetadata.id)
 
@@ -86,7 +86,7 @@ export class PlaylistFacade {
 					})
 					.map((t) => t.id)
 				logger.debug(
-					'step3: 获取播放列表中的所有歌曲并清洗完成（对于 bilibili 音频，去除掉失效视频）',
+					'step3: プレイリスト内のすべての曲を取得し、整理しました（Bilibiliの音声は無効な動画を除外）',
 				)
 
 				const replaceResult = await playlistSvc.replacePlaylistAllTracks(
@@ -106,7 +106,7 @@ export class PlaylistFacade {
 				return localPlaylist.id
 			}),
 			(e) =>
-				createFacadeError('PlaylistDuplicateFailed', '复制播放列表失败', {
+				createFacadeError('PlaylistDuplicateFailed', 'プレイリストを複製失败', {
 					cause: e,
 				}),
 		)
@@ -124,7 +124,7 @@ export class PlaylistFacade {
 				const uniqueSourceIds = Array.from(new Set(sourcePlaylistIds))
 				if (uniqueSourceIds.length < 2) {
 					throw createValidationError(
-						'动态合并歌单需要选择至少两个不同的源歌单',
+						'動的マージプレイリストには、異なる元のプレイリストを2つ以上選んでください',
 					)
 				}
 
@@ -132,16 +132,16 @@ export class PlaylistFacade {
 					const playlist = await playlistSvc.getPlaylistById(playlistId)
 					if (playlist.isErr()) throw playlist.error
 					if (!playlist.value) {
-						throw createValidationError(`未找到播放列表：${playlistId}`)
+						throw createValidationError(`プレイリストが見つかりません：${playlistId}`)
 					}
 					if (playlist.value.type === 'dynamic') {
-						throw createValidationError('动态合并歌单不能作为源歌单')
+						throw createValidationError('動的マージプレイリスト不能作为源歌单')
 					}
 				}
 
 				const newPlaylistRes = await playlistSvc.createPlaylist({
 					title,
-					description: '动态合并歌单',
+					description: '動的マージプレイリスト',
 					type: 'dynamic',
 					authorId: null,
 					remoteSyncId: null,
@@ -165,7 +165,7 @@ export class PlaylistFacade {
 				return newPlaylist.id
 			}),
 			(e) =>
-				createFacadeError('PlaylistMergeFailed', '创建动态合并播放列表失败', {
+				createFacadeError('PlaylistMergeFailed', '作成动态合并播放列表失败', {
 					cause: e,
 				}),
 		)
@@ -216,7 +216,7 @@ export class PlaylistFacade {
 					if (!pl)
 						throw createFacadeError(
 							'PlaylistPermissionDenied',
-							`未找到播放列表：${pid}`,
+							`プレイリストが見つかりません：${pid}`,
 						)
 					if (
 						pl.shareId &&
@@ -225,7 +225,7 @@ export class PlaylistFacade {
 					) {
 						throw createFacadeError(
 							'PlaylistPermissionDenied',
-							'无权限修改此共享歌单',
+							'この共有プレイリストを編集する権限がありません',
 						)
 					}
 
@@ -303,7 +303,7 @@ export class PlaylistFacade {
 			(e) =>
 				createFacadeError(
 					'UpdateTrackLocalPlaylistsFailed',
-					'更新 Track 在本地播放列表失败',
+					'ローカルのプレイリスト内の曲の更新に失敗しました',
 					{ cause: e },
 				),
 		).map((res) => {
@@ -330,7 +330,7 @@ export class PlaylistFacade {
 			if (payload.artist.source === 'local') {
 				return errAsync(
 					createValidationError(
-						'批量添加 tracks 到本地播放列表时，artist 只能为 remote 来源',
+						'曲をまとめてローカルのプレイリストに追加するとき、アーティストはリモート由来のものだけ指定できます',
 					),
 				)
 			}
@@ -348,13 +348,13 @@ export class PlaylistFacade {
 				if (!playlist)
 					throw createFacadeError(
 						'PlaylistPermissionDenied',
-						`未找到播放列表：${playlistId}`,
+						`プレイリストが見つかりません：${playlistId}`,
 					)
 				const { shareId, shareRole } = playlist
 				if (shareId && shareRole !== 'owner' && shareRole !== 'editor') {
 					throw createFacadeError(
 						'PlaylistPermissionDenied',
-						'无权限修改此共享歌单',
+						'この共有プレイリストを編集する権限がありません',
 					)
 				}
 
@@ -397,7 +397,7 @@ export class PlaylistFacade {
 			(e) =>
 				createFacadeError(
 					'BatchAddTracksToLocalPlaylistFailed',
-					'批量添加 tracks 到本地播放列表失败',
+					'曲をまとめてローカルのプレイリストに追加できませんでした',
 					{ cause: e },
 				),
 		).map((res) => {
@@ -446,7 +446,7 @@ export class PlaylistFacade {
 						logger.error(`保存队列时发现缺失的 track: ${key}`)
 						throw createFacadeError(
 							'PlaylistCreateFailed',
-							`无法保存队列，发现未入库的歌曲 (ID: ${key})，请向开发者反馈`,
+							`キューを保存できません。未登録の曲が見つかりました (ID: ${key})。開発者に報告してください`,
 						)
 					}
 					trackIds.push(id)
@@ -489,13 +489,13 @@ export class PlaylistFacade {
 				if (!playlist)
 					throw createFacadeError(
 						'PlaylistPermissionDenied',
-						`未找到播放列表：${playlistId}`,
+						`プレイリストが見つかりません：${playlistId}`,
 					)
 				const { shareId, shareRole } = playlist
 				if (shareId && shareRole !== 'owner' && shareRole !== 'editor') {
 					throw createFacadeError(
 						'PlaylistPermissionDenied',
-						'无权限修改此共享歌单',
+						'この共有プレイリストを編集する権限がありません',
 					)
 				}
 
@@ -517,7 +517,7 @@ export class PlaylistFacade {
 			(e) =>
 				createFacadeError(
 					'RemoveTracksFromPlaylistFailed',
-					'从播放列表移除曲目失败',
+					'プレイリストから曲を削除できませんでした',
 					{ cause: e },
 				),
 		).map((res) => {
@@ -545,13 +545,13 @@ export class PlaylistFacade {
 				if (!playlist)
 					throw createFacadeError(
 						'PlaylistPermissionDenied',
-						`未找到播放列表：${playlistId}`,
+						`プレイリストが見つかりません：${playlistId}`,
 					)
 				const { shareId, shareRole } = playlist
 				if (shareId && shareRole !== 'owner' && shareRole !== 'editor') {
 					throw createFacadeError(
 						'PlaylistPermissionDenied',
-						'无权限修改此共享歌单',
+						'この共有プレイリストを編集する権限がありません',
 					)
 				}
 
@@ -575,7 +575,7 @@ export class PlaylistFacade {
 			(e) =>
 				createFacadeError(
 					'ReorderPlaylistTrackFailed',
-					'调整播放列表曲目顺序失败',
+					'プレイリスト内の曲順の変更に失敗しました',
 					{ cause: e },
 				),
 		).map((res) => {
@@ -603,13 +603,13 @@ export class PlaylistFacade {
 				if (!playlist)
 					throw createFacadeError(
 						'PlaylistPermissionDenied',
-						`未找到播放列表：${playlistId}`,
+						`プレイリストが見つかりません：${playlistId}`,
 					)
 				const { shareId, shareRole } = playlist
 				if (shareId && shareRole !== 'owner' && shareRole !== 'editor') {
 					throw createFacadeError(
 						'PlaylistPermissionDenied',
-						'无权限修改此共享歌单',
+						'この共有プレイリストを編集する権限がありません',
 					)
 				}
 
@@ -638,7 +638,7 @@ export class PlaylistFacade {
 			(e) =>
 				createFacadeError(
 					'UpdatePlaylistMetadataFailed',
-					'更新播放列表元数据失败',
+					'プレイリスト情報の更新に失敗しました',
 					{ cause: e },
 				),
 		).map((res) => {
@@ -668,7 +668,7 @@ export class PlaylistFacade {
 			return errAsync(
 				createFacadeError(
 					'PlaylistDeleteFailed',
-					`未找到播放列表：${playlistId}`,
+					`プレイリストが見つかりません：${playlistId}`,
 				),
 			)
 		}
@@ -698,7 +698,7 @@ export class PlaylistFacade {
 						const body = await resp.json().catch(() => ({}))
 						throw createFacadeError(
 							'PlaylistDeleteFailed',
-							`删除共享歌单失败（${resp.status}）`,
+							`共有プレイリストの削除に失敗しました（${resp.status}）`,
 							{ cause: body },
 						)
 					}
@@ -722,13 +722,13 @@ export class PlaylistFacade {
 						const body = await resp.json().catch(() => ({}))
 						throw createFacadeError(
 							'PlaylistDeleteFailed',
-							`解除共享歌单关联失败（${resp.status}）`,
+							`共有プレイリストとの関連付けの解除に失敗しました（${resp.status}）`,
 							{ cause: body },
 						)
 					}
 					if (resp.status === 404 || resp.status === 403) {
 						logger.warning(
-							'远端歌单已被删除或已解除成员关系，继续清理本地关联',
+							'リモートのプレイリストが削除されたか、メンバーから外れています。ローカルの関連付けを続けて消去します',
 							{
 								playlistId,
 								shareId,

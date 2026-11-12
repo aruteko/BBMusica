@@ -53,19 +53,19 @@ export default function AccountSettingsPage() {
 	const [authStatusText, setAuthStatusText] = useState<string | null>(null)
 
 	const finishAuth = async () => {
-		setAuthStatusText('正在同步云端共享歌单...')
+		setAuthStatusText('クラウドの共有プレイリストを同期中...')
 		const restoreResult = await sharedPlaylistFacade.restoreFromCloud()
 		if (restoreResult.isOk() && restoreResult.value.restored > 0) {
 			await queryClient.invalidateQueries({
 				queryKey: playlistKeys.playlistLists(),
 			})
-			setAuthStatusText(`已恢复 ${restoreResult.value.restored} 个共享歌单`)
-			toast.success(`已恢复 ${restoreResult.value.restored} 个共享歌单`)
+			setAuthStatusText(`共有プレイリストを ${restoreResult.value.restored} 件復元しました`)
+			toast.success(`共有プレイリストを ${restoreResult.value.restored} 件復元しました`)
 		} else if (restoreResult.isOk()) {
-			setAuthStatusText('云端共享歌单已同步')
+			setAuthStatusText('クラウドの共有プレイリストを同期しました')
 		} else {
-			setAuthStatusText('云端共享歌单同步失败，可稍后重新登录重试')
-			toast.error('同步云端共享歌单失败', {
+			setAuthStatusText('クラウドの共有プレイリストの同期に失敗しました。あとで再ログインして試してください')
+			toast.error('クラウドの共有プレイリストの同期に失敗しました', {
 				description: restoreResult.error.message,
 			})
 		}
@@ -94,7 +94,7 @@ export default function AccountSettingsPage() {
 				if (!cancelled) setAccount(data.account)
 			})
 			.catch((e) => {
-				toastAndLogError('获取 BBPlayer 账号信息失败', e, 'Settings.Account')
+				toastAndLogError('BBPlayerアカウント情報の取得に失敗しました', e, 'Settings.Account')
 			})
 			.finally(() => {
 				if (!cancelled) setIsRefreshing(false)
@@ -106,11 +106,11 @@ export default function AccountSettingsPage() {
 
 	const fillProfileFromBilibili = async () => {
 		if (!hasBilibiliCookie) {
-			toast.error('请先登录 Bilibili 账号')
+			toast.error('先にBilibiliアカウントにログインしてください')
 			return
 		}
 		setIsFillingProfile(true)
-		setAuthStatusText('正在读取 Bilibili 资料...')
+		setAuthStatusText('Bilibiliのプロフィールを読み込み中...')
 		try {
 			const info = await returnOrThrowAsync(bilibiliApi.getUserInfo())
 			if (info.name) setName(info.name)
@@ -118,11 +118,11 @@ export default function AccountSettingsPage() {
 				setFace(info.face)
 				void Image.prefetch(info.face, 'disk')
 			}
-			setAuthStatusText('已填充 Bilibili 昵称和头像')
-			toast.success('已填充 Bilibili 资料')
+			setAuthStatusText('Bilibiliのニックネームとアイコンを入力しました')
+			toast.success('Bilibiliのプロフィールを入力しました')
 		} catch (e) {
 			setAuthStatusText(null)
-			toast.error('读取 Bilibili 资料失败', {
+			toast.error('Bilibiliのプロフィール取得に失敗しました', {
 				description: e instanceof Error ? e.message : String(e),
 			})
 		}
@@ -132,15 +132,15 @@ export default function AccountSettingsPage() {
 	const handleRegister = async () => {
 		const normalizedUsername = username.trim()
 		if (!normalizedUsername || password.length < 8) {
-			toast.error('用户名不能为空，密码至少 8 位')
+			toast.error('ユーザー名は必須で、パスワードは8文字以上にしてください')
 			return
 		}
 		setIsSubmitting(true)
-		setAuthStatusText('正在创建 BBPlayer 账号...')
+		setAuthStatusText('BBPlayerアカウントを作成中...')
 		const registerName = name.trim() || normalizedUsername
 		const registerFace = face.trim() || undefined
 		try {
-			setAuthStatusText('正在注册 BBPlayer 账号...')
+			setAuthStatusText('BBPlayerアカウントを登録中...')
 			const resp = await api.auth.register.$post({
 				json: {
 					username: normalizedUsername,
@@ -154,7 +154,7 @@ export default function AccountSettingsPage() {
 				setAuthStatusText(null)
 				setIsSubmitting(false)
 				toastAndLogError(
-					'注册失败',
+					'登録に失敗しました',
 					new Error(`注册失败：${resp.status} ${JSON.stringify(errBody)}`),
 					'Settings.Account',
 				)
@@ -164,11 +164,11 @@ export default function AccountSettingsPage() {
 			setToken(data.token)
 			setAccount(data.account)
 			setPassword('')
-			toast.success('注册成功')
+			toast.success('登録しました')
 			await finishAuth()
 		} catch (e) {
 			setAuthStatusText(null)
-			toastAndLogError('注册失败', e, 'Settings.Account')
+			toastAndLogError('登録に失敗しました', e, 'Settings.Account')
 		}
 		setIsSubmitting(false)
 	}
@@ -176,11 +176,11 @@ export default function AccountSettingsPage() {
 	const handleLogin = async () => {
 		const normalizedUsername = username.trim()
 		if (!normalizedUsername || password.length < 8) {
-			toast.error('用户名不能为空，密码至少 8 位')
+			toast.error('ユーザー名は必須で、パスワードは8文字以上にしてください')
 			return
 		}
 		setIsSubmitting(true)
-		setAuthStatusText('正在登录 BBPlayer 账号...')
+		setAuthStatusText('BBPlayerアカウントにログイン中...')
 		try {
 			const resp = await api.auth.login.$post({
 				json: {
@@ -193,7 +193,7 @@ export default function AccountSettingsPage() {
 				setAuthStatusText(null)
 				setIsSubmitting(false)
 				toastAndLogError(
-					'登录失败',
+					'ログインに失敗しました',
 					new Error(`登录失败：${resp.status} ${JSON.stringify(errBody)}`),
 					'Settings.Account',
 				)
@@ -203,11 +203,11 @@ export default function AccountSettingsPage() {
 			setToken(data.token)
 			setAccount(data.account)
 			setPassword('')
-			toast.success('登录成功')
+			toast.success('ログインしました')
 			await finishAuth()
 		} catch (e) {
 			setAuthStatusText(null)
-			toastAndLogError('登录失败', e, 'Settings.Account')
+			toastAndLogError('ログインに失敗しました', e, 'Settings.Account')
 		}
 		setIsSubmitting(false)
 	}
@@ -226,7 +226,7 @@ export default function AccountSettingsPage() {
 			if (!resp.ok) {
 				setIsSavingProfile(false)
 				toastAndLogError(
-					'保存资料失败',
+					'プロフィールの保存に失敗しました',
 					new Error(`保存失败：${resp.status}`),
 					'Settings.Account',
 				)
@@ -234,9 +234,9 @@ export default function AccountSettingsPage() {
 			}
 			const data = await resp.json()
 			setAccount(data.account)
-			toast.success('已保存')
+			toast.success('保存しました')
 		} catch (e) {
-			toastAndLogError('保存资料失败', e, 'Settings.Account')
+			toastAndLogError('プロフィールの保存に失敗しました', e, 'Settings.Account')
 		}
 		setIsSavingProfile(false)
 	}
@@ -245,7 +245,7 @@ export default function AccountSettingsPage() {
 		<View style={[styles.container, { backgroundColor: colors.background }]}>
 			<Appbar.Header>
 				<Appbar.BackAction onPress={() => router.back()} />
-				<Appbar.Content title='BBPlayer 账号' />
+				<Appbar.Content title='BBPlayerアカウント' />
 			</Appbar.Header>
 			<ScrollView
 				style={styles.scrollView}
@@ -257,7 +257,7 @@ export default function AccountSettingsPage() {
 				{account ? (
 					<View style={styles.section}>
 						<SettingsSectionTitle
-							title='个人资料'
+							title='プロフィール'
 							first
 						/>
 						<View style={styles.profileHeader}>
@@ -288,13 +288,13 @@ export default function AccountSettingsPage() {
 							</View>
 						</View>
 						<TextInput
-							label='昵称'
+							label='ニックネーム'
 							value={name}
 							mode='outlined'
 							onChangeText={setName}
 						/>
 						<TextInput
-							label='头像 URL'
+							label='アイコンのURL'
 							value={face}
 							mode='outlined'
 							onChangeText={setFace}
@@ -306,30 +306,30 @@ export default function AccountSettingsPage() {
 							loading={isSavingProfile}
 							disabled={isSavingProfile || isRefreshing}
 						>
-							保存资料
+							プロフィールを保存
 						</Button>
 						<Button
 							onPress={() => {
 								clearAccount()
-								toast.success('已退出 BBPlayer 账号')
+								toast.success('BBPlayerアカウントからログアウトしました')
 							}}
 						>
-							退出登录
+							ログアウト
 						</Button>
 					</View>
 				) : (
 					<View style={styles.section}>
 						<SettingsSectionTitle
-							title='登录 / 注册'
+							title='ログイン / 登録'
 							first
 						/>
 						<View style={styles.descriptionBlock}>
-							<Text variant='titleMedium'>登录 BBPlayer 账号</Text>
+							<Text variant='titleMedium'>BBPlayerアカウントにログイン</Text>
 							<Text
 								variant='bodyMedium'
 								style={{ color: colors.onSurfaceVariant }}
 							>
-								登录后可以开启歌单共享、邀请他人协同编辑，并在新设备上自动恢复你的云端共享歌单。
+								ログインすると、プレイリストの共有、他の人との共同編集ができ、新しい端末でクラウドの共有プレイリストを自動で復元できます。
 							</Text>
 						</View>
 						<SegmentedControl
@@ -338,17 +338,17 @@ export default function AccountSettingsPage() {
 								const selectedIndex = event.nativeEvent.selectedSegmentIndex
 								setMode(selectedIndex === 0 ? 'login' : 'register')
 							}}
-							values={['登录', '注册']}
+							values={['ログイン', '登録']}
 						/>
 						<TextInput
-							label='用户名'
+							label='ユーザー名'
 							value={username}
 							mode='outlined'
 							onChangeText={setUsername}
 							autoCapitalize='none'
 						/>
 						<TextInput
-							label='密码'
+							label='パスワード'
 							value={password}
 							mode='outlined'
 							onChangeText={setPassword}
@@ -357,13 +357,13 @@ export default function AccountSettingsPage() {
 						{mode === 'register' && (
 							<>
 								<TextInput
-									label='昵称'
+									label='ニックネーム'
 									value={name}
 									mode='outlined'
 									onChangeText={setName}
 								/>
 								<TextInput
-									label='头像 URL'
+									label='アイコンのURL'
 									value={face}
 									mode='outlined'
 									onChangeText={setFace}
@@ -377,7 +377,7 @@ export default function AccountSettingsPage() {
 								loading={isFillingProfile}
 								disabled={isSubmitting || isFillingProfile}
 							>
-								使用 Bilibili 资料填充
+								Bilibiliのプロフィールを使う
 							</Button>
 						)}
 						<Button
@@ -386,7 +386,7 @@ export default function AccountSettingsPage() {
 							loading={isSubmitting}
 							disabled={isSubmitting}
 						>
-							{mode === 'login' ? '登录' : '注册'}
+							{mode === 'login' ? 'ログイン' : '登録'}
 						</Button>
 						{authStatusText && (
 							<Text

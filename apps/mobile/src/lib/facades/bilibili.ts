@@ -24,7 +24,7 @@ export class BilibiliFacade {
 					return err(
 						createFacadeError(
 							'fetchRemotePlaylistMetadataFailed',
-							'获取系列元数据失败',
+							'シリーズ情報の取得に失敗しました',
 							{ cause: result.error },
 						),
 					)
@@ -38,7 +38,7 @@ export class BilibiliFacade {
 					return err(
 						createFacadeError(
 							'fetchRemotePlaylistMetadataFailed',
-							'获取系列封面失败',
+							'シリーズのカバーの取得に失敗しました',
 							{ cause: firstPage.error },
 						),
 					)
@@ -57,7 +57,7 @@ export class BilibiliFacade {
 					return err(
 						createFacadeError(
 							'fetchRemotePlaylistMetadataFailed',
-							'获取合集元数据失败',
+							'コレクション情報の取得に失敗しました',
 							{ cause: result.error },
 						),
 					)
@@ -77,7 +77,7 @@ export class BilibiliFacade {
 					return err(
 						createFacadeError(
 							'fetchRemotePlaylistMetadataFailed',
-							'获取多集视频元数据失败',
+							'複数パートの動画情報の取得に失敗しました',
 							{ cause: result.error },
 						),
 					)
@@ -98,7 +98,7 @@ export class BilibiliFacade {
 					return err(
 						createFacadeError(
 							'fetchRemotePlaylistMetadataFailed',
-							'获取收藏夹元数据失败',
+							'お気に入りの情報の取得に失敗しました',
 							{ cause: result.error },
 						),
 					)
@@ -108,7 +108,7 @@ export class BilibiliFacade {
 					return err(
 						createFacadeError(
 							'fetchRemotePlaylistMetadataFailed',
-							'获取收藏夹元数据失败，数据为空，收藏夹可能不存在',
+							'お気に入りの情報を取得できません（データが空です。お気に入りが存在しない可能性があります）',
 						),
 					)
 				}
@@ -122,7 +122,7 @@ export class BilibiliFacade {
 				return err(
 					createFacadeError(
 						'fetchRemotePlaylistMetadataFailed',
-						`获取播放列表元数据失败：未知的播放列表类型：${type}`,
+						`プレイリスト情報の取得に失敗しました：不明なプレイリストの種類：${type}`,
 					),
 				)
 		}

@@ -138,7 +138,7 @@ const executeFetch = <TReturnBody>(
 			if (!res.ok) {
 				return err(
 					new NeteaseApiError({
-						message: '请求失败！http 状态码不符合预期！',
+						message: 'リクエストに失敗しました。HTTPステータスコードが想定と異なります',
 						type: 'ResponseFailed',
 						msgCode: res.status,
 						rawData: res.statusText,
@@ -167,7 +167,7 @@ const executeFetch = <TReturnBody>(
 		(e: unknown) =>
 			// 按理来说不应该发生
 			new NeteaseApiError({
-				message: '请求失败！',
+				message: 'リクエストに失敗しました',
 				type: 'RequestFailed',
 				msgCode: 500,
 				cause: e,

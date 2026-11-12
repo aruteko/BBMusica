@@ -28,16 +28,16 @@ export const phoneFormModel = {
 	tel: {
 		validate(v: string): string {
 			const trimmed = v.trim()
-			if (!trimmed) return '请输入手机号'
-			if (!/^\d{5,15}$/.test(trimmed)) return '手机号格式不正确'
+			if (!trimmed) return '電話番号を入力してください'
+			if (!/^\d{5,15}$/.test(trimmed)) return '電話番号の形式が正しくありません'
 			return ''
 		},
 	},
 	smsCode: {
 		validate(v: string): string {
 			const trimmed = v.trim()
-			if (!trimmed) return '请输入验证码'
-			if (!/^\d{4,8}$/.test(trimmed)) return '验证码格式不正确'
+			if (!trimmed) return '認証コードを入力してください'
+			if (!/^\d{4,8}$/.test(trimmed)) return '認証コードの形式が正しくありません'
 			return ''
 		},
 	},
@@ -162,7 +162,7 @@ export function usePhoneLogin(options?: { onClose?: () => void }) {
 			const captchaResult = await bilibiliApi.getPhoneLoginCaptchaToken()
 			if (captchaResult.isErr()) {
 				toastAndLogError(
-					'获取验证码失败',
+					'認証コードの取得に失敗しました',
 					captchaResult.error,
 					'usePhoneLogin.getPhoneLoginCaptchaToken',
 				)
@@ -182,7 +182,7 @@ export function usePhoneLogin(options?: { onClose?: () => void }) {
 			})
 		} catch (error) {
 			toastAndLogError(
-				'获取验证码失败',
+				'認証コードの取得に失敗しました',
 				error,
 				'usePhoneLogin.handleRequestCode',
 			)
@@ -208,7 +208,7 @@ export function usePhoneLogin(options?: { onClose?: () => void }) {
 			if (loginResult.isErr()) {
 				let errorMessage = loginResult.error.message
 				if (!errorMessage) {
-					errorMessage = '登录失败，请检查验证码'
+					errorMessage = 'ログインに失敗しました。認証コードを確認してください'
 				}
 				dispatch({
 					type: 'LOGIN_FAIL',
@@ -224,16 +224,16 @@ export function usePhoneLogin(options?: { onClose?: () => void }) {
 			)
 			const result = setCookie(finalCookieObject)
 			if (result.isErr()) {
-				toast.error('保存 Cookie 失败：' + result.error.message)
+				toast.error('Cookieの保存に失敗しました：' + result.error.message)
 				Sentry.captureException(result.error, {
 					tags: { Hook: 'usePhoneLogin' },
 				})
-				dispatch({ type: 'LOGIN_FAIL', payload: '保存 Cookie 失败' })
+				dispatch({ type: 'LOGIN_FAIL', payload: 'Cookieの保存に失敗しました' })
 				return
 			}
 
 			dispatch({ type: 'LOGIN_SUCCESS' })
-			toast.success('登录成功', { id: 'phone-login-success' })
+			toast.success('ログインしました', { id: 'phone-login-success' })
 			await queryClient.cancelQueries()
 			await queryClient.invalidateQueries({
 				queryKey: favoriteListQueryKeys.all,
@@ -241,8 +241,8 @@ export function usePhoneLogin(options?: { onClose?: () => void }) {
 			await queryClient.invalidateQueries({ queryKey: userQueryKeys.all })
 			setTimeout(() => close(), 1000)
 		} catch (error) {
-			toastAndLogError('登录失败', error, 'usePhoneLogin.handleLogin')
-			dispatch({ type: 'LOGIN_FAIL', payload: '登录失败' })
+			toastAndLogError('ログインに失敗しました', error, 'usePhoneLogin.handleLogin')
+			dispatch({ type: 'LOGIN_FAIL', payload: 'ログインに失敗しました' })
 		}
 	}
 

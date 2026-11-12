@@ -40,7 +40,7 @@ function buildGeetestHtml(gt: string, challenge: string): string {
 </head>
 <body>
   <div class="card">
-    <h3>请完成安全验证</h3>
+    <h3>セキュリティ認証を完了してください</h3>
     <div id="captcha"></div>
     <div class="err" id="err-msg"></div>
   </div>
@@ -65,7 +65,7 @@ function buildGeetestHtml(gt: string, challenge: string): string {
         }));
       });
       captchaObj.onError(function() {
-        document.getElementById('err-msg').textContent = '验证出错，请关闭后重试';
+        document.getElementById('err-msg').textContent = '認証でエラーが発生しました。閉じてもう一度お試しください';
       });
     });
   </script>
@@ -89,13 +89,13 @@ export default function GeetestVerifyStep({
 					variant='headlineMedium'
 					style={styles.title}
 				>
-					安全验证
+					セキュリティ認証
 				</Text>
 				<Text
 					variant='bodyMedium'
 					style={[styles.subtitle, { color: colors.onSurfaceVariant }]}
 				>
-					请在下方完成 Bilibili 安全验证。
+					下でBilibiliのセキュリティ認証を完了してください。
 				</Text>
 			</View>
 
@@ -109,7 +109,7 @@ export default function GeetestVerifyStep({
 					variant='bodyMedium'
 					style={{ color: colors.onSurfaceVariant }}
 				>
-					正在加载验证模块...
+					認証モジュールを読み込み中...
 				</Text>
 			</View>
 
@@ -119,7 +119,7 @@ export default function GeetestVerifyStep({
 					onPress={onCancel}
 					style={styles.button}
 				>
-					取消
+					キャンセル
 				</Button>
 			</View>
 
@@ -148,7 +148,7 @@ export default function GeetestVerifyStep({
 							variant='titleMedium'
 							style={[styles.geetestModalTitle, { color: colors.onSurface }]}
 						>
-							安全验证
+							セキュリティ認証
 						</Text>
 						<Pressable
 							onPress={onCancel}
@@ -158,7 +158,7 @@ export default function GeetestVerifyStep({
 								variant='labelLarge'
 								style={{ color: colors.primary }}
 							>
-								取消
+								キャンセル
 							</Text>
 						</Pressable>
 					</View>

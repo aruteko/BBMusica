@@ -53,7 +53,7 @@ export const usePlaylistSync = () => {
 			return result.value
 		},
 		onSuccess: async (id, { toastId }) => {
-			toast.success('同步成功', { id: toastId })
+			toast.success('同期しました', { id: toastId })
 			if (!id) return
 			await Promise.all([
 				queryClient.invalidateQueries({
@@ -72,7 +72,7 @@ export const usePlaylistSync = () => {
 				toast.dismiss(toastId)
 			}
 			toastAndLogError(
-				`同步播放列表失败: remoteSyncId=${remoteSyncId}, type=${type}`,
+				`プレイリストの同期に失敗しました: remoteSyncId=${remoteSyncId}, type=${type}`,
 				error,
 				SCOPE,
 			)
@@ -100,7 +100,7 @@ export const useUpdateTrackLocalPlaylists = () => {
 			return res.value
 		},
 		onSuccess: async (trackId, { toAddPlaylistIds, toRemovePlaylistIds }) => {
-			toast.success('操作成功')
+			toast.success('操作しました')
 			const promises: Promise<unknown>[] = []
 			promises.push(
 				queryClient.invalidateQueries({
@@ -128,7 +128,7 @@ export const useUpdateTrackLocalPlaylists = () => {
 		},
 		onError: (error, { trackPayload }) =>
 			toastAndLogError(
-				`操作音频收藏位置失败: trackTitle=${trackPayload.title}`,
+				`曲のプレイリスト登録の操作に失敗しました: trackTitle=${trackPayload.title}`,
 				error,
 				SCOPE,
 			),
@@ -152,14 +152,14 @@ export const useDuplicatePlaylist = () => {
 			return result.value
 		},
 		onSuccess: async () => {
-			toast.success('复制成功')
+			toast.success('複製しました')
 			await queryClient.invalidateQueries({
 				queryKey: playlistKeys.playlistLists(),
 			})
 		},
 		onError: (error, { playlistId, name }) =>
 			toastAndLogError(
-				`复制播放列表失败: playlistId=${playlistId}, name=${name}`,
+				`プレイリストを複製失败: playlistId=${playlistId}, name=${name}`,
 				error,
 				SCOPE,
 			),
@@ -187,7 +187,7 @@ export const useEditPlaylistMetadata = () => {
 			return result.value
 		},
 		onSuccess: async (_, variables) => {
-			toast.success('操作成功')
+			toast.success('操作しました')
 			await Promise.all([
 				queryClient.invalidateQueries({
 					queryKey: playlistKeys.playlistLists(),
@@ -199,7 +199,7 @@ export const useEditPlaylistMetadata = () => {
 		},
 		onError: (error, { playlistId }) =>
 			toastAndLogError(
-				`修改播放列表信息失败：playlistId=${playlistId}`,
+				`プレイリスト情報の変更に失敗しました：playlistId=${playlistId}`,
 				error,
 				SCOPE,
 			),
@@ -223,7 +223,7 @@ export const useDeletePlaylist = () => {
 			return result.value
 		},
 		onSuccess: (_, { playlistId }) => {
-			toast.success('删除成功')
+			toast.success('削除しました')
 			// 取消被删歌单的在途查询：删除成功时详情页可能仍处于挂载状态，
 			// 若不处理，重连/重取会在歌单已不存在时再次查询（BBPLAYER-76 / BBPLAYER-AG）
 			void queryClient.cancelQueries({
@@ -240,7 +240,7 @@ export const useDeletePlaylist = () => {
 		},
 		onError: (error, { playlistId }) =>
 			toastAndLogError(
-				`删除播放列表失败: playlistId=${playlistId}`,
+				`プレイリストの削除に失敗しました: playlistId=${playlistId}`,
 				error,
 				SCOPE,
 			),
@@ -267,10 +267,10 @@ export const useBatchDeleteTracksFromLocalPlaylist = () => {
 			return result.value
 		},
 		onSuccess: async (data, variables) => {
-			toast.success('删除成功', {
+			toast.success('削除しました', {
 				description:
 					data.missingTrackIds.length !== 0
-						? `但缺少了: ${data.missingTrackIds.toString()} (理论来说不应该出现此错误)`
+						? `ただし、次の曲が見つかりませんでした: ${data.missingTrackIds.toString()}`
 						: undefined,
 			})
 			const promises = [
@@ -294,7 +294,7 @@ export const useBatchDeleteTracksFromLocalPlaylist = () => {
 			await Promise.all(promises)
 		},
 		onError: (error) =>
-			toastAndLogError('从播放列表中删除 track 失败', error, SCOPE),
+			toastAndLogError('プレイリストから曲を削除できませんでした', error, SCOPE),
 	})
 }
 
@@ -314,7 +314,7 @@ export const useCreateNewLocalPlaylist = () => {
 			return result.value
 		},
 		onSuccess: async (playlist) => {
-			toast.success('创建播放列表成功')
+			toast.success('プレイリストを作成しました')
 			await Promise.all([
 				queryClient.invalidateQueries({
 					queryKey: playlistKeys.playlistLists(),
@@ -327,7 +327,7 @@ export const useCreateNewLocalPlaylist = () => {
 				}),
 			])
 		},
-		onError: (error) => toastAndLogError('创建播放列表失败', error, SCOPE),
+		onError: (error) => toastAndLogError('プレイリストの作成に失敗しました', error, SCOPE),
 	})
 }
 
@@ -349,7 +349,7 @@ export const useMergePlaylists = () => {
 			return result.value
 		},
 		onSuccess: async (newPlaylistId) => {
-			toast.success('动态合并歌单已创建')
+			toast.success('動的マージプレイリストを作成しました')
 			await Promise.all([
 				queryClient.invalidateQueries({
 					queryKey: playlistKeys.playlistLists(),
@@ -362,7 +362,7 @@ export const useMergePlaylists = () => {
 				}),
 			])
 		},
-		onError: (error) => toastAndLogError('创建动态合并歌单失败', error, SCOPE),
+		onError: (error) => toastAndLogError('動的マージプレイリストの作成に失敗しました', error, SCOPE),
 	})
 }
 
@@ -396,7 +396,7 @@ export const useReorderLocalPlaylistTrack = () => {
 				queryKey: playlistKeys.playlistContents(playlistId),
 			})
 		},
-		onError: (error) => toastAndLogError('重排序歌曲位置失败', error, SCOPE),
+		onError: (error) => toastAndLogError('曲の並べ替えに失敗しました', error, SCOPE),
 	})
 }
 
@@ -424,7 +424,7 @@ export const useBatchAddTracksToLocalPlaylist = () => {
 			return result.value
 		},
 		onSuccess: async (trackIds, { playlistId }) => {
-			toast.success('添加成功')
+			toast.success('追加しました')
 			const promises = [
 				queryClient.invalidateQueries({
 					queryKey: playlistKeys.playlistLists(),
@@ -446,7 +446,7 @@ export const useBatchAddTracksToLocalPlaylist = () => {
 			await Promise.all(promises)
 		},
 		onError: (error) =>
-			toastAndLogError('批量添加歌曲到播放列表失败', error, SCOPE),
+			toastAndLogError('曲をまとめてプレイリストに追加できませんでした', error, SCOPE),
 	})
 }
 
@@ -465,7 +465,7 @@ export const useEnableSharing = () => {
 			return result.value
 		},
 		onSuccess: async (_, { playlistId }) => {
-			toast.success('已开启共享')
+			toast.success('共有をオンにしました')
 			await Promise.all([
 				queryClient.invalidateQueries({
 					queryKey: playlistKeys.playlistLists(),
@@ -475,7 +475,7 @@ export const useEnableSharing = () => {
 				}),
 			])
 		},
-		onError: (error) => toastAndLogError('启用共享歌单失败', error, SCOPE),
+		onError: (error) => toastAndLogError('共有プレイリストの有効化に失敗しました', error, SCOPE),
 	})
 }
 
@@ -502,7 +502,7 @@ export const useSubscribeToSharedPlaylist = () => {
 			return result.value
 		},
 		onSuccess: async ({ localPlaylistId }) => {
-			toast.success('订阅成功')
+			toast.success('購読しました')
 			await queryClient.invalidateQueries({
 				queryKey: playlistKeys.playlistLists(),
 			})
@@ -511,7 +511,7 @@ export const useSubscribeToSharedPlaylist = () => {
 				params: { id: String(localPlaylistId) },
 			})
 		},
-		onError: (error) => toastAndLogError('订阅共享歌单失败', error, SCOPE),
+		onError: (error) => toastAndLogError('共有プレイリストの購読に失敗しました', error, SCOPE),
 	})
 }
 
@@ -549,7 +549,7 @@ export const usePullSharedPlaylist = () => {
 				return
 			}
 			toastAndLogError(
-				`拉取共享歌单失败: playlistId=${playlistId}`,
+				`共有プレイリストの取得に失敗しました: playlistId=${playlistId}`,
 				error,
 				SCOPE,
 			)
@@ -571,6 +571,6 @@ export const useRotateEditorInviteCode = () => {
 			})
 			return data
 		},
-		onError: (error) => toastAndLogError('生成编辑者邀请码失败', error, SCOPE),
+		onError: (error) => toastAndLogError('編集者の招待コードの作成に失敗しました', error, SCOPE),
 	})
 }

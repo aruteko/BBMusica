@@ -73,9 +73,9 @@ export const PlaylistHeader = memo(function PlaylistHeader({
 						onLongPress={async () => {
 							const result = await Clipboard.setStringAsync(title)
 							if (!result) {
-								toast.error('复制失败')
+								toast.error('コピーに失敗しました')
 							} else {
-								toast.success('已复制标题到剪贴板')
+								toast.success('タイトルをクリップボードにコピーしました')
 							}
 						}}
 					>
@@ -112,7 +112,7 @@ export const PlaylistHeader = memo(function PlaylistHeader({
 						buttonColor={primaryButtonColor}
 						textColor={primaryButtonTextColor}
 					>
-						进入播放列表
+						プレイリストを開く
 					</Button>
 				) : (
 					onClickMainButton && (
@@ -126,7 +126,7 @@ export const PlaylistHeader = memo(function PlaylistHeader({
 							buttonColor={primaryButtonColor}
 							textColor={primaryButtonTextColor}
 						>
-							{mainButtonText ?? '同步到本地'}
+							{mainButtonText ?? 'ローカルに同期'}
 						</Button>
 					)
 				)}
@@ -148,8 +148,8 @@ export const PlaylistHeader = memo(function PlaylistHeader({
 					<ExpandableText
 						text={description}
 						lines={3}
-						expandLabel='展开简介'
-						collapseLabel='收起简介'
+						expandLabel='概要を表示'
+						collapseLabel='概要を閉じる'
 					/>
 				</View>
 			)}

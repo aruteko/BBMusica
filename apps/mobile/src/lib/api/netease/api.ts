@@ -128,7 +128,7 @@ export class NeteaseApi {
 				if (searchResult.length === 0) {
 					return errAsync(
 						new NeteaseApiError({
-							message: '未搜索到相关歌曲\n\n搜索关键词：' + keyword,
+							message: '該当する曲が見つかりません\n\n検索キーワード：' + keyword,
 							type: 'SearchResultNoMatch',
 						}),
 					)

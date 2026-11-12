@@ -46,22 +46,22 @@ const SkinDownloadProgressModal = memo(function SkinDownloadProgressModal({
 								...previous,
 								completed: previous.total,
 								progress: 1,
-								label: '下载完成',
+								label: 'ダウンロード完了',
 							}
 						: {
 								completed: 1,
 								total: 1,
 								progress: 1,
-								label: '下载完成',
+								label: 'ダウンロード完了',
 							},
 				)
 				setIsFinished(true)
 				close('SkinDownloadProgress')
 				useModalStore.getState().doAfterModalHostClosed(() => {
-					alert('主题下载完成', '是否现在去启用这个主题？', [
-						{ text: '稍后' },
+					alert('テーマのダウンロードが完了しました', 'このテーマを今すぐ有効にしますか？', [
+						{ text: 'あとで' },
 						{
-							text: '去启用',
+							text: '有効にする',
 							onPress: () => router.replace('/settings/appearance'),
 						},
 					])
@@ -85,7 +85,7 @@ const SkinDownloadProgressModal = memo(function SkinDownloadProgressModal({
 	return (
 		<>
 			<Dialog.Title>
-				{hasError ? '下载失败' : isFinished ? '下载完成' : '正在下载主题资产'}
+				{hasError ? 'ダウンロードに失敗しました' : isFinished ? 'ダウンロードが完了しました' : 'テーマの素材をダウンロード中'}
 			</Dialog.Title>
 			<Dialog.Content>
 				<View style={styles.content}>
@@ -94,7 +94,7 @@ const SkinDownloadProgressModal = memo(function SkinDownloadProgressModal({
 						numberOfLines={2}
 						style={{ color: colors.onSurfaceVariant }}
 					>
-						{progress?.label ?? '准备下载'}
+						{progress?.label ?? 'ダウンロードの準備中'}
 					</Text>
 					<LinearProgressIndicator
 						progress={progress?.progress ?? 0}
@@ -107,7 +107,7 @@ const SkinDownloadProgressModal = memo(function SkinDownloadProgressModal({
 					>
 						{progress && progress.total > 0
 							? `${progress.completed}/${progress.total}`
-							: '正在获取资产清单'}
+							: '素材の一覧を取得中'}
 					</Text>
 				</View>
 			</Dialog.Content>
@@ -116,7 +116,7 @@ const SkinDownloadProgressModal = memo(function SkinDownloadProgressModal({
 					onPress={() => close('SkinDownloadProgress')}
 					disabled={!canClose}
 				>
-					{canClose ? '关闭' : '请稍候'}
+					{canClose ? '閉じる' : 'お待ちください'}
 				</Button>
 			</Dialog.Actions>
 		</>

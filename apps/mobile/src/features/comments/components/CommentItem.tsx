@@ -156,7 +156,7 @@ export function CommentItem({ item, onReplyPress, bvid }: CommentItemProps) {
 				newAction: newAction,
 			})
 		} catch (e) {
-			toastAndLogError('点赞失败', e, 'Comments.CommentItem')
+			toastAndLogError('いいねに失敗しました', e, 'Comments.CommentItem')
 			setLiked(liked)
 			setLikeCount(likeCount)
 			return
@@ -241,7 +241,7 @@ export function CommentItem({ item, onReplyPress, bvid }: CommentItemProps) {
 								style={styles.actionIcon}
 							/>
 							<Text style={{ color: theme.colors.outline, fontSize: 12 }}>
-								{likeCount > 0 ? likeCount : '点赞'}
+								{likeCount > 0 ? likeCount : 'いいね'}
 							</Text>
 						</TouchableOpacity>
 
@@ -302,7 +302,7 @@ export function CommentItem({ item, onReplyPress, bvid }: CommentItemProps) {
 											{ color: theme.colors.primary },
 										]}
 									>
-										查看全部 {item.rcount} 条回复
+										すべての返信 {item.rcount} 件を見る
 									</Text>
 								)}
 							</SquircleView>

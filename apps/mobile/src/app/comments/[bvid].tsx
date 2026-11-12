@@ -69,7 +69,7 @@ export default function CommentsPage() {
 	if (!bvid) {
 		return (
 			<View style={styles.center}>
-				<Text>参数错误</Text>
+				<Text>パラメーターが正しくありません</Text>
 			</View>
 		)
 	}
@@ -79,7 +79,7 @@ export default function CommentsPage() {
 			style={[styles.container, { backgroundColor: theme.colors.background }]}
 		>
 			<Appbar.Header elevated>
-				<Appbar.Content title={'评论区'} />
+				<Appbar.Content title={'コメント'} />
 				<Appbar.BackAction onPress={() => router.back()} />
 			</Appbar.Header>
 			{isLoading ? (

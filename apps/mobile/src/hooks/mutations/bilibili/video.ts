@@ -19,10 +19,10 @@ export const useThumbUpVideo = () => {
 				videoDataQueryKeys.getVideoIsThumbUp(bvid),
 				like ? 1 : 0,
 			)
-			toast.success(`${like ? '点赞' : '取消点赞'}成功`)
+			toast.success(like ? 'いいねしました' : 'いいねを取り消しました')
 		},
 		onError: (err, { like }) => {
-			toastAndLogError(`${like ? '点赞' : '取消点赞'}失败`, err, 'UI.Player')
+			toastAndLogError(`${like ? 'いいね' : 'いいねの取り消し'}に失敗しました`, err, 'UI.Player')
 		},
 	})
 }
@@ -78,7 +78,7 @@ export const useDeleteToViewVideo = () => {
 		) => {
 			if (error) {
 				toastAndLogError(
-					deleteAllViewed ? '清除稍后再看列表失败' : '删除失败',
+					deleteAllViewed ? 'あとで見るの消去に失敗しました' : '削除に失敗しました',
 					error,
 					'Mutation.Bilibili.Video',
 				)
@@ -87,7 +87,7 @@ export const useDeleteToViewVideo = () => {
 					onMutateResult?.previousData,
 				)
 			} else {
-				toast.success(deleteAllViewed ? '清除稍后再看列表成功' : '删除成功')
+				toast.success(deleteAllViewed ? 'あとで見るを消去しました' : '削除しました')
 			}
 			await context.client.invalidateQueries({
 				queryKey: videoDataQueryKeys.getToViewVideoList(),
@@ -126,7 +126,7 @@ export const useClearToViewVideoList = () => {
 		onSettled: async (_d, error, _v, onMutateResult, context) => {
 			if (error) {
 				toastAndLogError(
-					'清除稍后再看列表失败',
+					'あとで見るの消去に失敗しました',
 					error,
 					'Mutation.Bilibili.Video',
 				)
@@ -135,7 +135,7 @@ export const useClearToViewVideoList = () => {
 					onMutateResult?.previousData,
 				)
 			} else {
-				toast.success('清除稍后再看列表成功')
+				toast.success('あとで見るを消去しました')
 			}
 			await context.client.invalidateQueries({
 				queryKey: videoDataQueryKeys.getToViewVideoList(),

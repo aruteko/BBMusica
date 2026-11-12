@@ -56,7 +56,7 @@ export function SearchUserHeader({ query }: SearchUserHeaderProps) {
 							{ color: colors.onSurface, marginBottom: 0 },
 						]}
 					>
-						相关 UP 主
+						関連する投稿者
 					</Text>
 					<ActivityIndicator
 						size='small'
@@ -149,7 +149,7 @@ export function SearchUserHeader({ query }: SearchUserHeaderProps) {
 					variant='titleMedium'
 					style={[styles.sectionTitle, { color: colors.onSurface }]}
 				>
-					相关 UP 主
+					関連する投稿者
 				</Text>
 				<View
 					style={[
@@ -207,7 +207,7 @@ export function SearchUserHeader({ query }: SearchUserHeaderProps) {
 										variant='bodySmall'
 										style={{ color: colors.onSurfaceVariant }}
 									>
-										{formatFansCount(user.fans)} 粉丝 • {user.videos} 投稿
+										{formatFansCount(user.fans)} フォロワー • {user.videos} 投稿
 									</Text>
 								</View>
 							</View>
@@ -239,7 +239,7 @@ export function SearchUserHeader({ query }: SearchUserHeaderProps) {
 					variant='titleMedium'
 					style={[styles.videoSectionTitle, { color: colors.onSurface }]}
 				>
-					相关视频
+					関連動画
 				</Text>
 			</View>
 		)
@@ -251,7 +251,7 @@ export function SearchUserHeader({ query }: SearchUserHeaderProps) {
 				variant='titleMedium'
 				style={[styles.sectionTitle, { color: colors.onSurface }]}
 			>
-				相关 UP 主
+				関連する投稿者
 			</Text>
 			<ScrollView
 				horizontal
@@ -303,7 +303,7 @@ export function SearchUserHeader({ query }: SearchUserHeaderProps) {
 									style={[styles.cardSub, { color: colors.onSurfaceVariant }]}
 									numberOfLines={1}
 								>
-									{formatFansCount(user.fans)} 粉丝
+									{formatFansCount(user.fans)} フォロワー
 								</Text>
 							</Touchable>
 						</View>
@@ -314,7 +314,7 @@ export function SearchUserHeader({ query }: SearchUserHeaderProps) {
 				variant='titleMedium'
 				style={[styles.videoSectionTitle, { color: colors.onSurface }]}
 			>
-				相关视频
+				関連動画
 			</Text>
 		</View>
 	)

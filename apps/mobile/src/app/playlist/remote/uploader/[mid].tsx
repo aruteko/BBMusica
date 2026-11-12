@@ -204,10 +204,10 @@ export default function UploaderPage() {
 					variant='titleMedium'
 					style={styles.loginText}
 				>
-					登录{'\u2009bilibili\u2009'}账号后才能查看{'\u2009up\u2009'}主作品
+					Bilibiliアカウントにログインすると、投稿者の動画を確認できます
 					{'\n\n'}
-					为什么：bilibili
-					对访问用户个人空间和上传的视频接口有莫名其妙的风控校验
+					理由：Bilibili
+					ユーザーのスペースや投稿動画のAPIに、厳しいリスク制御があるためです
 				</Text>
 				<Button
 					mode='contained'
@@ -215,7 +215,7 @@ export default function UploaderPage() {
 						router.navigate('/settings/bilibili-account/qrcode-login')
 					}}
 				>
-					登录
+					ログイン
 				</Button>
 			</View>
 		)
@@ -230,7 +230,7 @@ export default function UploaderPage() {
 	}
 
 	if (isUploadedVideosError || isUserInfoError) {
-		return <PlaylistError text='加载失败' />
+		return <PlaylistError text='読み込みに失敗しました' />
 	}
 
 	return (
@@ -242,7 +242,7 @@ export default function UploaderPage() {
 				<Appbar.Content
 					title={
 						selectMode
-							? `已选择\u2009${selected.size}\u2009首`
+							? `${selected.size}\u2009曲を選択中`
 							: uploaderUserInfo.name
 					}
 					onPress={handleDoubleTap}
@@ -290,7 +290,7 @@ export default function UploaderPage() {
 				style={[styles.searchbarContainer, searchbarAnimatedStyle]}
 			>
 				<SearchBar
-					placeholder='搜索歌曲'
+					placeholder='曲を検索'
 					onChangeText={setSearchQuery}
 					value={searchQuery}
 				/>
@@ -307,22 +307,22 @@ export default function UploaderPage() {
 						<PlaylistHeader
 							cover={coverRef ?? undefined}
 							title={uploaderUserInfo.name}
-							subtitles={`${uploadedVideos?.pages[0].page.count ?? 0}\u2009首歌曲`}
+							subtitles={`${uploadedVideos?.pages[0].page.count ?? 0}\u2009曲`}
 							description={uploaderUserInfo.sign}
 							onClickMainButton={isSelf ? undefined : handleFollowing}
 							mainButtonIcon={isFollowing ? 'account-check' : 'account-plus'}
 							mainButtonText={
 								setFollowing.isPending
-									? '处理中'
+									? '処理中'
 									: relation.isError
-										? '关注状态加载失败，重试'
+										? 'フォロー状態の取得に失敗しました。再試行'
 										: isBlocked
-											? '已拉黑'
+											? 'ブロック中'
 											: relation.isPending
-												? '加载关注状态'
+												? 'フォロー状態を読み込み中'
 												: isFollowing
-													? '取消关注'
-													: '关注 UP 主'
+													? 'フォロー解除'
+													: '投稿者をフォロー'
 							}
 							mainButtonLoading={setFollowing.isPending || relation.isFetching}
 							disableMainButton={

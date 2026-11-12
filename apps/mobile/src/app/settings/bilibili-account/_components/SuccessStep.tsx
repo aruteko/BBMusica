@@ -17,13 +17,13 @@ export default function SuccessStep() {
 				variant='headlineMedium'
 				style={styles.title}
 			>
-				登录成功
+				ログインしました
 			</Text>
 			<Text
 				variant='bodyMedium'
 				style={[styles.description, { color: colors.onSurfaceVariant }]}
 			>
-				已成功登录 Bilibili 账号 🎉
+				Bilibiliアカウントにログインしました 🎉
 			</Text>
 		</View>
 	)

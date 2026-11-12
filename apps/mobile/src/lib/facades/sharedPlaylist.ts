@@ -167,7 +167,7 @@ export class SharedPlaylistFacade {
 					const errBody = await resp.json().catch(() => ({}))
 					throw createFacadeError(
 						'SharedPlaylistEnableFailed',
-						`创建共享歌单失败：${resp.status}`,
+						`共有プレイリストの作成に失敗しました：${resp.status}`,
 						{ cause: errBody },
 					)
 				}
@@ -192,7 +192,7 @@ export class SharedPlaylistFacade {
 				return { shareId }
 			})(),
 			(e) =>
-				createFacadeError('SharedPlaylistEnableFailed', '启用共享歌单失败', {
+				createFacadeError('SharedPlaylistEnableFailed', '共有プレイリストの有効化に失敗しました', {
 					cause: e,
 				}),
 		)
@@ -237,7 +237,7 @@ export class SharedPlaylistFacade {
 					const errBody = await subResp.json().catch(() => ({}))
 					throw createFacadeError(
 						'SharedPlaylistSubscribeFailed',
-						`订阅歌单失败：${subResp.status}`,
+						`プレイリストの購読に失敗しました：${subResp.status}`,
 						{ cause: errBody },
 					)
 				}
@@ -255,7 +255,7 @@ export class SharedPlaylistFacade {
 				if (!changesResp.ok) {
 					throw createFacadeError(
 						'SharedPlaylistSubscribeFailed',
-						`拉取歌单初始数据失败`,
+						`プレイリストの初期データの取得に失敗しました`,
 						{ cause: await changesResp.json().catch(() => ({})) },
 					)
 				}
@@ -279,7 +279,7 @@ export class SharedPlaylistFacade {
 					const txArtist = this.artistService.withDB(tx)
 
 					const createResult = await txPlaylist.createPlaylist({
-						title: meta?.title ?? '共享歌单',
+						title: meta?.title ?? '共有プレイリスト',
 						description: meta?.description ?? null,
 						coverUrl: meta?.cover_url ?? null,
 						type: 'local',
@@ -308,7 +308,7 @@ export class SharedPlaylistFacade {
 				return { localPlaylistId }
 			})(),
 			(e) =>
-				createFacadeError('SharedPlaylistSubscribeFailed', '订阅共享歌单失败', {
+				createFacadeError('SharedPlaylistSubscribeFailed', '共有プレイリストの購読に失敗しました', {
 					cause: e,
 				}),
 		)
@@ -325,14 +325,14 @@ export class SharedPlaylistFacade {
 				if (resp.status === 404) {
 					throw createFacadeError(
 						'SharedPlaylistNotFound',
-						'共享歌单不存在或已删除',
+						'共有プレイリストが存在しないか、削除されました',
 					)
 				}
 				if (!resp.ok) {
 					const errBody = await resp.json().catch(() => ({}))
 					throw createFacadeError(
 						'SharedPlaylistPreviewFailed',
-						`获取共享歌单预览失败：${resp.status}`,
+						`获取共享歌单プレビュー失败：${resp.status}`,
 						{ cause: errBody },
 					)
 				}
@@ -380,7 +380,7 @@ export class SharedPlaylistFacade {
 			(e) =>
 				createFacadeError(
 					'SharedPlaylistPreviewFailed',
-					'获取共享歌单预览失败',
+					'获取共享歌单プレビュー失败',
 					{ cause: e },
 				),
 		)
@@ -403,7 +403,7 @@ export class SharedPlaylistFacade {
 				if (!resp.ok) {
 					throw createFacadeError(
 						'SharedPlaylistRestoreFailed',
-						`获取云端歌单列表失败：${resp.status}`,
+						`クラウドのプレイリスト一覧の取得に失敗しました：${resp.status}`,
 					)
 				}
 				const { playlists: remotePlaylists } = (await resp.json()) as {
@@ -529,7 +529,7 @@ export class SharedPlaylistFacade {
 				const playlist = playlistResult.value
 				if (!playlist?.shareId) {
 					throw createValidationError(
-						`歌单 ${localPlaylistId} 没有 shareId，无法拉取`,
+						`プレイリスト ${localPlaylistId} に shareId がないため、取得できません`,
 					)
 				}
 
@@ -545,7 +545,7 @@ export class SharedPlaylistFacade {
 				if (resp.status === 404 || resp.status === 403) {
 					throw createFacadeError(
 						'SharedPlaylistDeleted',
-						'共享歌单已被删除或无权限访问',
+						'共有プレイリストが削除されたか、アクセス権がありません',
 						{
 							data: {
 								playlistId: localPlaylistId,
@@ -558,7 +558,7 @@ export class SharedPlaylistFacade {
 				if (!resp.ok) {
 					throw createFacadeError(
 						'SharedPlaylistPullFailed',
-						`拉取变更失败：${resp.status}`,
+						`変更の取得に失敗しました：${resp.status}`,
 					)
 				}
 				const data = await resp.json()
@@ -605,7 +605,7 @@ export class SharedPlaylistFacade {
 				}
 				return createFacadeError(
 					'SharedPlaylistPullFailed',
-					'增量拉取歌单变更失败',
+					'プレイリストの差分の取得に失敗しました',
 					{
 						cause: e,
 					},
@@ -678,7 +678,7 @@ export class SharedPlaylistFacade {
 			(e) =>
 				createFacadeError(
 					'SharedPlaylistUnsubscribeFailed',
-					'解除共享歌单订阅失败',
+					'共有プレイリストの購読解除に失敗しました',
 					{ cause: e },
 				),
 		)
@@ -698,14 +698,14 @@ export class SharedPlaylistFacade {
 				if (!resp.ok) {
 					throw createFacadeError(
 						'InviteCodeRotateFailed',
-						`生成编辑者邀请码失败：${resp.status}`,
+						`編集者の招待コードの作成に失敗しました：${resp.status}`,
 					)
 				}
 				const data = await resp.json()
 				return { editorInviteCode: data.editor_invite_code }
 			})(),
 			(e) =>
-				createFacadeError('InviteCodeRotateFailed', '生成编辑者邀请码失败', {
+				createFacadeError('InviteCodeRotateFailed', '編集者の招待コードの作成に失敗しました', {
 					cause: e,
 				}),
 		)
@@ -725,7 +725,7 @@ export class SharedPlaylistFacade {
 				if (!resp.ok) {
 					throw createFacadeError(
 						'InviteCodeFetchFailed',
-						`获取编辑者邀请码失败：${resp.status}`,
+						`編集者の招待コードの取得に失敗しました：${resp.status}`,
 					)
 				}
 				const data = (await resp.json()) as {

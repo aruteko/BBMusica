@@ -110,7 +110,7 @@ export default function CollectionPage() {
 
 	const handleSync = useCallback(() => {
 		const toastId = 'sync-playlist'
-		toast.show('同步中...', { id: toastId, duration: Infinity })
+		toast.show('同期中...', { id: toastId, duration: Infinity })
 		setRefreshing(true)
 		syncCollection(
 			{
@@ -148,7 +148,7 @@ export default function CollectionPage() {
 	if (isCollectionDataError) {
 		return (
 			<PlaylistError
-				text='加载收藏夹内容失败'
+				text='お気に入りの内容を読み込めませんでした'
 				onRetry={refetch}
 			/>
 		)
@@ -163,7 +163,7 @@ export default function CollectionPage() {
 				<Appbar.Content
 					title={
 						selectMode
-							? `已选择\u2009${selected.size}\u2009首`
+							? `${selected.size}\u2009曲を選択中`
 							: collectionData.info.title
 					}
 					onPress={handleDoubleTap}
@@ -219,7 +219,7 @@ export default function CollectionPage() {
 						<PlaylistHeader
 							cover={coverRef ?? undefined}
 							title={collectionData.info.title}
-							subtitles={`${collectionData.info.upper.name}\u2009•\u2009${collectionData.info.media_count}\u2009首歌曲`}
+							subtitles={`${collectionData.info.upper.name}\u2009•\u2009${collectionData.info.media_count}\u2009曲`}
 							description={collectionData.info.intro}
 							onClickMainButton={handleSync}
 							mainButtonIcon={'sync'}

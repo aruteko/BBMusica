@@ -98,7 +98,7 @@ export default function SeriesPage() {
 		refetch: refetchArchives,
 	} = useInfiniteSeriesArchives(seriesId, seriesMetadata?.mid)
 	const { data: uploader } = useOtherUserInfo(seriesMetadata?.mid ?? 0, false)
-	const artistName = uploader?.name ?? `UP主 ${seriesMetadata?.mid ?? ''}`
+	const artistName = uploader?.name ?? `投稿者 ${seriesMetadata?.mid ?? ''}`
 	const tracks = useMemo(
 		() =>
 			archivesData?.pages.flatMap((page) =>
@@ -182,7 +182,7 @@ export default function SeriesPage() {
 	if (isMetadataError || (isArchivesError && !archivesData)) {
 		return (
 			<PlaylistError
-				text='加载系列内容失败'
+				text='シリーズの内容を読み込めませんでした'
 				onRetry={() => {
 					void refetchMetadata()
 					void refetchArchives()
@@ -200,7 +200,7 @@ export default function SeriesPage() {
 				<Appbar.Content
 					title={
 						selectMode
-							? `已选择\u2009${selected.size}\u2009首`
+							? `${selected.size}\u2009曲を選択中`
 							: seriesMetadata.name
 					}
 					onPress={handleDoubleTap}
@@ -258,7 +258,7 @@ export default function SeriesPage() {
 						? {
 								ListFooterComponent: (
 									<Button onPress={() => void fetchNextPage()}>
-										重试加载更多
+										もう一度読み込む
 									</Button>
 								),
 							}
@@ -276,7 +276,7 @@ export default function SeriesPage() {
 						<PlaylistHeader
 							cover={coverRef ?? undefined}
 							title={seriesMetadata.name}
-							subtitles={`${artistName}\u2009•\u2009${seriesMetadata.total}\u2009首歌曲`}
+							subtitles={`${artistName}\u2009•\u2009${seriesMetadata.total}\u2009曲`}
 							description={seriesMetadata.description}
 							onClickMainButton={handleSync}
 							mainButtonIcon={'sync'}

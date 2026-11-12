@@ -29,7 +29,7 @@ export default function DownloadHeader({
 				variant='bodyMedium'
 				style={{ color: colors.onSurfaceVariant }}
 			>
-				总共 {taskCount} 个任务
+				合計 {taskCount} 件のタスク
 			</Text>
 			<View style={styles.buttonContainer}>
 				<Button
@@ -37,14 +37,14 @@ export default function DownloadHeader({
 					onPress={onRetryAll}
 					disabled={retryableCount === 0}
 				>
-					重试失败
+					失敗を再試行
 				</Button>
 				<Button
 					mode='outlined'
 					onPress={onClearAll}
 					disabled={taskCount === 0}
 				>
-					全部清除
+					すべて消去
 				</Button>
 			</View>
 		</View>

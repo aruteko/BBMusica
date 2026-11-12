@@ -10,9 +10,9 @@ const NotFoundScreen: React.FC = () => {
 	return (
 		<View style={styles.container}>
 			<Text style={styles.title}>404</Text>
-			<Text style={styles.message}>你正在找的页面不见了！</Text>
+			<Text style={styles.message}>お探しのページが見つかりません</Text>
 			<Button
-				title='回到主页'
+				title='ホームに戻る'
 				onPress={handleGoHome}
 			/>
 		</View>

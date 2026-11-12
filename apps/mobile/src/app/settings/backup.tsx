@@ -79,7 +79,7 @@ export default function BackupSettingsPage() {
 		if (!initialConfig || didInitialRefresh.current) return
 		didInitialRefresh.current = true
 		void refetchBackups({ throwOnError: true }).catch((error) =>
-			toastAndLogError('读取云端备份失败', error, 'UI.Settings.Backup'),
+			toastAndLogError('クラウドバックアップの読み込みに失敗しました', error, 'UI.Settings.Backup'),
 		)
 	}, [initialConfig, refetchBackups])
 
@@ -97,18 +97,18 @@ export default function BackupSettingsPage() {
 			const config = currentConfig()
 			await createMobileWebDavClient(config, password)
 			await saveWebDavConfig(config, password || undefined)
-			toast.success('WebDAV 配置已保存')
+			toast.success('WebDAVの設定を保存しました')
 		} catch (error) {
-			toastAndLogError('保存 WebDAV 配置失败', error, 'UI.Settings.Backup')
+			toastAndLogError('WebDAV設定の保存に失敗しました', error, 'UI.Settings.Backup')
 		}
 	}
 
 	const handleRefreshBackups = async () => {
 		try {
 			await refetchBackups({ throwOnError: true })
-			toast.success('云端备份列表已刷新')
+			toast.success('クラウドバックアップの一覧を更新しました')
 		} catch (error) {
-			toastAndLogError('读取云端备份失败', error, 'UI.Settings.Backup')
+			toastAndLogError('クラウドバックアップの読み込みに失敗しました', error, 'UI.Settings.Backup')
 		}
 	}
 
@@ -126,9 +126,9 @@ export default function BackupSettingsPage() {
 				'application/zip',
 			)
 			if (!downloadsUri) throw new Error('无法写入文件')
-			toast.success('已导出到下载目录/bbplayer-backup')
+			toast.success('ダウンロード/bbplayer-backup にエクスポートしました')
 		} catch (error) {
-			toastAndLogError('导出失败', error, 'UI.Settings.Backup')
+			toastAndLogError('エクスポートに失敗しました', error, 'UI.Settings.Backup')
 		} finally {
 			setIsExporting(false)
 			isExportingRef.current = false
@@ -147,7 +147,7 @@ export default function BackupSettingsPage() {
 			await restoreBackup(file.uri)
 			showRestartPrompt()
 		} catch (error) {
-			toastAndLogError('导入失败', error, 'UI.Settings.Backup')
+			toastAndLogError('インポートに失敗しました', error, 'UI.Settings.Backup')
 		} finally {
 			setIsImporting(false)
 			isImportingRef.current = false
@@ -158,7 +158,7 @@ export default function BackupSettingsPage() {
 		<View style={[styles.container, { backgroundColor: colors.background }]}>
 			<Appbar.Header>
 				<Appbar.BackAction onPress={() => router.back()} />
-				<Appbar.Content title='数据与备份' />
+				<Appbar.Content title='データとバックアップ' />
 			</Appbar.Header>
 			<ScrollView
 				style={styles.scrollView}
@@ -168,7 +168,7 @@ export default function BackupSettingsPage() {
 				]}
 			>
 				<SettingsSectionTitle
-					title='本地备份'
+					title='ローカルバックアップ'
 					first
 				/>
 				<View style={styles.buttonRow}>
@@ -179,7 +179,7 @@ export default function BackupSettingsPage() {
 						disabled={isExporting}
 						onPress={() => void handleLocalExport()}
 					>
-						导出数据
+						データをエクスポート
 					</Button>
 					<Button
 						mode='outlined'
@@ -188,14 +188,14 @@ export default function BackupSettingsPage() {
 						disabled={isImporting}
 						onPress={() => void handleLocalImport()}
 					>
-						导入数据
+						データをインポート
 					</Button>
 				</View>
 
 				<Divider style={styles.divider} />
 				<SettingsSectionTitle title='WebDAV' />
 				<TextInput
-					label='服务器地址'
+					label='サーバーのアドレス'
 					placeholder='https://example.com/dav'
 					mode='outlined'
 					value={baseUrl}
@@ -206,7 +206,7 @@ export default function BackupSettingsPage() {
 					style={styles.input}
 				/>
 				<TextInput
-					label='用户名'
+					label='ユーザー名'
 					mode='outlined'
 					value={username}
 					autoCapitalize='none'
@@ -215,7 +215,7 @@ export default function BackupSettingsPage() {
 					style={styles.input}
 				/>
 				<TextInput
-					label='密码'
+					label='パスワード'
 					mode='outlined'
 					value={password}
 					secureTextEntry
@@ -228,7 +228,7 @@ export default function BackupSettingsPage() {
 					style={styles.input}
 				/>
 				<TextInput
-					label='远端目录'
+					label='リモートのフォルダー'
 					mode='outlined'
 					value={directory}
 					autoCapitalize='none'
@@ -248,14 +248,14 @@ export default function BackupSettingsPage() {
 							})
 						}
 					>
-						测试连接
+						接続をテスト
 					</Button>
 					<Button
 						mode='contained-tonal'
 						disabled={!baseUrl.trim()}
 						onPress={() => void handleSaveConfig()}
 					>
-						保存配置
+						設定を保存
 					</Button>
 				</View>
 				<Button
@@ -270,7 +270,7 @@ export default function BackupSettingsPage() {
 								onSuccess: () => {
 									void refetchBackups({ throwOnError: true }).catch((error) =>
 										toastAndLogError(
-											'读取云端备份失败',
+											'クラウドバックアップの読み込みに失敗しました',
 											error,
 											'UI.Settings.Backup',
 										),
@@ -281,11 +281,11 @@ export default function BackupSettingsPage() {
 					}
 					style={styles.primaryButton}
 				>
-					立即备份到云端
+					今すぐクラウドにバックアップ
 				</Button>
 
 				<View style={styles.listHeader}>
-					<Text variant='titleMedium'>云端备份</Text>
+					<Text variant='titleMedium'>クラウドバックアップ</Text>
 					<IconButton
 						icon='refresh'
 						size={20}
@@ -299,7 +299,7 @@ export default function BackupSettingsPage() {
 						variant='bodyMedium'
 						style={{ color: colors.onSurfaceVariant }}
 					>
-						暂无云端备份
+						クラウドバックアップはありません
 					</Text>
 				) : (
 					entries?.map((entry) => (
@@ -345,21 +345,21 @@ function confirmCloudRestore(
 	entry: WebDavEntry,
 	restore: (entry: WebDavEntry) => void,
 ) {
-	alert('恢复云端备份', '恢复将覆盖当前的本地歌单和应用设置。确定继续吗？', [
-		{ text: '取消' },
-		{ text: '恢复', onPress: () => restore(entry) },
+	alert('クラウドバックアップを復元', '復元すると、現在のローカルのプレイリストとアプリの設定が上書きされます。続けますか？', [
+		{ text: 'キャンセル' },
+		{ text: '復元', onPress: () => restore(entry) },
 	])
 }
 
 function showRestartPrompt() {
-	alert('恢复完成', '数据已恢复，需要重启应用才能完全生效。是否立即重启？', [
-		{ text: '稍后' },
-		{ text: '立即重启', onPress: () => void Expo.reloadAppAsync() },
+	alert('復元が完了しました', 'データを復元しました。完全に反映するにはアプリの再起動が必要です。今すぐ再起動しますか？', [
+		{ text: 'あとで' },
+		{ text: '今すぐ再起動', onPress: () => void Expo.reloadAppAsync() },
 	])
 }
 
 function formatBackupDate(entry: WebDavEntry): string {
-	return entry.lastModified?.toLocaleString() ?? '未知时间'
+	return entry.lastModified?.toLocaleString() ?? '日時不明'
 }
 
 function formatBytes(size: number): string {

@@ -47,13 +47,13 @@ async function performShare(
 					fileName,
 				})
 			} catch {
-				toast.error('生成图片失败')
+				toast.error('画像の生成に失敗しました')
 				return
 			}
 		}
 
 		if (!uri) {
-			toast.error('生成图片失败')
+			toast.error('画像の生成に失敗しました')
 			return
 		}
 
@@ -61,26 +61,26 @@ async function performShare(
 		if (action === 'save' && permissionStatus !== PermissionStatus.GRANTED) {
 			const { status } = await requestPermission()
 			if (status !== PermissionStatus.GRANTED) {
-				toast.error('无法保存图片', { description: '请允许访问相册' })
+				toast.error('画像を保存できません', { description: 'アルバムへのアクセスを許可してください' })
 				return
 			}
 		}
 
 		if (action === 'save') {
 			await MediaLibrary.Asset.create(uri)
-			toast.success('已保存到相册')
+			toast.success('アルバムに保存しました')
 		} else {
 			const sharingAvailable = await Sharing.isAvailableAsync()
 			if (sharingAvailable) {
 				await Sharing.shareAsync(uri)
 			} else {
-				toast.error('分享不可用')
+				toast.error('共有は利用できません')
 				return
 			}
 		}
 		closeModal()
 	} catch {
-		toast.error('操作失败')
+		toast.error('操作に失敗しました')
 	} finally {
 		setIsSharing(false)
 		isSharingRef.current = false
@@ -179,7 +179,7 @@ const SongShareModal = () => {
 			setPreviewUri(uri)
 			setIsGenerating(false)
 		} catch {
-			toast.error('生成预览失败')
+			toast.error('プレビューの生成に失敗しました')
 			setIsGenerating(false)
 		}
 	}, [imageRef, resolvedCoverUrl, isPageListPending])
@@ -218,17 +218,17 @@ const SongShareModal = () => {
 	if (!currentTrack) {
 		return (
 			<>
-				<Dialog.Title>分享歌曲</Dialog.Title>
+				<Dialog.Title>曲を共有</Dialog.Title>
 				<Dialog.Content style={styles.errorContainer}>
 					<Text
 						variant='bodyMedium'
 						style={styles.errorText}
 					>
-						当前没有正在播放的歌曲
+						再生中の曲がありません
 					</Text>
 				</Dialog.Content>
 				<Dialog.Actions>
-					<Button onPress={() => close('SongShare')}>关闭</Button>
+					<Button onPress={() => close('SongShare')}>閉じる</Button>
 				</Dialog.Actions>
 			</>
 		)
@@ -237,17 +237,17 @@ const SongShareModal = () => {
 	if (currentTrack.source !== 'bilibili') {
 		return (
 			<>
-				<Dialog.Title>分享歌曲</Dialog.Title>
+				<Dialog.Title>曲を共有</Dialog.Title>
 				<Dialog.Content style={styles.errorContainer}>
 					<Text
 						variant='bodyMedium'
 						style={styles.errorText}
 					>
-						当前仅支持分享 Bilibili 来源的歌曲
+						現在は、Bilibiliの曲のみ共有できます
 					</Text>
 				</Dialog.Content>
 				<Dialog.Actions>
-					<Button onPress={() => close('SongShare')}>关闭</Button>
+					<Button onPress={() => close('SongShare')}>閉じる</Button>
 				</Dialog.Actions>
 			</>
 		)
@@ -264,7 +264,7 @@ const SongShareModal = () => {
 
 	return (
 		<>
-			<Dialog.Title>分享歌曲</Dialog.Title>
+			<Dialog.Title>曲を共有</Dialog.Title>
 			<Dialog.Content style={styles.contentArea}>
 				{isGenerating ? (
 					<View style={styles.loadingContainer}>
@@ -273,7 +273,7 @@ const SongShareModal = () => {
 							variant='bodyMedium'
 							style={styles.loadingText}
 						>
-							正在生成预览...
+							プレビューを生成中...
 						</Text>
 					</View>
 				) : previewUri ? (
@@ -288,14 +288,14 @@ const SongShareModal = () => {
 							variant='bodyMedium'
 							style={styles.loadingText}
 						>
-							预览加载失败
+							プレビューの読み込みに失敗しました
 						</Text>
 						<Button
 							mode='outlined'
 							onPress={() => generatePreview()}
 							icon='refresh'
 						>
-							重试
+							再試行
 						</Button>
 					</View>
 				)}
@@ -317,9 +317,9 @@ const SongShareModal = () => {
 					disabled={isSharing || isGenerating}
 					icon='share-variant'
 				>
-					分享
+					共有
 				</Button>
-				<Button onPress={() => close('SongShare')}>关闭</Button>
+				<Button onPress={() => close('SongShare')}>閉じる</Button>
 			</Dialog.Actions>
 
 			{/* Hidden Capture View */}

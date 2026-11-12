@@ -26,7 +26,7 @@ function applyStatusBarLyricsProvider(
 		Orpheus.statusBarLyricsProvider = provider
 		syncStates()
 	} catch (e) {
-		toastAndLogError('设置失败', e, 'Settings')
+		toastAndLogError('設定に失敗しました', e, 'Settings')
 	}
 }
 
@@ -41,7 +41,7 @@ export default function LyricsSettingsPage() {
 		if (id === null) return
 		lyriconConnectionToast.current = null
 		if (connected) {
-			toast.success('已连接词幕', { id, duration: 2000 })
+			toast.success('詞幕に接続しました', { id, duration: 2000 })
 		} else {
 			toast.dismiss(id)
 		}
@@ -92,11 +92,11 @@ export default function LyricsSettingsPage() {
 	const inactiveStatusBarLyricsProviderText =
 		statusBarLyricsProvider === 'lyricon'
 			? isLyriconConnecting
-				? '（正在连接词幕…）'
-				: '（未连接词幕模块）'
+				? '（詞幕に接続中…）'
+				: '（詞幕モジュールに未接続）'
 			: statusBarLyricsProvider === 'meizu'
-				? '（仅支持 Flyme / 魅族状态栏歌词）'
-				: '（需安装 SuperLyric 模块）'
+				? '（Flyme / MeizuのステータスバーLyricsのみ対応）'
+				: '（SuperLyricモジュールが必要です）'
 
 	// Lyricon tries to connect when enabled; a failed attempt turns the setting off.
 	const isStatusBarLyricsSwitchDisabled =
@@ -127,17 +127,17 @@ export default function LyricsSettingsPage() {
 
 	const providerMenu = useMenuActions([
 		{
-			title: `SuperLyric${!isSuperLyricApiEnabled ? '（未激活）' : ''}`,
+			title: `SuperLyric${!isSuperLyricApiEnabled ? '（未有効）' : ''}`,
 			state: statusBarLyricsProvider === 'superlyric' ? 'on' : 'off',
 			onPress: () => applyStatusBarLyricsProvider('superlyric', syncStates),
 		},
 		{
-			title: `词幕 (Lyricon)${statusBarLyricsProvider === 'lyricon' && !isLyriconApiEnabled ? '（未连接）' : ''}`,
+			title: `詞幕 (Lyricon)${statusBarLyricsProvider === 'lyricon' && !isLyriconApiEnabled ? '（未接続）' : ''}`,
 			state: statusBarLyricsProvider === 'lyricon' ? 'on' : 'off',
 			onPress: () => applyStatusBarLyricsProvider('lyricon', syncStates),
 		},
 		{
-			title: '魅族状态栏歌词',
+			title: 'Meizuのステータスバー歌詞',
 			state: statusBarLyricsProvider === 'meizu' ? 'on' : 'off',
 			onPress: () => applyStatusBarLyricsProvider('meizu', syncStates),
 		},
@@ -145,27 +145,27 @@ export default function LyricsSettingsPage() {
 
 	const lyricSourceMenu = useMenuActions([
 		{
-			title: '网易云音乐',
+			title: 'NetEase Cloud Music',
 			state: lyricSource === 'netease' ? 'on' : 'off',
 			onPress: () => setSettings({ lyricSource: 'netease' }),
 		},
 		{
-			title: 'QQ 音乐',
+			title: 'QQ音楽',
 			state: lyricSource === 'qqmusic' ? 'on' : 'off',
 			onPress: () => setSettings({ lyricSource: 'qqmusic' }),
 		},
 		{
-			title: '酷狗音乐',
+			title: 'KuGou Music',
 			state: lyricSource === 'kugou' ? 'on' : 'off',
 			onPress: () => setSettings({ lyricSource: 'kugou' }),
 		},
 		{
-			title: '自动 (选择最先返回的数据源)',
+			title: '自動（最初に返ったソースを使用）',
 			state: lyricSource === 'auto' ? 'on' : 'off',
 			onPress: () => {
 				setSettings({ lyricSource: 'auto' })
 				toast.info(
-					'「自动」的意思是：选择最先返回的数据源，但不会考虑匹配度，所以不保证结果一定是最好的',
+					'「自動」は、最初に返ってきたソースを使います。一致度は考慮しないため、最良の結果とは限りません',
 				)
 			},
 		},
@@ -185,12 +185,12 @@ export default function LyricsSettingsPage() {
 				return
 			}
 			alert(
-				'桌面歌词',
-				'启用桌面歌词需要启用悬浮窗权限。跳转到设置后，请找到 BBPlayer，并允许显示悬浮窗',
+				'デスクトップ歌詞',
+				'デスクトップ歌詞には、他のアプリの上に重ねて表示する権限が必要です。設定で BBPlayer を探し、重ねて表示を許可してください',
 				[
-					{ text: '取消' },
+					{ text: 'キャンセル' },
 					{
-						text: '去设置',
+						text: '設定を開く',
 						onPress: async () => {
 							await Orpheus.requestOverlayPermission()
 						},
@@ -199,7 +199,7 @@ export default function LyricsSettingsPage() {
 				{ cancelable: true },
 			)
 		} catch (e) {
-			toastAndLogError('设置桌面歌词失败', e, 'Settings')
+			toastAndLogError('デスクトップ歌詞の設定に失敗しました', e, 'Settings')
 		}
 	}
 
@@ -234,7 +234,7 @@ export default function LyricsSettingsPage() {
 		<View style={[styles.container, { backgroundColor: colors.background }]}>
 			<Appbar.Header>
 				<Appbar.BackAction onPress={() => router.back()} />
-				<Appbar.Content title='歌词设置' />
+				<Appbar.Content title='歌詞の設定' />
 			</Appbar.Header>
 			<ScrollView
 				style={styles.scrollView}
@@ -244,11 +244,11 @@ export default function LyricsSettingsPage() {
 				]}
 			>
 				<SettingsSectionTitle
-					title='歌词显示'
+					title='歌詞の表示'
 					first
 				/>
 				<View style={styles.settingRow}>
-					<Text>显示逐字歌词</Text>
+					<Text>1文字ずつの歌詞を表示</Text>
 					<UniversalSwitch
 						value={enableVerbatimLyrics}
 						onValueChange={() =>
@@ -257,7 +257,7 @@ export default function LyricsSettingsPage() {
 					/>
 				</View>
 				<View style={styles.settingRow}>
-					<Text>恢复旧版歌词样式</Text>
+					<Text>旧バージョンの歌詞スタイルに戻す</Text>
 					<UniversalSwitch
 						value={enableOldSchoolStyleLyric}
 						onValueChange={() =>
@@ -269,9 +269,9 @@ export default function LyricsSettingsPage() {
 				</View>
 				{Platform.OS === 'android' && (
 					<>
-						<SettingsSectionTitle title='系统歌词（仅 Android）' />
+						<SettingsSectionTitle title='システム歌詞（Androidのみ）' />
 						<View style={styles.settingRow}>
-							<Text>桌面歌词</Text>
+							<Text>デスクトップ歌詞</Text>
 							<UniversalSwitch
 								value={isDesktopLyricsShown}
 								onValueChange={async () => {
@@ -286,13 +286,13 @@ export default function LyricsSettingsPage() {
 											await enableDesktopLyrics()
 										}
 									} catch (e) {
-										toastAndLogError('设置失败', e, 'Settings')
+										toastAndLogError('設定に失敗しました', e, 'Settings')
 									}
 								}}
 							/>
 						</View>
 						<View style={styles.settingRow}>
-							<Text>桌面歌词锁定</Text>
+							<Text>デスクトップ歌詞をロック</Text>
 							<UniversalSwitch
 								value={isDesktopLyricsLocked}
 								onValueChange={async () => {
@@ -300,14 +300,14 @@ export default function LyricsSettingsPage() {
 										Orpheus.isDesktopLyricsLocked = !isDesktopLyricsLocked
 										await syncStates()
 									} catch (e) {
-										toastAndLogError('设置失败', e, 'Settings')
+										toastAndLogError('設定に失敗しました', e, 'Settings')
 									}
 								}}
 							/>
 						</View>
 						<View style={styles.settingRow}>
 							<View style={{ flex: 1, marginRight: 16 }}>
-								<Text>车载歌词</Text>
+								<Text>車載用の歌詞</Text>
 								<Text
 									style={{
 										fontSize: 12,
@@ -315,7 +315,7 @@ export default function LyricsSettingsPage() {
 										marginTop: 4,
 									}}
 								>
-									启用后会把当前歌词显示到媒体信息的标题部分
+									有効にすると、現在の歌詞をメディア情報のタイトル部分に表示します
 								</Text>
 							</View>
 							<UniversalSwitch
@@ -332,13 +332,13 @@ export default function LyricsSettingsPage() {
 											}
 										}
 									} catch (e) {
-										toastAndLogError('设置失败', e, 'Settings')
+										toastAndLogError('設定に失敗しました', e, 'Settings')
 									}
 								}}
 							/>
 						</View>
 						<View style={styles.settingRow}>
-							<Text>状态栏歌词框架</Text>
+							<Text>ステータスバー歌詞のフレームワーク</Text>
 							<MenuView {...providerMenu}>
 								<IconButton
 									icon='playlist-music'
@@ -355,7 +355,7 @@ export default function LyricsSettingsPage() {
 											: undefined
 									}
 								>
-									状态栏歌词
+									ステータスバー歌詞
 									{!isStatusBarLyricsProviderActive
 										? inactiveStatusBarLyricsProviderText
 										: ''}
@@ -376,8 +376,8 @@ export default function LyricsSettingsPage() {
 										}
 									>
 										{statusBarLyricsProvider === 'lyricon'
-											? '开启时尝试连接，失败后自动关闭。点击查看配置文档'
-											: '未检测到可用环境，请点击查看配置文档'}
+											? 'オンにすると接続を試し、失敗したら自動でオフになります。タップして設定の資料を見る'
+											: '利用できる環境が見つかりません。タップして設定の資料を見る'}
 									</Text>
 								)}
 							</View>
@@ -389,7 +389,7 @@ export default function LyricsSettingsPage() {
 										const next = !isStatusBarLyricsEnabled
 										if (statusBarLyricsProvider === 'lyricon' && next) {
 											lyriconConnectionToast.current = toast.loading(
-												'正在连接词幕…',
+												'詞幕に接続中…',
 												{
 													id: lyriconConnectionToast.current ?? undefined,
 													duration: Infinity,
@@ -413,16 +413,16 @@ export default function LyricsSettingsPage() {
 										setIsStatusBarLyricsEnabled(
 											Orpheus.isStatusBarLyricsEnabled,
 										)
-										toastAndLogError('设置失败', e, 'Settings')
+										toastAndLogError('設定に失敗しました', e, 'Settings')
 									}
 								}}
 							/>
 						</View>
 					</>
 				)}
-				<SettingsSectionTitle title='歌词来源' />
+				<SettingsSectionTitle title='歌詞のソース' />
 				<View style={styles.settingRow}>
-					<Text>自动匹配的歌词源（不影响手动搜索）</Text>
+					<Text>自動で照合する歌詞ソース（手動検索には影響しません）</Text>
 					<MenuView {...lyricSourceMenu}>
 						<IconButton
 							icon='playlist-music'

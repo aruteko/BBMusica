@@ -156,7 +156,7 @@ export async function persistFavoriteSync(
 					if (id === undefined)
 						throw createFacadeError(
 							'SyncFavoriteFailed',
-							'已完成 tracks 创建后，却依然没有找到 uniqueKey 对应的 ID',
+							'已完了 tracks 作成后，却依然没有找到 uniqueKey 对应的 ID',
 						)
 					return id !== undefined
 				})
@@ -182,7 +182,7 @@ export async function persistFavoriteSync(
 			return playlistResult.value.id
 		}),
 		(e) =>
-			createFacadeError('SyncFavoriteFailed', '同步收藏夹失败', {
+			createFacadeError('SyncFavoriteFailed', 'お気に入りを同期失败', {
 				cause: e,
 			}),
 	)

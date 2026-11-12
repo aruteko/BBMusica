@@ -57,13 +57,13 @@ export function useSearchInteractions() {
 			const createIt = await syncFacade.addTrackToLocal(track)
 			if (createIt.isErr()) {
 				toastAndLogError(
-					'将 track 录入本地失败',
+					'曲のローカル登録に失敗しました',
 					createIt.error,
 					'UI.Playlist.Remote',
 				)
 				reportErrorToSentry(
 					createIt.error,
-					'将 track 录入本地失败',
+					'曲のローカル登録に失敗しました',
 					'UI.Playlist.Remote',
 				)
 				return
@@ -76,7 +76,7 @@ export function useSearchInteractions() {
 				startFromKey: track.uniqueKey,
 			})
 			if (added && playNext) {
-				toast.success('添加到下一首播放成功')
+				toast.success('次に再生に追加しました')
 			}
 		},
 		[router],
@@ -92,12 +92,12 @@ export function useSearchInteractions() {
 				},
 			},
 			{
-				title: '下一首播放',
+				title: '次に再生',
 				leadingIcon: PLAY_NEXT_ICON,
 				onPress: () => playTrack(item, true),
 			},
 			{
-				title: '查看详细信息',
+				title: '詳細を表示',
 				leadingIcon: INFO_ICON,
 				onPress: () => {
 					router.navigate({
@@ -107,14 +107,14 @@ export function useSearchInteractions() {
 				},
 			},
 			{
-				title: '添加到本地歌单',
+				title: 'ローカルプレイリストに追加',
 				leadingIcon: ADD_TO_PLAYLIST_ICON,
 				onPress: () => {
 					openModal('UpdateTrackLocalPlaylists', { track: item })
 				},
 			},
 			{
-				title: '查看 up 主作品',
+				title: '投稿者の動画を表示',
 				leadingIcon: ARTIST_ICON,
 				onPress: () => {
 					if (!item.artist?.remoteId) {

@@ -136,7 +136,7 @@ export class SyncBilibiliPlaylistFacade {
 			return errAsync(createSyncTaskAlreadyRunningError())
 		}
 		this.syncingIds.add(syncKey)
-		onProgress?.({ stage: 'fetching_metadata', message: '正在获取系列信息...' })
+		onProgress?.({ stage: 'fetching_metadata', message: 'シリーズの情報を取得中...' })
 		try {
 			return this.bilibiliApi
 				.getSeriesAllContents({
@@ -144,13 +144,13 @@ export class SyncBilibiliPlaylistFacade {
 					onPage: (loaded, total) =>
 						onProgress?.({
 							stage: 'fetching_details',
-							message: `已获取 ${loaded}/${total} 首`,
+							message: `${loaded}/${total} 曲を取得しました`,
 							current: loaded,
 							total,
 						}),
 				})
 				.andThen((contents) => {
-					onProgress?.({ stage: 'saving', message: '正在保存系列到本地...' })
+					onProgress?.({ stage: 'saving', message: 'シリーズをローカルに保存中...' })
 					return this.saveRemoteMediaList(contents, seriesId, 'series')
 				})
 				.andTee(() => {
@@ -179,7 +179,7 @@ export class SyncBilibiliPlaylistFacade {
 			return errAsync(
 				createFacadeError(
 					type === 'series' ? 'SyncSeriesFailed' : 'SyncCollectionFailed',
-					`同步${type === 'series' ? '系列' : '合集'}失败，该列表中没有任何 track`,
+					`${type === 'series' ? 'シリーズ' : 'コレクション'}の同期に失敗しました。リストに曲がありません`,
 				),
 			)
 		}
@@ -277,7 +277,7 @@ export class SyncBilibiliPlaylistFacade {
 			(e) =>
 				createFacadeError(
 					type === 'series' ? 'SyncSeriesFailed' : 'SyncCollectionFailed',
-					`同步${type === 'series' ? '系列' : '合集'}失败`,
+					`${type === 'series' ? 'シリーズ' : 'コレクション'}の同期に失敗しました`,
 					{
 						cause: e,
 					},
@@ -416,10 +416,10 @@ export class SyncBilibiliPlaylistFacade {
 		try {
 			this.syncingIds.add(syncKey)
 			onProgress?.({
-				message: '初始化同步任务...',
+				message: '同期を準備中...',
 				stage: 'initializing',
 			})
-			scopedLogger.info('开始同步收藏夹', { favoriteId })
+			scopedLogger.info('开始お気に入りを同期', { favoriteId })
 			scopedLogger.debug('syncFavorite', { favoriteId })
 
 			return await runFavoriteSync(
@@ -432,7 +432,7 @@ export class SyncBilibiliPlaylistFacade {
 					logger: scopedLogger,
 					onProgress,
 					onHiddenVideos: (bvids) => {
-						const tip = `Bilibili 隐藏了被 up 设置为仅自己可见的稿件，却没有更新索引，所以你会看到同步到的歌曲数量少于收藏夹实际显示的数量，具体隐藏稿件：${bvids.join(',')}`
+						const tip = `投稿者が「自分のみ表示」にした動画を、Bilibiliが非表示にしながらも索引を更新していないため、同期できた曲数がお気に入りの表示より少なくなります。非表示の動画：${bvids.join(',')}`
 						scopedLogger.warning(tip)
 						toast.info(tip)
 					},

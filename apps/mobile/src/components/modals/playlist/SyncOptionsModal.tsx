@@ -49,31 +49,31 @@ const SyncOptionsModal = memo(function SyncOptionsModal({
 
 	return (
 		<>
-			<Dialog.Title>同步收藏夹</Dialog.Title>
+			<Dialog.Title>お気に入りを同期</Dialog.Title>
 			<Dialog.Content>
 				<View style={styles.checkboxRow}>
 					<UniversalCheckbox
 						status={expandMultiPage ? 'checked' : 'unchecked'}
 						onPress={() => setExpandMultiPage((v) => !v)}
 					/>
-					<Text variant='bodyLarge'>展开分 P 视频</Text>
+					<Text variant='bodyLarge'>分割P動画を展開</Text>
 				</View>
 				<Text
 					variant='bodySmall'
 					style={[styles.hint, { color: colors.onSurfaceVariant }]}
 				>
-					开启后，分 P 视频的每一 P 将作为独立媒体同步，适合包含大量分 P
-					视频的收藏夹。首次开启需要额外请求分 P 信息，同步时间可能变长。此选项
-					仅在首次同步时询问，之后可在「通用设置」中修改。
+					オンにすると、分割P動画の各Pを個別のメディアとして同期します。分割P動画が多いお気に入りに向いています。
+					初めてオンにするときは、分割Pの情報を追加で取得するため、同期に時間がかかる場合があります。この設定は
+					初回の同期時にだけ確認されます。あとから「一般設定」で変更できます。
 				</Text>
 			</Dialog.Content>
 			<Dialog.Actions>
-				<Button onPress={() => close('SyncOptions')}>取消</Button>
+				<Button onPress={() => close('SyncOptions')}>キャンセル</Button>
 				<Button
 					mode='contained'
 					onPress={handleStart}
 				>
-					开始同步
+					同期を開始
 				</Button>
 			</Dialog.Actions>
 		</>

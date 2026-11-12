@@ -59,7 +59,7 @@ export class ArtistService {
 					} satisfies CreateArtistPayload)
 					.returning(),
 			),
-			(e) => new DatabaseError('创建artist失败', { cause: e }),
+			(e) => new DatabaseError('作成artist失败', { cause: e }),
 		).andThen((result) => {
 			return okAsync(result[0])
 		})
@@ -123,7 +123,7 @@ export class ArtistService {
 			(e) =>
 				e instanceof ServiceError
 					? e
-					: new DatabaseError('查找或创建artist的事务失败', { cause: e }),
+					: new DatabaseError('查找或作成artist的事务失败', { cause: e }),
 		)
 	}
 
@@ -253,7 +253,7 @@ export class ArtistService {
 				if (!formatted) {
 					return errAsync(
 						new ServiceError(
-							`格式化歌曲 ${dbTrack.id} 时发生错误，可能是原数据不存在或 source & metadata 不匹配`,
+							`曲 ${dbTrack.id} の整形でエラーが発生しました。元のデータがないか、source と metadata が一致しません`,
 						),
 					)
 				}
@@ -323,7 +323,7 @@ export class ArtistService {
 			if (!p.source || !p.remoteId) {
 				return errAsync(
 					createValidationError(
-						'payloads 中存在 source 或 remoteId 为空的对象，该方法仅用于处理 remote artist',
+						'payloads に source または remoteId が空のものがあります。この処理はリモートのアーティスト専用です',
 					),
 				)
 			}
@@ -377,12 +377,12 @@ export class ArtistService {
 						return existing
 					}
 					throw new DatabaseError(
-						`批量查找或创建 artists 后数据不一致，未找到 artist: ${p.source}::${p.remoteId}`,
+						`アーティストをまとめて検索または作成した後でデータが一致しません。見つからないアーティスト: ${p.source}::${p.remoteId}`,
 					)
 				})
 				if (fullArtists.length !== payloads.length) {
 					throw new DatabaseError(
-						'创建或查找 artists 后数据不一致，部分 artist 未能成功写入或查询。',
+						'アーティストの作成または検索の後でデータが一致しません。一部のアーティストを書き込めなかったか、取得できませんでした',
 					)
 				}
 
@@ -395,7 +395,7 @@ export class ArtistService {
 			(e) =>
 				e instanceof ServiceError
 					? e
-					: new DatabaseError('批量查找或创建 artist 失败', { cause: e }),
+					: new DatabaseError('批量查找或作成 artist 失败', { cause: e }),
 		)
 	}
 }

@@ -95,7 +95,7 @@ const SyncTrackItem = memo(
 										marginBottom: 2,
 									}}
 								>
-									已匹配:{' '}
+									一致:{' '}
 									{result.matchedVideo.title
 										.replace(/<em class="keyword">/g, '')
 										.replace(/<\/em>/g, '')}
@@ -104,7 +104,7 @@ const SyncTrackItem = memo(
 									variant='bodySmall'
 									style={{ color: theme.colors.onSurfaceVariant }}
 								>
-									UP主: {result.matchedVideo.author}
+									投稿者: {result.matchedVideo.author}
 								</Text>
 							</View>
 						)}
@@ -231,15 +231,15 @@ const ExternalPlaylistSyncPageInner = () => {
 	const hasResults = Object.keys(results).length > 0 && !isExiting
 	usePreventRemove(hasResults, () => {
 		openModal('Alert', {
-			title: '确定要退出吗？',
+			title: '終了しますか？',
 			message:
-				'当前匹配结果已临时保存，下次进入这个歌单可以继续匹配。匹配完成后仍需要手动保存到本地歌单。',
+				'現在の照合結果は一時保存されました。次回このプレイリストを開くと、続きから照合できます。照合が終わったら、手動でローカルのプレイリストに保存してください。',
 			buttons: [
 				{
-					text: '取消',
+					text: 'キャンセル',
 				},
 				{
-					text: '退出',
+					text: '終了',
 					onPress: () => {
 						setIsExiting(true)
 						useModalStore.getState().doAfterModalHostClosed(() => router.back())
@@ -255,7 +255,7 @@ const ExternalPlaylistSyncPageInner = () => {
 			.map((_, index) => results[index])
 			.filter((result) => result !== undefined)
 		if (matchResults.length === 0) {
-			toast.error('没有可保存的内容')
+			toast.error('保存できる内容がありません')
 			return
 		}
 
@@ -266,7 +266,7 @@ const ExternalPlaylistSyncPageInner = () => {
 		const unprocessedCount = data.tracks.length - matchResults.length
 
 		const proceedSave = async () => {
-			const loadingToast = toast.loading('正在保存到本地...')
+			const loadingToast = toast.loading('ローカルに保存中...')
 			const coverUrl = data.playlist.coverUrl ?? ''
 			const description = data.playlist.description ?? ''
 			try {
@@ -280,9 +280,9 @@ const ExternalPlaylistSyncPageInner = () => {
 				)
 
 				if (saveResult.isErr()) {
-					toast.error(`保存失败: ${saveResult.error.message}`)
+					toast.error(`保存に失敗しました: ${saveResult.error.message}`)
 				} else {
-					toast.success('歌单已保存到本地')
+					toast.success('プレイリストをローカルに保存しました')
 					await queryClient.invalidateQueries({
 						queryKey: playlistKeys.playlistLists(),
 					})
@@ -295,7 +295,7 @@ const ExternalPlaylistSyncPageInner = () => {
 						)
 				}
 			} catch {
-				toast.error('保存失败')
+				toast.error('保存に失敗しました')
 			}
 			toast.dismiss(loadingToast)
 		}
@@ -303,21 +303,21 @@ const ExternalPlaylistSyncPageInner = () => {
 		if (unmatchedCount > 0 || unprocessedCount > 0) {
 			const messages = []
 			if (unprocessedCount > 0) {
-				messages.push(`还有 ${unprocessedCount} 首歌曲未进行匹配`)
+				messages.push(`まだ照合していない曲が ${unprocessedCount} 曲あります`)
 			}
 			if (unmatchedCount > 0) {
-				messages.push(`还有 ${unmatchedCount} 首歌曲未匹配到视频`)
+				messages.push(`動画が見つからなかった曲が ${unmatchedCount} 曲あります`)
 			}
 
 			openModal('Alert', {
-				title: '存在未完成的项目',
-				message: `${messages.join('，')}。如果继续，这些已匹配的歌曲将被保存，未匹配的将被忽略。建议您完成匹配或手动匹配剩余歌曲。`,
+				title: '未完了の項目があります',
+				message: `${messages.join('、')}。続けると、照合済みの曲だけが保存され、未照合の曲は無視されます。照合を完了するか、残りを手動で照合することをおすすめします。`,
 				buttons: [
 					{
-						text: '去手动匹配',
+						text: '手動で照合する',
 					},
 					{
-						text: '仍要保存',
+						text: 'このまま保存',
 						onPress: proceedSave,
 					},
 				],
@@ -336,14 +336,14 @@ const ExternalPlaylistSyncPageInner = () => {
 		.map((_, index) => index)
 		.filter((index) => !Object.hasOwn(results, index))
 	const syncButtonText = syncing
-		? '暂停'
+		? '一時停止'
 		: !hasProcessedAny
-			? '开始匹配'
+			? '照合を開始'
 			: unprocessedIndexes.length > 0
-				? '继续匹配'
+				? '照合を再開'
 				: failedIndexes.length > 0
-					? '继续匹配失败项'
-					: '重新匹配全部'
+					? '失敗した項目を再照合'
+					: 'すべて照合し直す'
 
 	const handleSync = async () => {
 		if (!data?.tracks) return
@@ -352,7 +352,7 @@ const ExternalPlaylistSyncPageInner = () => {
 			abortControllerRef.current?.abort()
 			setSyncing(false)
 			setEtaSeconds(null)
-			toast.info('已暂停匹配')
+			toast.info('照合を一時停止しました')
 			return
 		}
 
@@ -404,10 +404,10 @@ const ExternalPlaylistSyncPageInner = () => {
 		setEtaSeconds(null)
 		if (result.isErr()) {
 			if (result.error.message !== 'Aborted') {
-				toast.error(`匹配出错: ${result.error.message}`)
+				toast.error(`照合でエラーが発生しました: ${result.error.message}`)
 			}
 		} else {
-			toast.success('匹配完成')
+			toast.success('照合が完了しました')
 		}
 	}
 
@@ -435,7 +435,7 @@ const ExternalPlaylistSyncPageInner = () => {
 		return (
 			<View style={styles.center}>
 				<Text style={{ color: theme.colors.error }}>
-					加载失败: {error?.message ?? '未知错误'}
+					読み込みに失敗しました: {error?.message ?? '不明なエラー'}
 				</Text>
 			</View>
 		)
@@ -446,7 +446,7 @@ const ExternalPlaylistSyncPageInner = () => {
 			<Appbar.Header>
 				<Appbar.BackAction onPress={router.back} />
 				<Appbar.Content
-					title='外部歌单匹配'
+					title='外部プレイリストの照合'
 					onPress={handleDoubleTap}
 				/>
 				<Appbar.Action
@@ -459,13 +459,13 @@ const ExternalPlaylistSyncPageInner = () => {
 				visible={hasResults}
 				actions={[
 					{
-						label: '立即保存',
+						label: '今すぐ保存',
 						onPress: handleSave,
 					},
 				]}
 				icon='information'
 			>
-				匹配进度已临时保存。完成后请点击右上角或下方的保存按钮写入本地歌单。
+				照合の進み具合は一時保存されています。完了したら、右上または下の保存ボタンでローカルのプレイリストに書き込んでください。
 			</Banner>
 			<LegendList
 				ref={listRef}
@@ -489,7 +489,7 @@ const ExternalPlaylistSyncPageInner = () => {
 						cover={data.playlist.coverUrl ?? ''}
 						subtitles={[
 							data.playlist.author.name,
-							`${data.playlist.trackCount} 首歌曲`,
+							`${data.playlist.trackCount} 曲`,
 						]}
 						mainButtonIcon='check'
 						mainButtonText='保存'
@@ -528,9 +528,9 @@ const ExternalPlaylistSyncFooter = ({
 	const etaText =
 		etaSeconds !== null
 			? etaSeconds > 60
-				? `${(etaSeconds / 60).toFixed(1)} 分 (ETA)`
-				: `${etaSeconds.toFixed(0)} 秒 (ETA)`
-			: '计算中...'
+				? `残り約 ${(etaSeconds / 60).toFixed(1)} 分`
+				: `残り約 ${etaSeconds.toFixed(0)} 秒`
+			: '計算中...'
 
 	return (
 		<View
@@ -554,13 +554,13 @@ const ExternalPlaylistSyncFooter = ({
 							<ActivityIndicator color={theme.colors.primary} />
 							<View style={{ marginLeft: 12 }}>
 								<Text variant='bodyMedium'>
-									正在匹配... {(progress * 100).toFixed(0)}%
+									照合中... {(progress * 100).toFixed(0)}%
 								</Text>
 								<Text
 									variant='bodySmall'
 									style={{ color: theme.colors.outline }}
 								>
-									剩余 {etaText}
+									{etaText}
 								</Text>
 							</View>
 						</View>
@@ -569,7 +569,7 @@ const ExternalPlaylistSyncFooter = ({
 							mode='contained-tonal'
 							onPress={onSync}
 						>
-							暂停
+							一時停止
 						</Button>
 					</View>
 				) : (

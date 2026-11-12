@@ -36,7 +36,7 @@ export const useModalStore = create<ModalState>()(
 			const exists = get().modals.some((m) => m.key === key)
 
 			if (exists) {
-				toast.error(`已经打开 ${key} 了`)
+				toast.error(`${key} はすでに開いています`)
 				return
 			}
 

@@ -170,7 +170,7 @@ export default function StorageUsageChart({
 						variant='labelSmall'
 						style={{ color: colors.onSurfaceVariant }}
 					>
-						总占用
+						合計の使用量
 					</Text>
 					<Text
 						variant='titleMedium'

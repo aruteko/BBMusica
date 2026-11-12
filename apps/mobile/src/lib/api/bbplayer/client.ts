@@ -27,7 +27,7 @@ export async function ensureBBPlayerToken(options?: {
 	const store = useAppStore.getState()
 	if (!options?.forceRefresh && store.bbplayerToken) return
 
-	throw new Error('请先登录 BBPlayer 账号，才能使用共享功能')
+	throw new Error('请先BBPlayerアカウントにログイン，才能使用共享功能')
 }
 
 const fetchWithAuthRetry: typeof fetch = async (input, init) => {

@@ -33,7 +33,7 @@ export default function EditPlaylistMetadataModal({
 
 	const fetchRemoteMetadata = useCallback(async () => {
 		if (!playlist.remoteSyncId) {
-			toast.error('播放列表的 remoteSyncId 为空，无法获取远程数据')
+			toast.error('プレイリストの remoteSyncId が空のため、リモートのデータを取得できません')
 			return
 		}
 		const result = await bilibiliFacade.fetchRemotePlaylistMetadata(
@@ -42,7 +42,7 @@ export default function EditPlaylistMetadataModal({
 		)
 		if (result.isErr()) {
 			toastAndLogError(
-				'获取远程播放列表元数据失败',
+				'リモートのプレイリスト情報の取得に失敗しました',
 				result.error,
 				'Components.EditPlaylistMetadataModal',
 			)
@@ -53,12 +53,12 @@ export default function EditPlaylistMetadataModal({
 		setDescription(metadata.description)
 		setCoverUrl(metadata.coverUrl)
 		logger.debug('获取远程播放列表元数据成功', metadata)
-		toast.success('获取远程播放列表元数据成功')
+		toast.success('リモートのプレイリスト情報を取得しました')
 	}, [playlist.remoteSyncId, playlist.type])
 
 	const handleConfirm = useCallback(() => {
 		if (title.trim().length === 0) {
-			toast.error('标题不能为空')
+			toast.error('タイトルを入力してください')
 			return
 		}
 		editPlaylistMetadata({
@@ -104,10 +104,10 @@ export default function EditPlaylistMetadataModal({
 
 	return (
 		<>
-			<Dialog.Title>编辑信息</Dialog.Title>
+			<Dialog.Title>情報を編集</Dialog.Title>
 			<Dialog.Content style={styles.content}>
 				<TextInput
-					label='标题'
+					label='タイトル'
 					testID='edit-playlist-title-input'
 					value={title}
 					onChangeText={setTitle}
@@ -116,7 +116,7 @@ export default function EditPlaylistMetadataModal({
 					textAlignVertical='top'
 				/>
 				<TextInput
-					label='描述'
+					label='説明'
 					onChangeText={setDescription}
 					value={description ?? undefined}
 					mode='outlined'
@@ -126,7 +126,7 @@ export default function EditPlaylistMetadataModal({
 				/>
 				<View style={styles.coverUrlContainer}>
 					<TextInput
-						label='封面'
+						label='カバー'
 						onChangeText={setCoverUrl}
 						value={coverUrl ?? undefined}
 						mode='outlined'
@@ -144,17 +144,17 @@ export default function EditPlaylistMetadataModal({
 			</Dialog.Content>
 			<Dialog.Actions style={styles.actionsContainer}>
 				{playlist.type !== 'local' && playlist.type !== 'dynamic' ? (
-					<Button onPress={fetchRemoteMetadata}>获取远程数据</Button>
+					<Button onPress={fetchRemoteMetadata}>リモートのデータを取得</Button>
 				) : (
 					<View />
 				)}
 				<View style={styles.rightActionsContainer}>
-					<Button onPress={handleDismiss}>取消</Button>
+					<Button onPress={handleDismiss}>キャンセル</Button>
 					<Button
 						testID='edit-playlist-confirm-button'
 						onPress={handleConfirm}
 					>
-						确定
+						OK
 					</Button>
 				</View>
 			</Dialog.Actions>

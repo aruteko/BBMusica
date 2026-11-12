@@ -54,7 +54,7 @@ export function useGeetest({
 					const errCode = smsResult.error.data.msgCode
 					let errorMsg = smsResult.error.message
 					if (!errorMsg) {
-						errorMsg = '发送验证码失败，请稍后重试'
+						errorMsg = '認証コードの送信に失敗しました。しばらくしてからお試しください'
 					}
 					let isExpiredCaptcha = false
 					if (errCode === 86211) {
@@ -64,21 +64,21 @@ export function useGeetest({
 						isExpiredCaptcha = true
 					}
 					if (isExpiredCaptcha) {
-						errorMsg = '图形验证已过期，请重新获取验证码'
+						errorMsg = '画像認証の有効期限が切れました。認証コードをもう一度取得してください'
 					}
 					onFail(errorMsg)
 					return
 				}
 
 				onSuccess(smsResult.value.captcha_key)
-				toast.success('验证码已发送', { id: 'phone-login-sms-sent' })
+				toast.success('認証コードを送信しました', { id: 'phone-login-sms-sent' })
 			} catch (error) {
 				toastAndLogError(
-					'发送验证码失败',
+					'認証コードの送信に失敗しました',
 					error,
 					'useGeetest.handleGeetestMessage',
 				)
-				onFail('发送验证码失败')
+				onFail('認証コードの送信に失敗しました')
 			}
 		},
 		[captchaParams, onFail, onStartRequest, onSuccess],

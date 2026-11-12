@@ -57,7 +57,7 @@ export class SyncExternalPlaylistFacade {
 				if (validMatches.length === 0) {
 					throw createFacadeError(
 						'SavePlaylistFailed',
-						'没有匹配到任何歌曲，无法保存',
+						'一致する曲がなく、保存できません',
 					)
 				}
 

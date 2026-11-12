@@ -74,21 +74,21 @@ const DownloadTaskItem = memo(function DownloadTaskItem({
 	const getStatusText = () => {
 		switch (task.state) {
 			case DownloadState.QUEUED:
-				return '等待下载...'
+				return 'ダウンロード待ち...'
 			case DownloadState.DOWNLOADING:
-				return '正在下载...'
+				return 'ダウンロード中...'
 			case DownloadState.FAILED:
-				return '下载失败'
+				return 'ダウンロードに失敗しました'
 			case DownloadState.STOPPED:
-				return '已停止'
+				return '停止しました'
 			case DownloadState.REMOVING:
-				return '正在删除...'
+				return '削除中...'
 			case DownloadState.RESTARTING:
-				return '正在重试...'
+				return '再試行中...'
 			case DownloadState.COMPLETED:
-				return '下载完成'
+				return 'ダウンロード完了'
 			default:
-				return '未知状态'
+				return '不明な状態'
 		}
 	}
 
@@ -154,7 +154,7 @@ const DownloadTaskItem = memo(function DownloadTaskItem({
 									}
 								} catch (e) {
 									toastAndLogError(
-										'重新下载失败',
+										'再ダウンロードに失敗しました',
 										e,
 										'Features.Downloads.DownloadTaskItem',
 									)
@@ -170,7 +170,7 @@ const DownloadTaskItem = memo(function DownloadTaskItem({
 								await Orpheus.removeDownload(task.id)
 							} catch (e) {
 								toastAndLogError(
-									'删除任务失败',
+									'タスクの削除に失敗しました',
 									e,
 									'Features.Downloads.DownloadTaskItem',
 								)
@@ -195,7 +195,7 @@ const DownloadTaskItem = memo(function DownloadTaskItem({
 							variant='bodyMedium'
 							numberOfLines={1}
 						>
-							{task.track?.title ?? '未知任务'}
+							{task.track?.title ?? '不明なタスク'}
 						</Text>
 						<View style={styles.statusContainer}>
 							<Text

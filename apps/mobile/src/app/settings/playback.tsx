@@ -92,7 +92,7 @@ export default function PlaybackSettingsPage() {
 					</MenuView>
 				</View>
 				<View style={styles.settingRow}>
-					<Text>音量の自動調整（実験的）</Text>
+					<Text>音量の自動調整</Text>
 					<UniversalSwitch
 						value={enableLoudnessNormalization}
 						onValueChange={() => {
@@ -182,7 +182,7 @@ export default function PlaybackSettingsPage() {
 					/>
 				</View>
 				<View style={styles.settingRow}>
-					<Text>アプリ起動時に自動で再生（周囲に注意）</Text>
+					<Text>アプリ起動時に自動で再生</Text>
 					<UniversalSwitch
 						value={enableAutostartPlayOnStart}
 						onValueChange={() => {

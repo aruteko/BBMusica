@@ -79,7 +79,7 @@ const ExportDownloadsProgressModal = memo(
 			total: ids.length,
 			failed: 0,
 			stage: 'config',
-			message: '准备导出...',
+			message: 'エクスポートを準備中...',
 		})
 		const hasStarted = useRef(false)
 		const subscriptionRef = useRef<{ remove(): void } | null>(null)
@@ -97,7 +97,7 @@ const ExportDownloadsProgressModal = memo(
 				total: ids.length,
 				failed: 0,
 				stage: 'config',
-				message: '准备导出...',
+				message: 'エクスポートを準備中...',
 			})
 			hasStarted.current = false
 
@@ -122,9 +122,9 @@ const ExportDownloadsProgressModal = memo(
 						const total = event.total ?? prev.total
 						const isLast = current === total
 
-						let message = `正在导出 ${current}/${total}...`
+						let message = `エクスポート中 ${current}/${total}...`
 						if (event.status === 'error') {
-							message = `导出 ${event.currentId} 失败: ${event.message ?? '未知错误'}`
+							message = `${event.currentId} のエクスポートに失敗しました: ${event.message ?? '不明なエラー'}`
 						}
 
 						if (isLast) {
@@ -139,8 +139,8 @@ const ExportDownloadsProgressModal = memo(
 							stage: isLast ? 'completed' : 'exporting',
 							message: isLast
 								? failed > 0
-									? `导出完成，${total - failed} 个成功，${failed} 个失败`
-									: `全部 ${total} 个曲目已成功导出`
+									? `エクスポート完了：${total - failed} 件成功、${failed} 件失敗`
+									: `${total} 曲をすべてエクスポートしました`
 								: message,
 						}
 					})
@@ -160,11 +160,11 @@ const ExportDownloadsProgressModal = memo(
 				convertToLrc,
 				cropCoverArt,
 			).catch((e: unknown) => {
-				toastAndLogError('启动批量导出失败', e, 'Modal.ExportDownloadsProgress')
+				toastAndLogError('まとめてエクスポートを開始できませんでした', e, 'Modal.ExportDownloadsProgress')
 				setProgress((prev) => ({
 					...prev,
 					stage: 'error',
-					message: '启动导出任务失败',
+					message: 'エクスポートを開始できませんでした',
 				}))
 				subscriptionRef.current?.remove()
 				subscriptionRef.current = null
@@ -183,12 +183,12 @@ const ExportDownloadsProgressModal = memo(
 
 		const stageTitle =
 			stage === 'config'
-				? '导出设置'
+				? 'エクスポート設定'
 				: stage === 'completed'
-					? '导出完成'
+					? 'エクスポートが完了しました'
 					: stage === 'error'
-						? '导出失败'
-						: '正在批量导出歌曲'
+						? 'エクスポートに失敗しました'
+						: '曲をまとめてエクスポート中'
 
 		return (
 			<TrueSheet
@@ -205,7 +205,7 @@ const ExportDownloadsProgressModal = memo(
 						total: ids.length,
 						failed: 0,
 						stage: 'config',
-						message: '准备导出...',
+						message: 'エクスポートを準備中...',
 					})
 					hasStarted.current = false
 					setFilenamePattern('{name}')
@@ -239,10 +239,10 @@ const ExportDownloadsProgressModal = memo(
 										variant='labelLarge'
 										style={styles.sectionTitle}
 									>
-										文件名模板
+										ファイル名のテンプレート
 									</Text>
 									<TextInput
-										label='文件名模板'
+										label='ファイル名のテンプレート'
 										value={filenamePattern}
 										onChangeText={setFilenamePattern}
 										mode='outlined'
@@ -262,10 +262,10 @@ const ExportDownloadsProgressModal = memo(
 										style={styles.helperText}
 									>
 										{!filenamePattern.trim()
-											? '为空时使用默认模板 {name}'
+											? '空の場合は既定のテンプレート {name} を使います'
 											: patternHasVariable(filenamePattern)
-												? `预览：${buildPreviewFilename(filenamePattern)}`
-												: '模板中未包含任何变量，将自动替换为 {name}'}
+												? `プレビュー：${buildPreviewFilename(filenamePattern)}`
+												: 'テンプレートに変数が含まれていないため、{name} に置き換えます'}
 									</HelperText>
 									{/* 可用变量说明 */}
 									<View style={styles.variableBox}>
@@ -273,14 +273,14 @@ const ExportDownloadsProgressModal = memo(
 											variant='labelSmall'
 											style={styles.variableTitle}
 										>
-											可用变量
+											使える変数
 										</Text>
 										{[
-											['id', '曲目唯一 ID'],
-											['name', '曲目标题'],
-											['artist', '艺术家'],
-											['bvid', 'B 站 BV 号'],
-											['cid', 'B 站 CID（如果不是分 P 视频则为空）'],
+											['id', '曲の一意のID'],
+											['name', '曲のタイトル'],
+											['artist', 'アーティスト'],
+											['bvid', 'BilibiliのBV番号'],
+											['cid', 'BilibiliのCID（分割P動画でなければ空）'],
 										].map(([v, desc]) => (
 											<Text
 												key={v}
@@ -299,7 +299,7 @@ const ExportDownloadsProgressModal = memo(
 									{/* ── 内嵌歌词开关 ── */}
 									<View style={styles.switchRow}>
 										<View style={styles.switchLabel}>
-											<Text variant='labelLarge'>内嵌歌词</Text>
+											<Text variant='labelLarge'>歌詞を埋め込む</Text>
 										</View>
 										<UniversalSwitch
 											value={embedLyrics}
@@ -311,7 +311,7 @@ const ExportDownloadsProgressModal = memo(
 										visible
 										style={styles.helperText}
 									>
-										只有在播放器「歌词」页面加载过歌词的曲目才会包含内嵌歌词——歌词在播放时加载并缓存到本地，未打开过歌词页面的曲目将不含内嵌歌词。
+										プレーヤーの「歌詞」ページで歌詞を読み込んだ曲だけが、歌詞を埋め込めます。歌詞は再生中に読み込まれ、キャッシュされます。本地，未打开过歌词页面的曲目将不含歌詞を埋め込む。
 									</HelperText>
 
 									{/* ── SPL → LRC 开关（仅 embedLyrics 开启时显示）── */}
@@ -320,7 +320,7 @@ const ExportDownloadsProgressModal = memo(
 											<Divider style={styles.divider} />
 											<View style={styles.switchRow}>
 												<View style={styles.switchLabel}>
-													<Text variant='labelLarge'>转换为标准 LRC</Text>
+													<Text variant='labelLarge'>標準のLRCに変換</Text>
 												</View>
 												<UniversalSwitch
 													value={convertToLrc}
@@ -332,10 +332,10 @@ const ExportDownloadsProgressModal = memo(
 												visible
 												style={styles.helperText}
 											>
-												BBPlayer 歌词遵循 SPL 规范（LRC
-												超集），支持逐字时间戳（卡拉OK高亮效果）。但大多数播放器（除椒盐音乐外，因为这个规范就来自椒盐音乐）无法识别
-												SPL 逐字语法，开启后将转换为所有播放器均可读取的标准
-												LRC（逐字信息将被移除）。
+												BBPlayerの歌詞はSPL（LRCの拡張）に従い、1文字ずつのタイムスタンプ（カラオケのハイライト）に対応しています。ただし、ほとんどのプレーヤーはこのSPLの文字単位の構文に対応していません。オンにすると、すべてのプレーヤーで読める標準のLRCに変換します（文字単位の情報は削除されます）。
+												
+												
+												
 											</HelperText>
 										</>
 									)}
@@ -345,7 +345,7 @@ const ExportDownloadsProgressModal = memo(
 									{/* ── 裁剪封面开关 ── */}
 									<View style={styles.switchRow}>
 										<View style={styles.switchLabel}>
-											<Text variant='labelLarge'>裁剪封面为正方形</Text>
+											<Text variant='labelLarge'>カバーを正方形に切り抜く</Text>
 										</View>
 										<UniversalSwitch
 											value={cropCoverArt}
@@ -357,19 +357,19 @@ const ExportDownloadsProgressModal = memo(
 										visible
 										style={styles.helperText}
 									>
-										Bilibili 封面通常为 16:9，开启后将按中心裁剪为 1:1
-										方形，符合主流音乐播放器的封面规范。
+										Bilibiliのカバーは通常16:9です。オンにすると、中央を基準に1:1の正方形に切り抜きます。
+										一般的な音楽プレーヤーのカバーの規格に合います。
 									</HelperText>
 
 									<Divider style={styles.divider} />
 
 									<View style={styles.actionRow}>
-										<Button onPress={dismiss}>取消</Button>
+										<Button onPress={dismiss}>キャンセル</Button>
 										<Button
 											mode='contained'
 											onPress={startExport}
 										>
-											开始导出
+											エクスポートを開始
 										</Button>
 									</View>
 								</>
@@ -395,7 +395,7 @@ const ExportDownloadsProgressModal = memo(
 											onPress={dismiss}
 											disabled={!isFinished}
 										>
-											{isFinished ? '关闭' : '请稍候'}
+											{isFinished ? '閉じる' : 'お待ちください'}
 										</Button>
 									</View>
 								</>

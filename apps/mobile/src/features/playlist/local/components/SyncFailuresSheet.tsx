@@ -46,10 +46,10 @@ const DEV_MOCK_ROWS: (typeof schema.playlistSyncQueue.$inferSelect)[] = __DEV__
 	? [
 			createMockRow(1, 'add_tracks', { trackIds: [1, 2, 3] }, 3600000),
 			createMockRow(2, 'remove_tracks', { removedTrackIds: [4, 5] }, 1800000),
-			createMockRow(3, 'update_metadata', { title: '测试歌单' }, 300000),
-			createMockRow(4, 'update_metadata', { title: '测试歌单' }, 300000),
-			createMockRow(5, 'update_metadata', { title: '测试歌单' }, 300000),
-			createMockRow(6, 'update_metadata', { title: '测试歌单' }, 300000),
+			createMockRow(3, 'update_metadata', { title: 'テストのプレイリスト' }, 300000),
+			createMockRow(4, 'update_metadata', { title: 'テストのプレイリスト' }, 300000),
+			createMockRow(5, 'update_metadata', { title: 'テストのプレイリスト' }, 300000),
+			createMockRow(6, 'update_metadata', { title: 'テストのプレイリスト' }, 300000),
 		]
 	: []
 

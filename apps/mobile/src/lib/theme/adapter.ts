@@ -41,7 +41,7 @@ const parseCardItem = (
 	index: number,
 ): SkinAssetDeclaration['cards'][number] => ({
 	img: card.card_img ?? '',
-	name: card.card_name ?? `卡牌 ${index + 1}`,
+	name: card.card_name ?? `カード ${index + 1}`,
 	type_id: card.card_type_id ?? `card_${index + 1}`,
 	video_list: card.video_list?.length ? card.video_list : null,
 })
@@ -54,7 +54,7 @@ const parseCollectCardItem = (
 	index: number,
 ): SkinAssetDeclaration['cards'][number] => ({
 	img: card?.card_img ?? '',
-	name: card?.card_name ?? `卡牌 ${index + 1}`,
+	name: card?.card_name ?? `カード ${index + 1}`,
 	type_id: card?.card_type_id ?? `card_${index + 1}`,
 	video_list: card?.video_list?.length ? card.video_list : null,
 })
@@ -354,7 +354,7 @@ const buildSuitAssetDeclaration = (
 	signal?: AbortSignal,
 ): ResultAsync<SkinAssetDeclaration, ServiceError> => {
 	if (!item.itemId) {
-		return errAsync(createSkinFetchFailed('主题装扮搜索结果缺少 item_id'))
+		return errAsync(createSkinFetchFailed('テーマ装扮の検索結果に item_id がありません'))
 	}
 
 	return bilibiliApi
@@ -546,6 +546,6 @@ export const fetchGarbSkinAssetDeclaration = (
 			return buildSuitAssetDeclaration(item, signal)
 		}
 		default:
-			return errAsync(createSkinFetchFailed('当前只支持下载收藏集和主题装扮'))
+			return errAsync(createSkinFetchFailed('現在は、コレクションとテーマ装扮のみダウンロードできます'))
 	}
 }

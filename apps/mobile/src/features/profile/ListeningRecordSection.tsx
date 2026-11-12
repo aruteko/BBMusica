@@ -62,7 +62,7 @@ export default function ListeningRecordSection({
 					variant='titleMedium'
 					style={styles.bold}
 				>
-					听歌记录
+					再生記録
 				</Text>
 				<Touchable
 					accessibilityRole='button'
@@ -73,7 +73,7 @@ export default function ListeningRecordSection({
 						variant='bodyMedium'
 						style={{ color: colors.onSurfaceVariant }}
 					>
-						全部统计
+						すべての統計
 					</Text>
 					<Icon
 						source='chevron-right'
@@ -84,8 +84,8 @@ export default function ListeningRecordSection({
 			</View>
 			<View style={styles.metrics}>
 				{[
-					{ icon: 'headphones', value: hours, unit: '小时', label: '累计听歌' },
-					{ icon: 'play-outline', value: plays, unit: '次', label: '完整播放' },
+					{ icon: 'headphones', value: hours, unit: '時間', label: '累計再生' },
+					{ icon: 'play-outline', value: plays, unit: '回', label: '最後まで再生' },
 				].map((metric) => (
 					<View
 						key={metric.label}
@@ -119,18 +119,18 @@ export default function ListeningRecordSection({
 					variant='bodySmall'
 					style={{ color: colors.error }}
 				>
-					听歌摘要加载失败
+					再生の概要を読み込めませんでした
 				</Text>
 			)}
 			{isError ? (
-				<Button onPress={() => void refetch()}>听歌记录加载失败，重试</Button>
+				<Button onPress={() => void refetch()}>再生記録の読み込みに失敗しました。再試行</Button>
 			) : isPending ? (
 				<View
 					style={[
 						styles.heatmapPlaceholder,
 						{ backgroundColor: colors.surfaceVariant },
 					]}
-					accessibilityLabel='正在加载听歌记录'
+					accessibilityLabel='再生記録を読み込み中'
 				/>
 			) : (
 				<WeeklyHeatMap
@@ -160,7 +160,7 @@ export default function ListeningRecordSection({
 				variant='bodySmall'
 				style={[styles.hint, { color: colors.onSurfaceVariant }]}
 			>
-				时长仅统计完整播放 · 点击日期查看历史
+				時間は最後まで再生したものだけを集計 · 日付をタップして履歴を見る
 			</Text>
 		</View>
 	)

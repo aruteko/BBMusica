@@ -23,7 +23,7 @@ export const useSetUserFollowing = (mid: number) => {
 				mid,
 				attribute: following ? (previous?.attribute === 6 ? 6 : 2) : 0,
 			}))
-			toast.success(following ? '已关注' : '已取消关注')
+			toast.success(following ? 'フォローしました' : 'フォローを解除しました')
 			await Promise.all([
 				queryClient.invalidateQueries({
 					queryKey: relationQueryKeys.relation(account, mid),
@@ -34,6 +34,6 @@ export const useSetUserFollowing = (mid: number) => {
 			])
 		},
 		onError: (error) =>
-			toastAndLogError('修改关注状态失败', error, 'Bilibili.Relations'),
+			toastAndLogError('フォロー状態の変更に失敗しました', error, 'Bilibili.Relations'),
 	})
 }

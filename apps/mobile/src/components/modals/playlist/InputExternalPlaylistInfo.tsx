@@ -31,10 +31,10 @@ const InputExternalPlaylistInfoModal = () => {
 
 	return (
 		<>
-			<Dialog.Title>输入外部歌单信息</Dialog.Title>
+			<Dialog.Title>外部プレイリストの情報を入力</Dialog.Title>
 			<Dialog.Content>
 				<TextInput
-					label='歌单 ID / 链接'
+					label='プレイリストID / リンク'
 					value={input}
 					onChangeText={(text) => {
 						setInput(text)
@@ -47,25 +47,25 @@ const InputExternalPlaylistInfoModal = () => {
 					style={styles.input}
 				/>
 				<View style={styles.segmentedContainer}>
-					<Text style={styles.label}>来源：</Text>
+					<Text style={styles.label}>ソース：</Text>
 					<SegmentedControl
 						selectedIndex={source === 'netease' ? 0 : 1}
 						onChange={(event) => {
 							const selectedIndex = event.nativeEvent.selectedSegmentIndex
 							setSource(selectedIndex === 0 ? 'netease' : 'qq')
 						}}
-						values={['网易云音乐', 'QQ音乐']}
+						values={['NetEase Cloud Music', 'QQ音楽']}
 						style={styles.segmentedButtons}
 					/>
 				</View>
 			</Dialog.Content>
 			<Dialog.Actions>
-				<Button onPress={() => close('InputExternalPlaylistInfo')}>取消</Button>
+				<Button onPress={() => close('InputExternalPlaylistInfo')}>キャンセル</Button>
 				<Button
 					onPress={handleConfirm}
 					disabled={!input.trim()}
 				>
-					确定
+					OK
 				</Button>
 			</Dialog.Actions>
 		</>

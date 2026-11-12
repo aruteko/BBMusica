@@ -22,7 +22,7 @@ let restoreInProgress = false
  * 恢复完成后需要重启应用以刷新内存中的设置。
  */
 export async function restoreBackup(filePath: string): Promise<void> {
-	if (restoreInProgress) throw new Error('已有备份正在恢复，请等待完成')
+	if (restoreInProgress) throw new Error('已有备份正在恢复，请等待完了')
 	restoreInProgress = true
 	try {
 		await performRestoreBackup(filePath)
@@ -46,7 +46,7 @@ async function performRestoreBackup(filePath: string): Promise<void> {
 
 	if (manifest.version !== BACKUP_VERSION) {
 		throw new Error(
-			`不支持的备份版本：${String(manifest.version)}。旧版本备份无法安全导入，请使用当前版本重新导出备份。`,
+			`対応していないバックアップのバージョンです：${String(manifest.version)}。古いバックアップは安全に読み込めません。現在のバージョンで書き出し直してください。`,
 		)
 	}
 

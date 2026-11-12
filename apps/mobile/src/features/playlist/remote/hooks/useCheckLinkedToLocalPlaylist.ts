@@ -26,7 +26,7 @@ export default function useCheckLinkedToPlaylist(
 			)
 			if (playlist.isErr()) {
 				toastAndLogError(
-					`查询 ${type}-${remoteId} 是否在本地存在失败`,
+					`${type}-${remoteId} がローカルにあるかの確認に失敗しました`,
 					playlist.error,
 					'UI.Playlist.Remote',
 				)

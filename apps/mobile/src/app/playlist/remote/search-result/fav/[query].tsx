@@ -101,7 +101,7 @@ export default function SearchResultsPage() {
 	}
 
 	if (isErrorSearchData) {
-		return <PlaylistError text='加载失败' />
+		return <PlaylistError text='読み込みに失敗しました' />
 	}
 
 	return (
@@ -110,8 +110,8 @@ export default function SearchResultsPage() {
 				<Appbar.Content
 					title={
 						selectMode
-							? `已选择\u2009${selected.size}\u2009首`
-							: `搜索结果\u2009-\u2009${query}`
+							? `${selected.size}\u2009曲を選択中`
+							: `検索結果\u2009-\u2009${query}`
 					}
 					onPress={handleDoubleTap}
 				/>
@@ -168,7 +168,7 @@ export default function SearchResultsPage() {
 						<Text
 							style={[styles.emptyListText, { color: colors.onSurfaceVariant }]}
 						>
-							没有在收藏中找到与&thinsp;&ldquo;{query}&rdquo;&thinsp;相关的内容
+							お気に入りの中に&thinsp;&ldquo;{query}&rdquo;&thinsp;に関する結果が見つかりません
 						</Text>
 					}
 				/>

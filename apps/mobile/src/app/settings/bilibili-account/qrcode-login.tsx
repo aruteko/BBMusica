@@ -40,7 +40,7 @@ type Action =
 
 const initialState: State = {
 	status: 'generating',
-	statusText: '正在生成二维码...',
+	statusText: 'QRコードを生成中...',
 	qrcodeKey: '',
 	qrcodeUrl: '',
 }
@@ -53,7 +53,7 @@ function reducer(state: State, action: Action): State {
 			return {
 				...state,
 				status: 'polling',
-				statusText: '等待扫码',
+				statusText: '読み取り待ち',
 				qrcodeKey: action.payload.qrcode_key,
 				qrcodeUrl: action.payload.url,
 			}
@@ -61,19 +61,19 @@ function reducer(state: State, action: Action): State {
 			return {
 				...state,
 				status: 'error',
-				statusText: `获取二维码失败: ${action.payload}`,
+				statusText: `QRコードの取得に失敗しました: ${action.payload}`,
 			}
 		case 'POLL_UPDATE':
 			switch (action.payload.code) {
 				case BilibiliQrCodeLoginStatus.QRCODE_LOGIN_STATUS_WAIT:
-					return { ...state, statusText: '等待扫码' }
+					return { ...state, statusText: '読み取り待ち' }
 				case BilibiliQrCodeLoginStatus.QRCODE_LOGIN_STATUS_SCANNED_BUT_NOT_CONFIRMED:
-					return { ...state, statusText: '已扫码，等待确认' }
+					return { ...state, statusText: '読み取り済み。確認待ち' }
 				case BilibiliQrCodeLoginStatus.QRCODE_LOGIN_STATUS_QRCODE_EXPIRED:
 					return {
 						...state,
 						status: 'expired',
-						statusText: '二维码已过期',
+						statusText: 'QRコードの有効期限が切れました',
 						qrcodeKey: '',
 						qrcodeUrl: '',
 					}
@@ -81,7 +81,7 @@ function reducer(state: State, action: Action): State {
 					return state
 			}
 		case 'LOGIN_SUCCESS':
-			return { ...state, status: 'success', statusText: '登录成功' }
+			return { ...state, status: 'success', statusText: 'ログインしました' }
 	}
 }
 
@@ -111,7 +111,7 @@ export default function QrCodeLoginPage() {
 					type: 'GENERATE_FAILURE',
 					payload: response.error.message,
 				})
-				toast.error('获取二维码失败', { id: 'bilibili-qrcode-login-error' })
+				toast.error('QRコードの取得に失敗しました', { id: 'bilibili-qrcode-login-error' })
 			} else {
 				dispatch({ type: 'GENERATE_SUCCESS', payload: response.value })
 			}
@@ -125,7 +125,7 @@ export default function QrCodeLoginPage() {
 		const interval = setInterval(async () => {
 			const response = await bilibiliApi.pollQrCodeLoginStatus({ qrcodeKey })
 			if (response.isErr()) {
-				toast.error('获取二维码登录状态失败', {
+				toast.error('QRコードのログイン状態の取得に失敗しました', {
 					id: 'bilibili-qrcode-login-status-error',
 				})
 				return
@@ -148,13 +148,13 @@ export default function QrCodeLoginPage() {
 				)
 				const result = setCookie(finalCookieObject)
 				if (result.isErr()) {
-					toast.error('保存 Cookie 失败：' + result.error.message)
+					toast.error('Cookieの保存に失敗しました：' + result.error.message)
 					Sentry.captureException(result.error, {
 						tags: { Page: 'QrCodeLoginPage' },
 					})
 					return
 				}
-				toast.success('登录成功', { id: 'bilibili-qrcode-login-success' })
+				toast.success('ログインしました', { id: 'bilibili-qrcode-login-success' })
 				await queryClient.cancelQueries()
 				await queryClient.invalidateQueries({
 					queryKey: favoriteListQueryKeys.all,
@@ -173,7 +173,7 @@ export default function QrCodeLoginPage() {
 		if (!qrcodeUrl) return
 		WebBrowser.openBrowserAsync(qrcodeUrl).catch((e) => {
 			void Clipboard.setStringAsync(qrcodeUrl)
-			toast.error('无法调用浏览器打开网页，已将链接复制到剪贴板', {
+			toast.error('ブラウザを開けないため、リンクをクリップボードにコピーしました', {
 				description: String(e),
 			})
 		})
@@ -184,7 +184,7 @@ export default function QrCodeLoginPage() {
 			case 'generating':
 				return colors.primary
 			case 'polling':
-				return statusText.includes('确认') ? '#4CAF50' : '#FFB300'
+				return statusText.includes('確認') ? '#4CAF50' : '#FFB300'
 			case 'success':
 				return '#4CAF50'
 			case 'expired':
@@ -199,7 +199,7 @@ export default function QrCodeLoginPage() {
 		<View style={[styles.container, { backgroundColor: colors.background }]}>
 			<Appbar.Header elevated>
 				<Appbar.BackAction onPress={() => router.back()} />
-				<Appbar.Content title='扫码登录 Bilibili' />
+				<Appbar.Content title='QRコードでBilibiliにログイン' />
 			</Appbar.Header>
 			<ScrollView
 				style={styles.container}
@@ -220,7 +220,7 @@ export default function QrCodeLoginPage() {
 							variant='headlineSmall'
 							style={styles.brandTitle}
 						>
-							Bilibili 扫码登录
+							BilibiliのQRコードログイン
 						</Text>
 					</View>
 				)}
@@ -287,14 +287,14 @@ export default function QrCodeLoginPage() {
 									variant='titleMedium'
 									style={styles.overlayText}
 								>
-									{status === 'expired' ? '二维码已失效' : '获取失败'}
+									{status === 'expired' ? 'QRコードが無効になりました' : '取得に失敗しました'}
 								</Text>
 								<Button
 									mode='contained'
 									onPress={() => dispatch({ type: 'RESET' })}
 									style={styles.refreshButton}
 								>
-									刷新二维码
+									QRコードを更新
 								</Button>
 							</View>
 						)}
@@ -311,7 +311,7 @@ export default function QrCodeLoginPage() {
 						icon='open-in-new'
 						testID='qrcode-open-client'
 					>
-						在 Bilibili 客户端打开
+						Bilibiliアプリで開く
 					</Button>
 				) : null}
 
@@ -319,9 +319,9 @@ export default function QrCodeLoginPage() {
 					variant='bodyMedium'
 					style={[styles.hintText, { color: colors.onSurfaceVariant }]}
 				>
-					请使用 Bilibili 客户端扫描上方二维码。
+					Bilibiliアプリで上のQRコードを読み取ってください。
 					{'\n'}
-					若处于同一台设备，可点击按钮直接跳转 B 站进行确认。
+					同じ端末の場合は、ボタンからBilibiliに移動して確認できます。
 				</Text>
 			</ScrollView>
 		</View>

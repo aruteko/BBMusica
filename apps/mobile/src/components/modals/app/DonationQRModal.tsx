@@ -35,8 +35,8 @@ export default function DonationQRModal({
 			if (needsPermission) {
 				const { granted } = await requestPermission()
 				if (!granted) {
-					toast.error('无法保存图片', {
-						description: '请在设置中允许访问相册',
+					toast.error('画像を保存できません', {
+						description: '設定でアルバムへのアクセスを許可してください',
 					})
 					return
 				}
@@ -57,19 +57,19 @@ export default function DonationQRModal({
 			}
 
 			if (!uri) {
-				toast.error('保存失败', { description: '无法获取图片路径' })
+				toast.error('保存に失敗しました', { description: '画像のパスを取得できません' })
 				return
 			}
 
 			await MediaLibrary.Asset.create(uri)
-			toast.success('已保存到相册')
+			toast.success('アルバムに保存しました')
 		} catch (e) {
-			toast.error('保存失败', { description: String(e) })
+			toast.error('保存に失敗しました', { description: String(e) })
 		}
 	}
 
 	const qrImage = currentType === 'wechat' ? WECHAT_QR : ALIPAY_QR
-	const title = currentType === 'wechat' ? '微信支付' : '支付宝'
+	const title = currentType === 'wechat' ? 'WeChat Pay' : 'Alipay'
 
 	return (
 		<>
@@ -82,7 +82,7 @@ export default function DonationQRModal({
 							const selectedIndex = event.nativeEvent.selectedSegmentIndex
 							setCurrentType(selectedIndex === 0 ? 'wechat' : 'alipay')
 						}}
-						values={['微信支付', '支付宝']}
+						values={['WeChat Pay', 'Alipay']}
 					/>
 				</View>
 				<View style={styles.imageContainer}>
@@ -105,13 +105,13 @@ export default function DonationQRModal({
 							variant='bodySmall'
 							style={styles.hint}
 						>
-							长按保存收款码
+							長押しで支払い用QRコードを保存
 						</Text>
 					</Pressable>
 				</View>
 			</Dialog.Content>
 			<Dialog.Actions>
-				<Button onPress={() => close('DonationQR')}>关闭</Button>
+				<Button onPress={() => close('DonationQR')}>閉じる</Button>
 			</Dialog.Actions>
 		</>
 	)

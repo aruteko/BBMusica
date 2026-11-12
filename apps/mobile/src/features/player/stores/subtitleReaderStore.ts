@@ -133,7 +133,7 @@ export function createSubtitleReaderStore(
 					resumeFollowing()
 				}
 			} catch (error) {
-				toastAndLogError('字幕跳转失败', error, 'Player.Subtitles')
+				toastAndLogError('字幕への移動に失敗しました', error, 'Player.Subtitles')
 			}
 		},
 	}

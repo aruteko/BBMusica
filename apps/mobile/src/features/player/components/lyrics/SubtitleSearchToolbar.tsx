@@ -70,7 +70,7 @@ export function SubtitleSearchToolbar({
 						onPress={onSelect}
 						disabled={!canSelect}
 						accessibilityRole='button'
-						accessibilityLabel={`选择字幕：${label}`}
+						accessibilityLabel={`字幕を選択：${label}`}
 						testID='subtitle-language'
 						style={[
 							styles.language,
@@ -106,8 +106,8 @@ export function SubtitleSearchToolbar({
 					>
 						<Searchbar
 							ref={input}
-							placeholder='搜索本期字幕'
-							accessibilityLabel='搜索本期字幕'
+							placeholder='この動画の字幕を検索'
+							accessibilityLabel='この動画の字幕を検索'
 							testID='subtitle-search-input'
 							value={search}
 							onChangeText={onChangeSearch}
@@ -116,7 +116,7 @@ export function SubtitleSearchToolbar({
 							right={() => (
 								<IconButton
 									icon='close'
-									accessibilityLabel='关闭字幕搜索'
+									accessibilityLabel='字幕の検索を閉じる'
 									onPress={onClose}
 									style={styles.icon}
 								/>
@@ -129,7 +129,7 @@ export function SubtitleSearchToolbar({
 					{!visible && (
 						<IconButton
 							icon='magnify'
-							accessibilityLabel='搜索字幕'
+							accessibilityLabel='字幕を検索'
 							testID='subtitle-search-open'
 							disabled={!canSearch}
 							onPress={onOpen}
@@ -146,13 +146,13 @@ export function SubtitleSearchToolbar({
 						style={{ color: colors.onSurfaceVariant, flex: 1 }}
 					>
 						{resultCount
-							? `${resultIndex + 1} / ${resultCount} 段匹配`
-							: '未找到匹配内容'}
+							? `${resultIndex + 1} / ${resultCount} 件一致`
+							: '一致する内容が見つかりません'}
 					</VariantPlainText>
 					<View style={styles.navigation}>
 						<IconButton
 							icon='chevron-up'
-							accessibilityLabel='上一条搜索结果'
+							accessibilityLabel='前の検索結果'
 							testID='subtitle-search-previous'
 							disabled={!hasQuery || !resultCount || resultIndex === 0}
 							onPress={() => onNavigate(-1)}
@@ -160,7 +160,7 @@ export function SubtitleSearchToolbar({
 						/>
 						<IconButton
 							icon='chevron-down'
-							accessibilityLabel='下一条搜索结果'
+							accessibilityLabel='次の検索結果'
 							testID='subtitle-search-next'
 							disabled={!hasQuery || resultIndex >= resultCount - 1}
 							onPress={() => onNavigate(1)}

@@ -197,7 +197,7 @@ export const TrackListItem = memo(function TrackListItem({
 										variant='bodySmall'
 										numberOfLines={1}
 									>
-										{data.artistName ?? '未知'}
+										{data.artistName ?? '不明'}
 									</VariantPlainText>
 									<VariantPlainText
 										style={styles.dotSeparator}

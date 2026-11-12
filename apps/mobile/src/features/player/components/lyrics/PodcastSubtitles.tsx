@@ -64,7 +64,7 @@ export function PodcastSubtitles({ active }: { active: boolean }) {
 				subtitleLabel(data.selected),
 			)
 		} catch (error) {
-			toastAndLogError('字幕导出失败', error, 'Player.Subtitles')
+			toastAndLogError('字幕のエクスポートに失敗しました', error, 'Player.Subtitles')
 		} finally {
 			exportingRef.current = false
 			setExporting(false)
@@ -79,7 +79,7 @@ export function PodcastSubtitles({ active }: { active: boolean }) {
 		>
 			<SubtitleReaderToolbar
 				store={store}
-				label={data.selected ? subtitleLabel(data.selected) : 'B 站字幕'}
+				label={data.selected ? subtitleLabel(data.selected) : 'Bilibiliの字幕'}
 				canSelect={!!data.tracks.length}
 				canSearch={!!data.lines.length}
 				onSelect={openPicker}
@@ -88,34 +88,34 @@ export function PodcastSubtitles({ active }: { active: boolean }) {
 				{data.isLoading || (data.lines.length > 0 && !playbackReady) ? (
 					<View style={styles.message}>
 						<ActivityIndicator />
-						<Text>正在加载字幕…</Text>
+						<Text>字幕を読み込み中…</Text>
 					</View>
 				) : data.isError ? (
 					<View style={styles.message}>
-						<Text>字幕加载失败，播放不受影响</Text>
+						<Text>字幕の読み込みに失敗しました（再生には影響しません）</Text>
 						<Button
 							onPress={() => {
 								void data.retry()
 							}}
 						>
-							重试
+							再試行
 						</Button>
 					</View>
 				) : !data.lines.length ? (
 					<View style={styles.message}>
 						<Text>
 							{data.isLocal
-								? '本地音频不支持 B 站字幕'
+								? 'ローカルの音声はBilibiliの字幕に対応していません'
 								: data.selected
-									? '这份字幕暂无内容，可尝试切换其他字幕'
-									: '此视频暂无可用字幕'}
+									? 'この字幕には内容がありません。ほかの字幕に切り替えてみてください'
+									: 'この動画には利用できる字幕がありません'}
 						</Text>
 						{!data.isLocal && !hasBilibiliCookie && (
 							<Text
 								variant='bodySmall'
 								style={{ color: colors.onSurfaceVariant }}
 							>
-								部分字幕需要先在「我的」登录 B 站账号
+								一部の字幕は、先に「マイページ」でBilibiliにログインする必要があります
 							</Text>
 						)}
 					</View>
@@ -171,10 +171,10 @@ export function PodcastSubtitles({ active }: { active: boolean }) {
 					visible={pickerVisible && active}
 					onDismiss={() => setPickerVisible(false)}
 				>
-					<Dialog.Title>选择字幕</Dialog.Title>
+					<Dialog.Title>字幕を選択</Dialog.Title>
 					<Dialog.Content>
 						<Text variant='bodyMedium'>
-							记住你的语言偏好；没有对应字幕时优先使用人工字幕。
+							言語の設定を記憶します。該当する字幕がないときは、人が作成した字幕を優先します。
 						</Text>
 					</Dialog.Content>
 					<Dialog.ScrollArea style={{ maxHeight: 320 }}>
@@ -224,9 +224,9 @@ export function PodcastSubtitles({ active }: { active: boolean }) {
 							}}
 							testID='subtitle-export-lrc'
 						>
-							导出 LRC
+							LRCをエクスポート
 						</Button>
-						<Button onPress={() => setPickerVisible(false)}>完成</Button>
+						<Button onPress={() => setPickerVisible(false)}>完了</Button>
 					</Dialog.Actions>
 				</Dialog>
 			</Portal>

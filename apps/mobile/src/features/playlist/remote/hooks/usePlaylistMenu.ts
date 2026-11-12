@@ -42,19 +42,19 @@ export function usePlaylistMenu(
 	return useCallback(
 		(item: BilibiliTrack) => [
 			{
-				title: '下一首播放',
+				title: '次に再生',
 				leadingIcon: PLAY_NEXT_ICON,
 				onPress: () => {
 					playTrack(item, true)
-					toast.success('添加到下一首播放成功')
+					toast.success('次に再生に追加しました')
 				},
 			},
 			{
-				title: '查看详细信息',
+				title: '詳細を表示',
 				leadingIcon: INFO_ICON,
 				onPress: () => {
 					if (pathname.includes('multipage')) {
-						toast.info('你已经在这里了，没法更深入了！')
+						toast.info('すでにここにいます。これ以上は深く進めません！')
 						return
 					}
 					router.navigate({
@@ -71,18 +71,18 @@ export function usePlaylistMenu(
 				},
 			},
 			{
-				title: '添加到本地歌单',
+				title: 'ローカルプレイリストに追加',
 				leadingIcon: ADD_TO_PLAYLIST_ICON,
 				onPress: () => {
 					openModal('UpdateTrackLocalPlaylists', { track: item })
 				},
 			},
 			{
-				title: '查看 up 主作品',
+				title: '投稿者の動画を表示',
 				leadingIcon: ARTIST_ICON,
 				onPress: () => {
 					if (!item.artist?.remoteId) {
-						toast.error('未找到 up 主信息')
+						toast.error('投稿者の情報が見つかりません')
 						return
 					}
 					router.navigate({

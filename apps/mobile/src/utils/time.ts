@@ -39,8 +39,8 @@ export const formatDurationToText = (seconds: number): string => {
 	const hours = Math.floor(seconds / 3600)
 	const minutes = Math.floor((seconds % 3600) / 60)
 	let text = ''
-	if (hours > 0) text += `${hours} 小时 `
-	text += `${minutes} 分钟`
+	if (hours > 0) text += `${hours} 時間 `
+	text += `${minutes} 分`
 	return text.trim()
 }
 

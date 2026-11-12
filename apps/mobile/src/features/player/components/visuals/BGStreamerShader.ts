@@ -35,13 +35,13 @@ try {
 	backgroundStreamerShader = Skia.RuntimeEffect.Make(GLSL_SHADER_SOURCE)
 } catch (e) {
 	toastAndLogError(
-		'无法加载流光效果着色器，已自动回退到渐变模式',
+		'流光エフェクトのシェーダーを読み込めないため、グラデーションに切り替えました',
 		e,
 		'Features.Player.BGStreamerShader',
 	)
 	reportErrorToSentry(
 		e,
-		'无法加载流光效果着色器',
+		'流光エフェクトのシェーダーを読み込めません',
 		'Features.Player.BGStreamerShader',
 	)
 	useAppStore.getState().setSettings({

@@ -42,7 +42,7 @@ export const SubtitleParagraphItem = memo(function SubtitleParagraphItem({
 			<Pressable
 				onPress={() => onSeek(paragraph.cues[0].index)}
 				accessibilityRole='button'
-				accessibilityLabel={`跳转到 ${formatDurationToHHMMSS(Math.floor(paragraph.startTime / 1000))}`}
+				accessibilityLabel={`${formatDurationToHHMMSS(Math.floor(paragraph.startTime / 1000))} に移動`}
 			>
 				<VariantPlainText
 					variant='labelMedium'
@@ -71,7 +71,7 @@ export const SubtitleParagraphItem = memo(function SubtitleParagraphItem({
 							<Text
 								onPress={() => onSeek(index)}
 								accessibilityRole='button'
-								accessibilityLabel={`从此句播放：${line.content}`}
+								accessibilityLabel={`この行から再生：${line.content}`}
 								style={{
 									backgroundColor: spoken
 										? colors.secondaryContainer

@@ -12,7 +12,7 @@ export default function GlobalErrorFallback({
 }) {
 	return (
 		<View style={styles.container}>
-			<Text style={styles.title}>发生未捕获错误</Text>
+			<Text style={styles.title}>予期しないエラーが発生しました</Text>
 			<Text style={styles.message}>
 				{error instanceof Error ? flatErrorMessage(error) : String(error)}
 			</Text>
@@ -21,7 +21,7 @@ export default function GlobalErrorFallback({
 				labelStyle={styles.buttonLabel}
 				onPress={resetError}
 			>
-				重试
+				再試行
 			</Button>
 		</View>
 	)

@@ -40,12 +40,12 @@ export default function AppearanceSettingsPage() {
 
 	const nowPlayingBarStyleMenu = useMenuActions([
 		{
-			title: '悬浮（默认）',
+			title: 'フローティング（既定）',
 			state: nowPlayingBarStyle === 'float' ? 'on' : 'off',
 			onPress: () => setSettings({ nowPlayingBarStyle: 'float' }),
 		},
 		{
-			title: '沉浸',
+			title: '没入',
 			state: nowPlayingBarStyle === 'bottom' ? 'on' : 'off',
 			onPress: () => setSettings({ nowPlayingBarStyle: 'bottom' }),
 		},
@@ -53,12 +53,12 @@ export default function AppearanceSettingsPage() {
 
 	const playerBackgroundStyleMenu = useMenuActions([
 		{
-			title: '流体效果（默认）',
+			title: '流体エフェクト（既定）',
 			state: playerBackgroundStyle === 'fluid' ? 'on' : 'off',
 			onPress: () => setSettings({ playerBackgroundStyle: 'fluid' }),
 		},
 		{
-			title: '普通渐变',
+			title: '通常のグラデーション',
 			state: playerBackgroundStyle === 'gradient' ? 'on' : 'off',
 			onPress: () => setSettings({ playerBackgroundStyle: 'gradient' }),
 		},
@@ -78,12 +78,12 @@ export default function AppearanceSettingsPage() {
 					Orpheus.isSpectrumVisualizerEnabled = true
 				} else {
 					alert(
-						'需要麦克风权限',
-						'音频频谱功能需要访问麦克风以分析音频数据。这不会录制任何声音。',
+						'マイクの権限が必要です',
+						'音声スペクトラムは、音声データを分析するためにマイクへのアクセスが必要です。音を録音することはありません。',
 						[
-							{ text: '取消' },
+							{ text: 'キャンセル' },
 							{
-								text: '确认',
+								text: '確認',
 								onPress: () => {
 									void PermissionsAndroid.request(
 										PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
@@ -108,7 +108,7 @@ export default function AppearanceSettingsPage() {
 		<View style={[styles.container, { backgroundColor: colors.background }]}>
 			<Appbar.Header>
 				<Appbar.BackAction onPress={() => router.back()} />
-				<Appbar.Content title='外观与主题' />
+				<Appbar.Content title='外観とテーマ' />
 			</Appbar.Header>
 			<ScrollView
 				style={styles.scrollView}
@@ -118,17 +118,17 @@ export default function AppearanceSettingsPage() {
 				]}
 			>
 				<SettingsSectionTitle
-					title='显示'
+					title='表示'
 					first
 				/>
 				<View style={styles.settingRow}>
 					<View style={styles.settingTextContainer}>
-						<Text>纯白背景</Text>
+						<Text>純白の背景</Text>
 						<Text
 							variant='bodySmall'
 							style={{ color: colors.onSurfaceVariant }}
 						>
-							仅用于墨水屏
+							電子ペーパー向け
 						</Text>
 					</View>
 					<UniversalSwitch
@@ -139,15 +139,15 @@ export default function AppearanceSettingsPage() {
 						testID='pure-white-background-switch'
 					/>
 				</View>
-				<SettingsSectionTitle title='播放器' />
+				<SettingsSectionTitle title='プレーヤー' />
 				<View style={styles.settingRow}>
 					<View style={styles.settingTextContainer}>
-						<Text>显示音频频谱</Text>
+						<Text>音声スペクトラムを表示</Text>
 						<Text
 							variant='bodySmall'
 							style={{ color: colors.onSurfaceVariant }}
 						>
-							在播放器封面周围显示实时音频频谱
+							プレーヤーのカバーの周りにリアルタイムの音声スペクトラムを表示します
 						</Text>
 					</View>
 					<UniversalSwitch
@@ -157,7 +157,7 @@ export default function AppearanceSettingsPage() {
 				</View>
 				{Platform.OS === 'android' && (
 					<View style={styles.settingRow}>
-						<Text>选择底部播放条样式</Text>
+						<Text>下部の再生バーのスタイルを選択</Text>
 						<MenuView {...nowPlayingBarStyleMenu}>
 							<IconButton
 								icon='palette'
@@ -167,7 +167,7 @@ export default function AppearanceSettingsPage() {
 					</View>
 				)}
 				<View style={styles.settingRow}>
-					<Text>选择播放器背景样式</Text>
+					<Text>プレーヤーの背景スタイルを選択</Text>
 					<MenuView {...playerBackgroundStyleMenu}>
 						<IconButton
 							icon='palette'
@@ -176,7 +176,7 @@ export default function AppearanceSettingsPage() {
 					</MenuView>
 				</View>
 
-				<SettingsSectionTitle title='主题' />
+				<SettingsSectionTitle title='テーマ' />
 				<ThemeSection disabled={pureWhiteBackground} />
 			</ScrollView>
 		</View>

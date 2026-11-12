@@ -48,7 +48,7 @@ export const useSmartFetchLyrics = (enable: boolean, track?: Track) => {
 					tlyric: undefined,
 					romalrc: undefined,
 					manualSkip: true,
-					errorMessage: '已跳过歌词获取，但你可以重新搜索或编辑歌词',
+					errorMessage: '歌詞の取得をスキップしましたが、再検索や編集はできます',
 					misc: undefined,
 				} satisfies LyricFileData
 			}

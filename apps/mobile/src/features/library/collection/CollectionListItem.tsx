@@ -47,10 +47,10 @@ const CollectionListItem = memo(({ item }: { item: BilibiliCollection }) => {
 								{item.title}
 							</Text>
 							<Text variant='bodySmall'>
-								{item.state === 0 ? item.upper.name : '已失效'}
+								{item.state === 0 ? item.upper.name : '無効'}
 								{'\u2009'}•{''}
 								{item.media_count}
-								{'\u2009'}首歌曲
+								{'\u2009'}曲
 							</Text>
 						</View>
 						<Icon

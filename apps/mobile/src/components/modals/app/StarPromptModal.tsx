@@ -26,7 +26,7 @@ export default function StarPromptModal() {
 			await WebBrowser.openBrowserAsync(GITHUB_REPO_URL)
 		} catch (e) {
 			await Clipboard.setStringAsync(GITHUB_REPO_URL)
-			toast.error('无法打开浏览器，已将链接复制到剪贴板', {
+			toast.error('ブラウザを開けないため、リンクをクリップボードにコピーしました', {
 				description: String(e),
 			})
 		}
@@ -35,17 +35,17 @@ export default function StarPromptModal() {
 
 	return (
 		<>
-			<Dialog.Title>喜欢 BBPlayer 吗？</Dialog.Title>
+			<Dialog.Title>BBPlayerを気に入っていただけましたか？</Dialog.Title>
 			<Dialog.Content>
 				<Text variant='bodyMedium'>
-					如果觉得好用的话，欢迎到 GitHub 点一个 Star 支持一下 🥺
+					気に入っていただけたら、GitHubでStarを付けて応援してください 🥺
 				</Text>
 			</Dialog.Content>
 			<Dialog.Actions style={styles.actionsContainer}>
-				<Button onPress={handleDontShowAgain}>不再显示</Button>
+				<Button onPress={handleDontShowAgain}>今後表示しない</Button>
 				<View style={styles.rightActionsContainer}>
-					<Button onPress={handleClose}>取消</Button>
-					<Button onPress={() => void handleGoStar()}>去 star</Button>
+					<Button onPress={handleClose}>キャンセル</Button>
+					<Button onPress={() => void handleGoStar()}>Starを付ける</Button>
 				</View>
 			</Dialog.Actions>
 		</>

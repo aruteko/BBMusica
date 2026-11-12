@@ -56,7 +56,7 @@ export function getCsrfToken(): Result<string, BilibiliApiError> {
 	if (!cookieList)
 		return err(
 			new BilibiliApiError({
-				message: '未找到 Cookie',
+				message: 'Cookieが見つかりません',
 				type: 'NoCookie',
 			}),
 		)
@@ -64,7 +64,7 @@ export function getCsrfToken(): Result<string, BilibiliApiError> {
 	if (!csrfToken) {
 		return err(
 			new BilibiliApiError({
-				message: '未找到 CSRF Token',
+				message: 'CSRFトークンが見つかりません',
 				type: 'CsrfError',
 			}),
 		)

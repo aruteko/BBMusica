@@ -83,13 +83,13 @@ export const SongShareCard = ({
 							variant='bodyMedium'
 							style={{ color: 'rgba(255,255,255,0.8)', fontWeight: 'bold' }}
 						>
-							长按识别二维码
+							長押しでQRコードを読み取る
 						</Text>
 						<Text
 							variant='labelSmall'
 							style={{ color: 'rgba(255,255,255,0.6)', marginTop: 4 }}
 						>
-							一起来听歌！
+							いっしょに聴こう！
 						</Text>
 						<View style={styles.logoContainer}>
 							<Text

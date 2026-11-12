@@ -123,17 +123,17 @@ function DownloadedItem({
 
 	const menuActions = useMenuActions([
 		{
-			title: '导出',
+			title: 'エクスポート',
 			image: EXPORT_ICON,
 			onPress: () => onSingleExport(item.id),
 		},
 		{
-			title: '删除',
+			title: '削除',
 			image: DELETE_ICON,
 			onPress: () => onDelete(item.id),
 		},
 		{
-			title: '下一首播放',
+			title: '次に再生',
 			image: PLAY_NEXT_ICON,
 			onPress: () => onPlayNext(item),
 			attributes: { disabled: !item.track },
@@ -192,7 +192,7 @@ function DownloadedItem({
 					<CoverWithPlaceHolder
 						id={item.id}
 						cover={track?.artwork}
-						title={track?.title ?? '未知曲目'}
+						title={track?.title ?? '不明な曲'}
 						size={LIST_ITEM_COVER_SIZE}
 					/>
 
@@ -201,7 +201,7 @@ function DownloadedItem({
 							variant='bodySmall'
 							numberOfLines={1}
 						>
-							{track?.title ?? '未知曲目'}
+							{track?.title ?? '不明な曲'}
 						</Text>
 						<View style={styles.detailsContainer}>
 							{track?.artist && (
@@ -286,7 +286,7 @@ export default function DownloadedPage() {
 
 	const handlePlayItem = useCallback((item: DownloadTask) => {
 		if (!item.track) {
-			toast.error('当前下载项缺少歌曲信息，无法播放')
+			toast.error('このダウンロードには曲の情報がないため、再生できません')
 			return
 		}
 
@@ -294,7 +294,7 @@ export default function DownloadedPage() {
 			tracks: [item.track],
 			startFromKey: item.track.id,
 		}).catch((error: unknown) =>
-			toastAndLogError('播放失败', error, 'Downloaded.Page'),
+			toastAndLogError('再生に失敗しました', error, 'Downloaded.Page'),
 		)
 	}, [])
 
@@ -306,23 +306,23 @@ export default function DownloadedPage() {
 				const permissionResult = await PermissionsAndroid.request(
 					PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
 					{
-						title: '存储权限',
-						message: '导出歌曲到公共音乐目录需要存储权限',
-						buttonPositive: '确定',
-						buttonNegative: '取消',
+						title: 'ストレージの権限',
+						message: '曲を公開の音楽フォルダーにエクスポートするには、ストレージの権限が必要です',
+						buttonPositive: 'OK',
+						buttonNegative: 'キャンセル',
 					},
 				)
 				if (permissionResult !== PermissionsAndroid.RESULTS.GRANTED) {
-					toast.error('需要存储权限才能导出到公共音乐目录')
+					toast.error('公開の音楽フォルダーにエクスポートするには、ストレージの権限が必要です')
 					return null
 				}
 			}
-			toast.info('系统不支持目录选择，回退到 Music/BBPlayer')
+			toast.info('フォルダーの選択に対応していないため、Music/BBPlayer に保存します')
 			return PUBLIC_MUSIC_EXPORT_URI
 		}
 
 		ToastAndroid.showWithGravity(
-			'请选择需要导出到的目录',
+			'エクスポート先のフォルダーを選んでください',
 			ToastAndroid.SHORT,
 			ToastAndroid.BOTTOM,
 		)
@@ -332,7 +332,7 @@ export default function DownloadedPage() {
 	const handleSingleExport = useCallback(
 		async (id: string) => {
 			if (Platform.OS !== 'android') {
-				Alert.alert('提示', '音频导出功能目前仅支持 Android 系统')
+				Alert.alert('お知らせ', '音声のエクスポートは、現在 Android のみ対応しています')
 				return
 			}
 
@@ -350,12 +350,12 @@ export default function DownloadedPage() {
 			const task = completedTasks.find((t) => t.id === id)
 			const title = task?.track?.title ?? id
 			alert(
-				'删除下载',
-				`确定要删除「${title}」的下载记录及缓存文件吗？`,
+				'ダウンロードを削除',
+				`「${title}」のダウンロード記録とキャッシュファイルを削除しますか？`,
 				[
-					{ text: '取消' },
+					{ text: 'キャンセル' },
 					{
-						text: '删除',
+						text: '削除',
 						onPress: async () => {
 							try {
 								await Orpheus.removeDownload(id)
@@ -363,7 +363,7 @@ export default function DownloadedPage() {
 									queryKey: orpheusQueryKeys.completedDownloads(),
 								})
 							} catch (e) {
-								toastAndLogError('删除下载失败', e, 'Downloaded.Page')
+								toastAndLogError('ダウンロードの削除に失敗しました', e, 'Downloaded.Page')
 							}
 						},
 					},
@@ -378,9 +378,9 @@ export default function DownloadedPage() {
 		if (!task.track) return
 		try {
 			await enqueueTracks({ tracks: [task.track], playNext: true })
-			toast.success('添加到下一首播放成功')
+			toast.success('次に再生に追加しました')
 		} catch (error) {
-			toastAndLogError('添加到下一首播放失败', error, 'Download')
+			toastAndLogError('次に再生への追加に失敗しました', error, 'Download')
 		}
 	}, [])
 
@@ -391,18 +391,18 @@ export default function DownloadedPage() {
 		if (idsToExport.length === 0) {
 			if (Platform.OS === 'android') {
 				ToastAndroid.showWithGravity(
-					'没有可导出的歌曲',
+					'エクスポートできる曲がありません',
 					ToastAndroid.SHORT,
 					ToastAndroid.BOTTOM,
 				)
 			} else {
-				Alert.alert('提示', '没有可导出的歌曲')
+				Alert.alert('お知らせ', 'エクスポートできる曲がありません')
 			}
 			return
 		}
 
 		if (Platform.OS !== 'android') {
-			Alert.alert('提示', '音频导出功能目前仅支持 Android 系统')
+			Alert.alert('お知らせ', '音声のエクスポートは、現在 Android のみ対応しています')
 			return
 		}
 
@@ -420,17 +420,17 @@ export default function DownloadedPage() {
 		const idsToDelete = Array.from(selected)
 		if (idsToDelete.length === 0) return
 		alert(
-			'批量删除',
-			`确定要删除选中的 ${idsToDelete.length} 首歌曲的下载记录及缓存文件吗？`,
+			'まとめて削除',
+			`選んだ ${idsToDelete.length} 曲のダウンロード記録とキャッシュファイルを削除しますか？`,
 			[
-				{ text: '取消' },
+				{ text: 'キャンセル' },
 				{
-					text: '删除',
+					text: '削除',
 					onPress: () => {
 						removeDownloadsMutation.mutate(idsToDelete, {
 							onSuccess: () => exitSelectMode(),
 							onError: (e) =>
-								toastAndLogError('批量删除失败', e, 'Downloaded.Page'),
+								toastAndLogError('まとめて削除に失敗しました', e, 'Downloaded.Page'),
 						})
 					},
 				},
@@ -494,7 +494,7 @@ export default function DownloadedPage() {
 					onPress={() => (selectMode ? exitSelectMode() : router.back())}
 				/>
 				<Appbar.Content
-					title={selectMode ? `已选择 ${selected.size} 项` : '下载管理'}
+					title={selectMode ? `${selected.size} 件を選択中` : 'ダウンロード管理'}
 				/>
 				{selectMode ? (
 					<>
@@ -540,7 +540,7 @@ export default function DownloadedPage() {
 
 			{isSearching && !selectMode && (
 				<SearchBar
-					placeholder='搜索已下载歌曲'
+					placeholder='ダウンロード済みの曲を検索'
 					onChangeText={setSearchQuery}
 					value={searchQuery}
 					style={styles.searchbar}
@@ -561,7 +561,7 @@ export default function DownloadedPage() {
 					}}
 					ListEmptyComponent={
 						<View style={styles.emptyContainer}>
-							<Text variant='bodyLarge'>没有已下载的歌曲</Text>
+							<Text variant='bodyLarge'>ダウンロード済みの曲がありません</Text>
 						</View>
 					}
 				/>

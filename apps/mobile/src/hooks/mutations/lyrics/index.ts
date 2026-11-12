@@ -23,7 +23,7 @@ export const useFetchLyrics = () => {
 			return result.value
 		},
 		onSuccess: (_, { uniqueKey }) => {
-			toast.show('歌词获取成功')
+			toast.show('歌詞を取得しました')
 			void queryClient.invalidateQueries({
 				queryKey: lyricsQueryKeys.smartFetchLyrics(uniqueKey),
 			})

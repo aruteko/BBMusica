@@ -66,19 +66,19 @@ export const LyricsControlOverlay = memo(function LyricsControlOverlay({
 		if (showTranslationToggle) {
 			const isTranslation = translationType === 'translation'
 			menu.add({
-				title: isTranslation ? '切换罗马音' : '切换翻译',
+				title: isTranslation ? 'ローマ字に切り替え' : '翻訳に切り替え',
 				image: isTranslation ? ALPHABETICAL_ICON : TRANSLATE_ICON,
 				onPress: onToggleTranslation,
 			})
 		}
 
 		menu.add({
-			title: '编辑歌词',
+			title: '歌詞を編集',
 			image: EDIT_ICON,
 			onPress: onEditLyrics,
 		})
 		menu.add({
-			title: '时间轴偏移',
+			title: 'タイミングのずれを調整',
 			image: OFFSET_ICON,
 			onPress: onOpenOffsetMenu,
 		})

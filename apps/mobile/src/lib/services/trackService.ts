@@ -107,14 +107,14 @@ export class TrackService {
 		if (payload.source === 'bilibili' && !payload.bilibiliMetadata) {
 			return errAsync(
 				createValidationError(
-					'当 source 为 bilibili 时，bilibiliMetadata 不能为空。',
+					'source が bilibili の場合、bilibiliMetadata は必須です',
 				),
 			)
 		}
 		if (payload.source === 'local' && !payload.localMetadata) {
 			return errAsync(
 				createValidationError(
-					'当 source 为 local 时，localMetadata 不能为空。',
+					'source が local の場合、localMetadata は必須です',
 				),
 			)
 		}
@@ -177,7 +177,7 @@ export class TrackService {
 			(e) =>
 				e instanceof ServiceError
 					? e
-					: new DatabaseError('创建 track 事务失败', { cause: e }),
+					: new DatabaseError('作成 track 事务失败', { cause: e }),
 		)
 
 		return transactionResult.andThen((newTrackId) =>
@@ -384,7 +384,7 @@ export class TrackService {
 			if (!formattedTrack) {
 				return errAsync(
 					createValidationError(
-						`根据 Bilibili 元数据查找 track 失败：元数据不匹配。`,
+						`Bilibiliのメタデータから曲を検索できません：メタデータが一致しません`,
 					),
 				)
 			}
@@ -434,7 +434,7 @@ export class TrackService {
 					}
 					return errAsync(
 						createValidationError(
-							`已存在的 track ${dbTrack.id} source 与 metadata 不匹配`,
+							`既存の曲 ${dbTrack.id} の source と metadata が一致しません`,
 						),
 					)
 				}
@@ -537,7 +537,7 @@ export class TrackService {
 
 				if (finalUniqueKeyToIdMap.size !== uniqueKeys.length) {
 					throw new DatabaseError(
-						'创建或查找 tracks 后数据不一致，部分 track 未能成功写入或查询。',
+						'曲の作成または検索の後でデータが一致しません。一部の曲を書き込めなかったか、取得できませんでした',
 					)
 				}
 
@@ -548,7 +548,7 @@ export class TrackService {
 								const trackId = finalUniqueKeyToIdMap.get(uniqueKey)
 								if (!trackId) {
 									throw new ServiceError(
-										`该错误不应该出现，无法为 ${uniqueKey} 找到 trackId`,
+										`想定外のエラー：${uniqueKey} の trackId が見つかりません`,
 									)
 								}
 								return {
@@ -574,7 +574,7 @@ export class TrackService {
 						break
 					}
 					case 'local': {
-						throw createNotImplementedError('处理 local source 的逻辑尚未实现')
+						throw createNotImplementedError('ローカルの曲の処理は未実装です')
 					}
 				}
 
@@ -590,7 +590,7 @@ export class TrackService {
 			(e) =>
 				e instanceof ServiceError
 					? e
-					: new DatabaseError('批量查找或创建 tracks 失败', {
+					: new DatabaseError('批量查找或作成 tracks 失败', {
 							cause: e,
 						}),
 		)

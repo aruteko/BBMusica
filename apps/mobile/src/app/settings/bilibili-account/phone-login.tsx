@@ -80,7 +80,7 @@ export default function PhoneLoginPage() {
 		<View style={[styles.container, { backgroundColor: colors.background }]}>
 			<Appbar.Header>
 				<Appbar.BackAction onPress={() => router.back()} />
-				<Appbar.Content title='手机号登录 Bilibili' />
+				<Appbar.Content title='電話番号でBilibiliにログイン' />
 			</Appbar.Header>
 			<KeyboardAvoidingView
 				behavior={Platform.OS === 'ios' ? 'padding' : 'height'}

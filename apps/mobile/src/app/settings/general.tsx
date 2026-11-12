@@ -60,7 +60,7 @@ export default function GeneralSettingsPage() {
 		try {
 			const result = await checkForAppUpdate()
 			if (result.isErr()) {
-				toast.error('检查更新失败', { description: result.error.message })
+				toast.error('アップデートの確認に失敗しました', { description: result.error.message })
 				setIsCheckingForUpdate(false)
 				return
 			}
@@ -73,10 +73,10 @@ export default function GeneralSettingsPage() {
 					openModal('UpdateApp', update)
 				}
 			} else {
-				toast.success('已是最新版本')
+				toast.success('最新バージョンです')
 			}
 		} catch (e) {
-			toast.error('检查更新时发生未知错误', { description: String(e) })
+			toast.error('アップデートの確認中に不明なエラーが発生しました', { description: String(e) })
 		}
 		setIsCheckingForUpdate(false)
 	}
@@ -93,12 +93,12 @@ export default function GeneralSettingsPage() {
 
 	const menuActions = useMenuActions([
 		{
-			title: '搜索',
+			title: 'ホーム',
 			state: startupScreen === 'home' ? 'on' : 'off',
 			onPress: () => setStartupScreen('home'),
 		},
 		{
-			title: '音乐库',
+			title: 'ライブラリ',
 			state: startupScreen === 'library' ? 'on' : 'off',
 			onPress: () => setStartupScreen('library'),
 		},
@@ -108,7 +108,7 @@ export default function GeneralSettingsPage() {
 		<View style={[styles.container, { backgroundColor: colors.background }]}>
 			<Appbar.Header>
 				<Appbar.BackAction onPress={() => router.back()} />
-				<Appbar.Content title='通用设置' />
+				<Appbar.Content title='一般設定' />
 			</Appbar.Header>
 			<ScrollView
 				style={styles.scrollView}
@@ -118,11 +118,11 @@ export default function GeneralSettingsPage() {
 				]}
 			>
 				<SettingsSectionTitle
-					title='启动'
+					title='起動'
 					first
 				/>
 				<View style={styles.settingRow}>
-					<Text>启动时进入</Text>
+					<Text>起動時に開く画面</Text>
 					<MenuView {...menuActions}>
 						<IconButton
 							icon='chevron-down'
@@ -131,24 +131,24 @@ export default function GeneralSettingsPage() {
 					</MenuView>
 				</View>
 
-				<SettingsSectionTitle title='隐私与数据' />
+				<SettingsSectionTitle title='プライバシーとデータ' />
 				<View style={styles.settingRow}>
-					<Text>分享数据（崩溃报告 & 匿名统计）</Text>
+					<Text>データを共有（クラッシュレポートと匿名の統計）</Text>
 					<UniversalSwitch
 						value={enableDataCollection}
 						onValueChange={setEnableDataCollection}
 					/>
 				</View>
 
-				<SettingsSectionTitle title='歌单同步' />
+				<SettingsSectionTitle title='プレイリストの同期' />
 				<View style={styles.settingRow}>
 					<View style={styles.settingTextContainer}>
-						<Text>同步时展开分 P 视频</Text>
+						<Text>同期時に分割P動画を展開</Text>
 						<Text
 							variant='bodySmall'
 							style={{ color: colors.onSurfaceVariant }}
 						>
-							同步 Bilibili 收藏夹 / 合集时，把分 P 视频展开为独立曲目
+							Bilibiliのお気に入り / コレクションを同期するとき、分割P動画を個別の曲として展開します
 						</Text>
 					</View>
 					<UniversalSwitch
@@ -163,9 +163,9 @@ export default function GeneralSettingsPage() {
 					/>
 				</View>
 
-				<SettingsSectionTitle title='更新与维护' />
+				<SettingsSectionTitle title='アップデートとメンテナンス' />
 				<View style={styles.settingRow}>
-					<Text>检查更新</Text>
+					<Text>アップデートを確認</Text>
 					<IconButton
 						icon='update'
 						size={20}
@@ -174,7 +174,7 @@ export default function GeneralSettingsPage() {
 					/>
 				</View>
 				<View style={styles.settingRow}>
-					<Text>分享今日运行日志</Text>
+					<Text>今日の動作ログを共有</Text>
 					<IconButton
 						icon='share-variant'
 						size={20}
@@ -184,16 +184,16 @@ export default function GeneralSettingsPage() {
 					/>
 				</View>
 
-				<SettingsSectionTitle title='开发者' />
+				<SettingsSectionTitle title='開発者' />
 				<View style={styles.settingRow}>
-					<Text>打开{'\u2009Debug\u2009'}日志</Text>
+					<Text>{'\u2009Debug\u2009'}ログを有効にする</Text>
 					<UniversalSwitch
 						value={enableDebugLog}
 						onValueChange={setEnableDebugLog}
 					/>
 				</View>
 				<View style={styles.settingRow}>
-					<Text>开发者页面</Text>
+					<Text>開発者ページ</Text>
 					<IconButton
 						icon='open-in-new'
 						size={20}
@@ -201,7 +201,7 @@ export default function GeneralSettingsPage() {
 					/>
 				</View>
 				<View style={styles.settingRow}>
-					<Text>性能</Text>
+					<Text>パフォーマンス</Text>
 					<IconButton
 						icon='speedometer'
 						size={20}
@@ -229,7 +229,7 @@ async function performShareLog(
 		if (file.exists) {
 			await Sharing.shareAsync(file.uri)
 		} else {
-			toastAndLogError('', new Error('无法分享日志：未找到日志文件'), 'UI.Test')
+			toastAndLogError('', new Error('无法共有日志：未找到日志文件'), 'UI.Test')
 		}
 	} catch (e) {
 		toastAndLogError('', e, 'UI.Settings')

@@ -50,13 +50,13 @@ export default function UpdateAppModal({
 			const canInstall = await canRequestPackageInstallsAsync()
 			if (!canInstall) {
 				await openPackageInstallerSettingsAsync()
-				toast.info('请允许 BBPlayer 安装未知来源应用后再次更新')
+				toast.info('BBPlayerに不明なアプリのインストールを許可してから、もう一度更新してください')
 				return
 			}
 
 			setIsUpdating(true)
-			toastId = toast.loading('正在下载更新包', {
-				description: '下载完成后会打开系统安装器',
+			toastId = toast.loading('アップデートをダウンロード中', {
+				description: 'ダウンロード後、システムのインストーラーが開きます',
 				duration: Infinity,
 			})
 			const downloadUrl = await resolveAndroidDownloadUrl()
@@ -70,12 +70,12 @@ export default function UpdateAppModal({
 				url: downloadUrl,
 				fileName: buildApkFileName(version),
 				title: `BBPlayer ${version}`,
-				description: '下载完成后安装更新',
+				description: 'ダウンロード後にアップデートをインストールします',
 			})
-			toast.success('更新包下载完成', { id: toastId })
+			toast.success('アップデートのダウンロードが完了しました', { id: toastId })
 			close()
 		} catch (e) {
-			toast.error('更新失败，已将下载链接复制到剪贴板', {
+			toast.error('アップデートに失敗しました。ダウンロードのリンクをクリップボードにコピーしました', {
 				description: String(e),
 				id: toastId,
 			})
@@ -89,7 +89,7 @@ export default function UpdateAppModal({
 			if (url) await WebBrowser.openBrowserAsync(url)
 		} catch (e) {
 			void Clipboard.setStringAsync(url)
-			toast.error('无法打开浏览器，已将链接复制到剪贴板', {
+			toast.error('ブラウザを開けないため、リンクをクリップボードにコピーしました', {
 				description: String(e),
 			})
 		}
@@ -118,12 +118,12 @@ export default function UpdateAppModal({
 	return (
 		<>
 			<Dialog.Title testID='update-app-title'>
-				发现新版本 {version}
+				新しいバージョン {version} があります
 			</Dialog.Title>
 			<Dialog.Content>
 				{forced ? (
 					<Text style={[styles.forcedText, { color: colors.error }]}>
-						此更新为强制更新，必须安装后继续使用。
+						このアップデートは必須です。インストールしないと、続けて使えません。
 					</Text>
 				) : null}
 				{listed_notes && listed_notes.length > 0 ? (
@@ -140,7 +140,7 @@ export default function UpdateAppModal({
 				) : (
 					<Text selectable>
 						{/* 小米对联，偷了！ */}
-						{notes?.trim() || '提高软件稳定性，优化软件流畅度'}
+						{notes?.trim() || '安定性と動作の滑らかさを改善しました'}
 					</Text>
 				)}
 			</Dialog.Content>
@@ -150,7 +150,7 @@ export default function UpdateAppModal({
 						onPress={onSkip}
 						disabled={isUpdating}
 					>
-						跳过此版本
+						このバージョンをスキップ
 					</Button>
 				) : (
 					<View />
@@ -161,13 +161,13 @@ export default function UpdateAppModal({
 						onPress={onCancel}
 						disabled={forced || isUpdating}
 					>
-						取消
+						キャンセル
 					</Button>
 					<Button
 						onPress={onUpdate}
 						disabled={isUpdating}
 					>
-						{isUpdating ? '下载中' : '去更新'}
+						{isUpdating ? 'ダウンロード中' : '更新する'}
 					</Button>
 				</View>
 			</Dialog.Actions>

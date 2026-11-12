@@ -114,7 +114,7 @@ export default function FavoritePage() {
 
 	const handleSync = useCallback(() => {
 		if (favoriteData?.pages.flatMap((page) => page.medias).length === 0) {
-			toast.info('收藏夹为空，无需同步')
+			toast.info('お気に入りが空のため、同期は不要です')
 			return
 		}
 
@@ -155,7 +155,7 @@ export default function FavoritePage() {
 	if (isFavoriteDataError) {
 		return (
 			<PlaylistError
-				text='加载收藏夹内容失败'
+				text='お気に入りの内容を読み込めませんでした'
 				onRetry={refetch}
 			/>
 		)
@@ -164,7 +164,7 @@ export default function FavoritePage() {
 	if (!favoriteData.pages[0].info) {
 		return (
 			<PlaylistError
-				text='收藏夹信息无效或不存在'
+				text='お気に入りの情報が無効か、存在しません'
 				onRetry={refetch}
 			/>
 		)
@@ -179,7 +179,7 @@ export default function FavoritePage() {
 				<Appbar.Content
 					title={
 						selectMode
-							? `已选择\u2009${selected.size}\u2009首`
+							? `${selected.size}\u2009曲を選択中`
 							: favoriteData.pages[0].info.title
 					}
 					onPress={handleDoubleTap}
@@ -221,7 +221,7 @@ export default function FavoritePage() {
 						<PlaylistHeader
 							cover={coverRef ?? undefined}
 							title={favoriteData.pages[0].info.title}
-							subtitles={`${favoriteData.pages[0].info.upper.name}\u2009•\u2009${favoriteData.pages[0].info.media_count}\u2009首歌曲`}
+							subtitles={`${favoriteData.pages[0].info.upper.name}\u2009•\u2009${favoriteData.pages[0].info.media_count}\u2009曲`}
 							description={favoriteData.pages[0].info.intro}
 							onClickMainButton={handleSync}
 							mainButtonIcon={'sync'}

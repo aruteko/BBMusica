@@ -42,35 +42,35 @@ const SleepTimerModal = () => {
 	const handleSetTimer = async (minutes: number) => {
 		try {
 			await Orpheus.setSleepTimer(minutes * 60 * 1000)
-			toast.success('设置定时器成功')
+			toast.success('スリープタイマーを設定しました')
 			close('SleepTimer')
 		} catch (e) {
-			toastAndLogError('设置定时器失败', e, 'Modal.SleepTimer')
+			toastAndLogError('スリープタイマーの設定に失敗しました', e, 'Modal.SleepTimer')
 		}
 	}
 
 	const handleCancelTimer = async () => {
 		try {
 			await Orpheus.cancelSleepTimer()
-			toast.success('取消定时器成功')
+			toast.success('スリープタイマーを解除しました')
 			close('SleepTimer')
 		} catch (e) {
-			toastAndLogError('取消定时器失败', e, 'Modal.SleepTimer')
+			toastAndLogError('スリープタイマーの解除に失敗しました', e, 'Modal.SleepTimer')
 		}
 	}
 
 	return (
 		<>
-			<Dialog.Title>定时关闭</Dialog.Title>
+			<Dialog.Title>スリープタイマー</Dialog.Title>
 			<Dialog.Content>
 				{remainingTime ? (
 					<View style={styles.remainingTimeContainer}>
 						<Text variant='headlineMedium'>
-							剩余 {formatDurationToHHMMSS(remainingTime)}
+							残り {formatDurationToHHMMSS(remainingTime)}
 						</Text>
 					</View>
 				) : (
-					<Text style={styles.promptText}>选择一个预设时间或自定义</Text>
+					<Text style={styles.promptText}>プリセットの時間を選ぶか、自分で指定してください</Text>
 				)}
 				<View style={styles.presetContainer}>
 					{PRESET_DURATIONS.map((minutes) => (
@@ -81,14 +81,14 @@ const SleepTimerModal = () => {
 							style={styles.presetButton}
 						>
 							{minutes}
-							{'\u2009'}分钟
+							{'\u2009'}分
 						</Button>
 					))}
 				</View>
 				{customInputVisible ? (
 					<View style={styles.customInputContainer}>
 						<TextInput
-							label='分钟'
+							label='分'
 							value={customMinutes}
 							onChangeText={setCustomMinutes}
 							keyboardType='numeric'
@@ -105,7 +105,7 @@ const SleepTimerModal = () => {
 								}
 							}}
 						>
-							设置
+							設定
 						</Button>
 					</View>
 				) : (
@@ -113,7 +113,7 @@ const SleepTimerModal = () => {
 						mode='text'
 						onPress={() => setCustomInputVisible(true)}
 					>
-						自定义
+						カスタム
 					</Button>
 				)}
 			</Dialog.Content>
@@ -123,10 +123,10 @@ const SleepTimerModal = () => {
 						onPress={handleCancelTimer}
 						textColor='red'
 					>
-						取消定时器
+						タイマーを解除
 					</Button>
 				)}
-				<Button onPress={() => close('SleepTimer')}>关闭</Button>
+				<Button onPress={() => close('SleepTimer')}>閉じる</Button>
 			</Dialog.Actions>
 		</>
 	)

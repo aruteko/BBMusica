@@ -190,7 +190,7 @@ export function TrackList({
 						<Text
 							style={[styles.emptyList, { color: colors.onSurfaceVariant }]}
 						>
-							什么都没找到哦~
+							何も見つかりませんでした
 						</Text>
 					)
 				}

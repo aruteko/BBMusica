@@ -168,7 +168,7 @@ const AddToFavoriteListsModal = memo(function AddToFavoriteListsModal({
 						variant='titleMedium'
 						style={styles.loginPromptText}
 					>
-						登录{'\u2009bilibili\u2009'}账号后才能查看收藏夹
+						Bilibiliアカウントにログインすると、お気に入りを確認できます
 					</Text>
 					<Button
 						mode='contained'
@@ -177,7 +177,7 @@ const AddToFavoriteListsModal = memo(function AddToFavoriteListsModal({
 							close()
 						}}
 					>
-						登录
+						ログイン
 					</Button>
 				</View>
 			)
@@ -195,7 +195,7 @@ const AddToFavoriteListsModal = memo(function AddToFavoriteListsModal({
 				<>
 					<Dialog.Content>
 						<Text style={[styles.errorText, { color: colors.error }]}>
-							加载收藏夹失败
+							お気に入りの読み込みに失敗しました
 						</Text>
 					</Dialog.Content>
 					<Dialog.Actions>
@@ -203,9 +203,9 @@ const AddToFavoriteListsModal = memo(function AddToFavoriteListsModal({
 							onPress={close}
 							disabled={isMutating}
 						>
-							关闭
+							閉じる
 						</Button>
-						<Button onPress={() => refetch()}>重试</Button>
+						<Button onPress={() => refetch()}>再試行</Button>
 					</Dialog.Actions>
 				</>
 			)
@@ -221,7 +221,7 @@ const AddToFavoriteListsModal = memo(function AddToFavoriteListsModal({
 						keyExtractor={keyExtractor}
 						ListEmptyComponent={
 							<View style={styles.emptyListContainer}>
-								<Text style={styles.emptyListText}>暂无收藏夹</Text>
+								<Text style={styles.emptyListText}>お気に入りがありません</Text>
 							</View>
 						}
 					/>
@@ -231,14 +231,14 @@ const AddToFavoriteListsModal = memo(function AddToFavoriteListsModal({
 						onPress={close}
 						disabled={isMutating}
 					>
-						取消
+						キャンセル
 					</Button>
 					<Button
 						onPress={handleConfirm}
 						loading={isMutating}
 						disabled={isMutating}
 					>
-						确定
+						OK
 					</Button>
 				</Dialog.Actions>
 			</>
@@ -247,7 +247,7 @@ const AddToFavoriteListsModal = memo(function AddToFavoriteListsModal({
 
 	return (
 		<>
-			<Dialog.Title>添加到收藏夹</Dialog.Title>
+			<Dialog.Title>お気に入りに追加</Dialog.Title>
 			{renderContent()}
 		</>
 	)

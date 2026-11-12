@@ -71,7 +71,7 @@ const MultiPageVideosListComponent = memo(() => {
 	if (playlistsIsError || isFavoriteDataError) {
 		return (
 			<DataFetchingError
-				text='加载失败'
+				text='読み込みに失敗しました'
 				onRetry={() => onRefresh()}
 			/>
 		)
@@ -84,7 +84,7 @@ const MultiPageVideosListComponent = memo(() => {
 					variant='titleMedium'
 					style={styles.noMpText}
 				>
-					未找到分&thinsp;P&thinsp;视频收藏夹，请先创建一个收藏夹，并以&thinsp;[mp]&thinsp;开头
+					分割P動画のお気に入りが見つかりません。先にお気に入りを作成し、名前を&thinsp;[mp]&thinsp;で始めてください
 				</Text>
 			</View>
 		)
@@ -97,11 +97,11 @@ const MultiPageVideosListComponent = memo(() => {
 					variant='titleMedium'
 					style={styles.headerTitle}
 				>
-					分P视频
+					分割P動画
 				</Text>
 				<Text variant='bodyMedium'>
 					{favoriteData.pages[0]?.info?.media_count ?? 0}
-					&thinsp;个分&thinsp;P&thinsp;视频
+					&thinsp;件の分割P動画
 				</Text>
 			</View>
 			<LegendList
@@ -122,7 +122,7 @@ const MultiPageVideosListComponent = memo(() => {
 					/>
 				}
 				ListEmptyComponent={
-					<Text style={styles.emptyList}>没有分&thinsp;P&thinsp;视频</Text>
+					<Text style={styles.emptyList}>分割P動画がありません</Text>
 				}
 				onEndReached={hasNextPage ? () => fetchNextPage() : undefined}
 			/>

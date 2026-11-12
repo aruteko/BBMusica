@@ -130,7 +130,7 @@ export default function MultipagePage() {
 
 	const handleSync = useCallback(() => {
 		const toastId = 'sync-playlist'
-		toast.show('同步中...', { id: toastId, duration: Infinity })
+		toast.show('同期中...', { id: toastId, duration: Infinity })
 		setRefreshing(true)
 		syncMultipage(
 			{
@@ -233,7 +233,7 @@ export default function MultipagePage() {
 	}
 
 	if (isMultipageDataError || isVideoDataError) {
-		return <PlaylistError text='加载失败' />
+		return <PlaylistError text='読み込みに失敗しました' />
 	}
 
 	return (
@@ -245,7 +245,7 @@ export default function MultipagePage() {
 				<Appbar.Content
 					title={
 						selectMode
-							? `已选择\u2009${selected.size}\u2009首`
+							? `${selected.size}\u2009曲を選択中`
 							: videoData.title
 					}
 					onPress={handleDoubleTap}
@@ -306,11 +306,11 @@ export default function MultipagePage() {
 						<PlaylistHeader
 							cover={coverRef ?? undefined}
 							title={videoData.title}
-							subtitles={`${videoData.owner.name}\u2009•\u2009${tracksData.length}\u2009首歌曲`}
+							subtitles={`${videoData.owner.name}\u2009•\u2009${tracksData.length}\u2009曲`}
 							description={videoData.desc}
 							onClickMainButton={handleSync}
 							mainButtonIcon={'sync'}
-							secondaryButtonText='打开原视频'
+							secondaryButtonText='元の動画を開く'
 							secondaryButtonIcon='open-in-new'
 							onClickSecondaryButton={() =>
 								void WebBrowser.openBrowserAsync(

@@ -72,19 +72,19 @@ export default function EnableSharingModal({
 	const handleCopySubscribe = async () => {
 		if (!subscribeUrl) return
 		await Clipboard.setStringAsync(subscribeUrl)
-		toast.success('已复制订阅链接')
+		toast.success('購読用リンクをコピーしました')
 	}
 
 	const handleCopyEditorLink = async () => {
 		if (!editorUrl || !inviteCode) return
 		await Clipboard.setStringAsync(editorUrl)
-		toast.success('已复制协作编辑链接')
+		toast.success('共同編集用リンクをコピーしました')
 	}
 
 	const handleRotateInvite = async () => {
 		if (!shareId) return
 		if (!hasToken) {
-			toast.error('请先登录 BBPlayer 账号')
+			toast.error('先にBBPlayerアカウントにログインしてください')
 			doAfterModalHostClosed(() => {
 				router.navigate({
 					pathname: '/settings/account',
@@ -96,27 +96,27 @@ export default function EnableSharingModal({
 		}
 		const result = await rotateInvite({ shareId })
 		setInviteCode(result.editorInviteCode)
-		toast.success('已生成新的编辑者邀请码')
+		toast.success('新しい編集者の招待コードを作成しました')
 	}
 
 	const handleCopyInvite = async () => {
 		if (!inviteCode) return
 		await Clipboard.setStringAsync(inviteCode)
-		toast.success('已复制邀请码')
+		toast.success('招待コードをコピーしました')
 	}
 
 	// ---- 成功状态：显示可复制的链接 ----
 	if (shareId) {
 		return (
 			<>
-				<Dialog.Title>共享已开启 🎉</Dialog.Title>
+				<Dialog.Title>共有をオンにしました 🎉</Dialog.Title>
 				<Dialog.Content>
 					<View style={styles.body}>
 						<Text variant='bodyMedium'>
-							把下方链接发给朋友，对方即可订阅此歌单。
+							下のリンクを友達に送ると、このプレイリストを購読できます。
 						</Text>
 						<View style={styles.linkSection}>
-							<Text variant='bodySmall'>订阅链接（只读）</Text>
+							<Text variant='bodySmall'>購読用リンク（閲覧のみ）</Text>
 							<TextInput
 								value={subscribeUrl}
 								editable={false}
@@ -134,11 +134,11 @@ export default function EnableSharingModal({
 						{(!shareRole || shareRole === 'owner') && (
 							<View style={styles.inviteSection}>
 								<Text variant='bodyMedium'>
-									需要协作者编辑此歌单？使用下面的邀请链接。
+									共同編集者にこのプレイリストを編集してもらうには、下の招待リンクを使ってください。
 								</Text>
 								{inviteCode && (
 									<View style={styles.linkSection}>
-										<Text variant='bodySmall'>协作编辑邀请链接</Text>
+										<Text variant='bodySmall'>共同編集の招待リンク</Text>
 										<TextInput
 											value={editorUrl}
 											editable={false}
@@ -159,7 +159,7 @@ export default function EnableSharingModal({
 										variant='bodySmall'
 										style={{ textAlign: 'center' }}
 									>
-										邀请码加载中...
+										招待コードを読み込み中...
 									</Text>
 								)}
 								<Button
@@ -167,7 +167,7 @@ export default function EnableSharingModal({
 									loading={isRotating}
 									disabled={isRotating || inviteFetching}
 								>
-									{inviteCode ? '重置协作编辑邀请链接' : '生成协作编辑邀请链接'}
+									{inviteCode ? '共同編集の招待リンクをリセット' : '共同編集の招待リンクを作成'}
 								</Button>
 							</View>
 						)}
@@ -178,7 +178,7 @@ export default function EnableSharingModal({
 						onPress={() => close('EnableSharing')}
 						mode='text'
 					>
-						完成
+						完了
 					</Button>
 				</Dialog.Actions>
 			</>
@@ -188,7 +188,7 @@ export default function EnableSharingModal({
 	// ---- 确认状态 ----
 	return (
 		<>
-			<Dialog.Title>开启歌单共享</Dialog.Title>
+			<Dialog.Title>プレイリストの共有をオンにする</Dialog.Title>
 			<Dialog.Content>
 				<View style={styles.body}>
 					{!hasToken && (
@@ -202,7 +202,7 @@ export default function EnableSharingModal({
 								variant='bodySmall'
 								style={styles.warningText}
 							>
-								开启共享需要先登录 BBPlayer 账号。
+								共有をオンにするには、BBPlayerアカウントへのログインが必要です。
 							</Text>
 						</View>
 					)}
@@ -222,13 +222,13 @@ export default function EnableSharingModal({
 								}
 							/>
 						)}
-						共享后，其他用户可通过链接订阅此歌单。
+						共有すると、ほかのユーザーがリンクからこのプレイリストを購読できます。
 					</Text>
 					<Text
 						variant='bodySmall'
 						style={styles.irreversible}
 					>
-						⚠️ 目前版本共享后无法撤销共享，请谨慎操作。
+						⚠️ 現在のバージョンでは、一度共有すると取り消せません。慎重に操作してください。
 					</Text>
 				</View>
 			</Dialog.Content>
@@ -238,7 +238,7 @@ export default function EnableSharingModal({
 					disabled={isPending}
 					mode='text'
 				>
-					取消
+					キャンセル
 				</Button>
 				<Button
 					onPress={handleConfirm}
@@ -246,7 +246,7 @@ export default function EnableSharingModal({
 					disabled={isPending}
 					mode='text'
 				>
-					开启共享
+					共有をオンにする
 				</Button>
 			</Dialog.Actions>
 		</>

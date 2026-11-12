@@ -35,7 +35,7 @@ const SelectablePlaylistItem = memo(function SelectablePlaylistItem({
 						variant='bodySmall'
 						style={{ opacity: 0.7 }}
 					>
-						{item.itemCount} 首歌曲
+						{item.itemCount} 曲
 					</Text>
 				</View>
 				<UniversalCheckbox
@@ -113,7 +113,7 @@ export default function MergePlaylistsModal() {
 
 	return (
 		<>
-			<Dialog.Title>动态合并歌单</Dialog.Title>
+			<Dialog.Title>動的マージプレイリスト</Dialog.Title>
 			<Dialog.Content style={styles.content}>
 				{isPending ? (
 					<View style={styles.center}>
@@ -121,16 +121,16 @@ export default function MergePlaylistsModal() {
 					</View>
 				) : isError ? (
 					<View style={styles.center}>
-						<Text style={{ opacity: 0.7 }}>加载本地歌单失败</Text>
+						<Text style={{ opacity: 0.7 }}>ローカルのプレイリストの読み込みに失敗しました</Text>
 					</View>
 				) : availablePlaylists.length === 0 ? (
 					<View style={styles.center}>
-						<Text style={{ opacity: 0.7 }}>没有本地歌单</Text>
+						<Text style={{ opacity: 0.7 }}>ローカルのプレイリストがありません</Text>
 					</View>
 				) : (
 					<View style={{ flex: 1 }}>
 						<TextInput
-							label='新歌单名称'
+							label='新しいプレイリスト名'
 							value={newTitle}
 							onChangeText={setNewTitle}
 							mode='outlined'
@@ -140,7 +140,7 @@ export default function MergePlaylistsModal() {
 							variant='labelMedium'
 							style={styles.subtitle}
 						>
-							选择至少两个源歌单（显示时动态合并并自动去重）：
+							元のプレイリストを2つ以上選んでください（表示するときに自動でまとめ、重複も取り除きます）：
 						</Text>
 						<View style={styles.listContainer}>
 							<LegendList
@@ -160,7 +160,7 @@ export default function MergePlaylistsModal() {
 					onPress={() => close('MergePlaylists')}
 					disabled={isMerging}
 				>
-					取消
+					キャンセル
 				</Button>
 				<Button
 					mode='contained'
@@ -168,7 +168,7 @@ export default function MergePlaylistsModal() {
 					disabled={isMerging || selectedIds.size < 2 || newTitle.trim() === ''}
 					loading={isMerging}
 				>
-					创建
+					作成
 				</Button>
 			</Dialog.Actions>
 		</>

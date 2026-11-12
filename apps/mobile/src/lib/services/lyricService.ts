@@ -266,7 +266,7 @@ class LyricService {
 				(networkState) => {
 					if (isActuallyOffline(networkState)) {
 						return errAsync(
-							new LyricNotFoundError('当前处于离线状态，无法获取网络歌词'),
+							new LyricNotFoundError('オフラインのため、オンラインの歌詞を取得できません'),
 						)
 					}
 					return fetchFromNetwork()
@@ -336,7 +336,7 @@ class LyricService {
 		return ResultAsync.fromPromise(
 			write,
 			(cause) =>
-				new FileSystemError('保存歌词文件失败', { cause, data: { uniqueKey } }),
+				new FileSystemError('歌詞ファイルの保存に失敗しました', { cause, data: { uniqueKey } }),
 		)
 	}
 
@@ -488,7 +488,7 @@ class LyricService {
 			migrationMarker.create()
 			logger.info('歌词格式迁移完成')
 		} catch (e) {
-			toastAndLogError('迁移歌词格式失败', e, 'Service.Lyric')
+			toastAndLogError('歌詞の形式の移行に失敗しました', e, 'Service.Lyric')
 		}
 	}
 

@@ -285,10 +285,10 @@ export function navigateWithSearchStrategy(
 			})
 			return 1
 		case 'INVALID_URL_NO_CTYPE':
-			toast.error('链接中未找到 ctype 参数，你确定复制全了吗？')
+			toast.error('リンクに ctype パラメーターがありません。すべてコピーできていますか？')
 			return 0
 		case 'B23_RESOLVE_ERROR':
-			toastAndLogError('解析 b23.tv 短链接失败', strategy.error, 'Utils.Search')
+			toastAndLogError('b23.tv の短縮リンクの解析に失敗しました', strategy.error, 'Utils.Search')
 			router.navigate({
 				pathname: '/playlist/remote/search-result/global/[query]',
 				params: { query: strategy.query },
@@ -296,7 +296,7 @@ export function navigateWithSearchStrategy(
 			return 1
 		case 'B23_NO_BVID_ERROR':
 			toastAndLogError(
-				'未能从短链解析出已识别内容（BV/作者/收藏等）',
+				'短縮リンクから、認識できる内容（BV・投稿者・お気に入りなど）を解析できませんでした',
 				new Error(strategy.resolvedUrl),
 				'Utils.Search',
 			)
@@ -307,7 +307,7 @@ export function navigateWithSearchStrategy(
 			return 1
 		case 'AV_PARSE_ERROR':
 			toastAndLogError(
-				'解析 avid 失败',
+				'avidの解析に失敗しました',
 				new Error(strategy.query),
 				'Utils.Search',
 			)

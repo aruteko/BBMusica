@@ -57,7 +57,7 @@ const CollectionListComponent = memo(() => {
 	if (collectionsIsError) {
 		return (
 			<DataFetchingError
-				text='加载失败'
+				text='読み込みに失敗しました'
 				onRetry={() => onRefresh()}
 			/>
 		)
@@ -70,11 +70,11 @@ const CollectionListComponent = memo(() => {
 					variant='titleMedium'
 					style={styles.headerTitle}
 				>
-					我的合集/收藏夹追更
+					フォロー中のコレクション / お気に入り
 				</Text>
 				<Text variant='bodyMedium'>
 					{collections.pages[0]?.count ?? 0}
-					{'\u2009'}个追更
+					{'\u2009'}件
 				</Text>
 			</View>
 			<LegendList

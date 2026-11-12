@@ -111,7 +111,7 @@ export default function SyncLocalToBilibiliModal({
 		if (step !== 'checking') return
 
 		if (!userInfo?.mid) {
-			dispatch({ type: 'SET_ERROR', payload: '未登录 B 站，请先登录' })
+			dispatch({ type: 'SET_ERROR', payload: 'Bilibiliにログインしていません。先にログインしてください' })
 			return
 		}
 		if (!playlist) return // 等待加载
@@ -161,7 +161,7 @@ export default function SyncLocalToBilibiliModal({
 			// 获取本地歌单
 			const tracksRes = await playlistService.getPlaylistTracks(playlistId)
 			if (tracksRes.isErr()) {
-				dispatch({ type: 'SET_ERROR', payload: '获取本地歌单失败' })
+				dispatch({ type: 'SET_ERROR', payload: 'ローカルのプレイリストの取得に失敗しました' })
 				return
 			}
 
@@ -203,7 +203,7 @@ export default function SyncLocalToBilibiliModal({
 				(p) => dispatch({ type: 'SET_PROGRESS', payload: p }),
 			)
 			if (res.isErr()) {
-				toast.error('部分歌曲添加失败，请查看日志')
+				toast.error('一部の曲の追加に失敗しました。ログを確認してください')
 			} else {
 				addsFailed = res.value
 			}
@@ -216,7 +216,7 @@ export default function SyncLocalToBilibiliModal({
 				diffResult.toRemove,
 			)
 			if (res.isErr()) {
-				toast.error('部分歌曲删除失败')
+				toast.error('一部の曲の削除に失敗しました')
 			}
 		}
 
@@ -229,14 +229,14 @@ export default function SyncLocalToBilibiliModal({
 			case 'checking':
 				return (
 					<>
-						<Dialog.Title>同步到 B 站</Dialog.Title>
+						<Dialog.Title>B站に同期</Dialog.Title>
 						<Dialog.Content>
 							<View style={styles.center}>
 								<ActivityIndicator size='large' />
-								<Text style={{ marginTop: 20 }}>正在查找远程收藏夹...</Text>
+								<Text style={{ marginTop: 20 }}>リモートのお気に入りを検索中...</Text>
 								<Text style={{ marginTop: 10, color: 'red', fontSize: 12 }}>
-									警告：此功能由于 B 站 API 限制，极易触发风控导致 IP{' '}
-									被暂时封禁，谨慎使用。
+									警告：Bilibili APIの制限により、この機能はリスク制御に引っかかりやすく、IPが{' '}
+									一時的に制限される可能性があります。慎重に使ってください。
 								</Text>
 							</View>
 						</Dialog.Content>
@@ -245,25 +245,25 @@ export default function SyncLocalToBilibiliModal({
 			case 'confirm_create':
 				return (
 					<>
-						<Dialog.Title>同步到 B 站</Dialog.Title>
+						<Dialog.Title>B站に同期</Dialog.Title>
 						<Dialog.Content>
 							<Text variant='bodyLarge'>
-								未找到名为 &quot;{playlist?.title}&quot; 的 B 站收藏夹。
+								&quot;{playlist?.title}&quot; という名前のBilibiliのお気に入りが見つかりません。
 							</Text>
 							<Text
 								variant='bodyMedium'
 								style={{ marginTop: 8, color: 'gray' }}
 							>
-								是否创建一个新的公开收藏夹？
+								新しい公開のお気に入りを作成しますか？
 							</Text>
 						</Dialog.Content>
 						<Dialog.Actions>
-							<Button onPress={() => close('SyncLocalToBilibili')}>取消</Button>
+							<Button onPress={() => close('SyncLocalToBilibili')}>キャンセル</Button>
 							<Button
 								mode='contained'
 								onPress={handleCreate}
 							>
-								创建并继续
+								作成して続ける
 							</Button>
 						</Dialog.Actions>
 					</>
@@ -271,11 +271,11 @@ export default function SyncLocalToBilibiliModal({
 			case 'diffing':
 				return (
 					<>
-						<Dialog.Title>同步到 B 站</Dialog.Title>
+						<Dialog.Title>B站に同期</Dialog.Title>
 						<Dialog.Content>
 							<View style={styles.center}>
 								<ActivityIndicator size='large' />
-								<Text style={{ marginTop: 20 }}>正在对比列表差异...</Text>
+								<Text style={{ marginTop: 20 }}>リストの差分を比較中...</Text>
 							</View>
 						</Dialog.Content>
 					</>
@@ -287,19 +287,19 @@ export default function SyncLocalToBilibiliModal({
 				if (nothingToSync) {
 					return (
 						<>
-							<Dialog.Title>同步确认</Dialog.Title>
+							<Dialog.Title>同期の確認</Dialog.Title>
 							<Dialog.Content>
-								<Text variant='bodyLarge'>无需同步</Text>
+								<Text variant='bodyLarge'>同期は不要です</Text>
 								<Text
 									variant='bodyMedium'
 									style={{ marginTop: 8, color: 'gray' }}
 								>
-									当前本地列表与远程收藏夹已完全一致。
+									ローカルのリストとリモートのお気に入りは、完全に一致しています。
 								</Text>
 							</Dialog.Content>
 							<Dialog.Actions>
 								<Button onPress={() => close('SyncLocalToBilibili')}>
-									关闭
+									閉じる
 								</Button>
 							</Dialog.Actions>
 						</>
@@ -307,17 +307,17 @@ export default function SyncLocalToBilibiliModal({
 				}
 				return (
 					<>
-						<Dialog.Title>同步确认</Dialog.Title>
+						<Dialog.Title>同期の確認</Dialog.Title>
 						<Dialog.Content>
 							<View style={styles.statRow}>
-								<Text>新增歌曲</Text>
+								<Text>追加する曲</Text>
 								<Text style={{ color: 'green', fontWeight: 'bold' }}>
 									+{diffResult?.toAdd.length}
 								</Text>
 							</View>
 							<Divider style={{ marginVertical: 4 }} />
 							<View style={styles.statRow}>
-								<Text>移除歌曲 (远端多余)</Text>
+								<Text>削除する曲（リモートにのみある曲）</Text>
 								<Text style={{ color: 'red', fontWeight: 'bold' }}>
 									-{diffResult?.toRemove.length}
 								</Text>
@@ -326,16 +326,16 @@ export default function SyncLocalToBilibiliModal({
 								variant='bodySmall'
 								style={{ marginTop: 10, color: 'gray', fontWeight: 'bold' }}
 							>
-								注意：这是一个镜像同步操作。本地没有的歌曲将会从远端删除。
+								注意：これはミラー同期です。ローカルにない曲は、リモートから削除されます。
 							</Text>
 						</Dialog.Content>
 						<Dialog.Actions>
-							<Button onPress={() => close('SyncLocalToBilibili')}>取消</Button>
+							<Button onPress={() => close('SyncLocalToBilibili')}>キャンセル</Button>
 							<Button
 								mode='contained'
 								onPress={handleSync}
 							>
-								开始同步
+								同期を開始
 							</Button>
 						</Dialog.Actions>
 					</>
@@ -344,12 +344,12 @@ export default function SyncLocalToBilibiliModal({
 			case 'syncing':
 				return (
 					<>
-						<Dialog.Title>同步到 B 站</Dialog.Title>
+						<Dialog.Title>B站に同期</Dialog.Title>
 						<Dialog.Content>
 							<View style={styles.center}>
 								<ActivityIndicator size='large' />
 								<Text style={{ marginTop: 20, marginBottom: 10 }}>
-									同步中...
+									同期中...
 								</Text>
 								<LinearProgressIndicator
 									progress={totalOps > 0 ? progress / totalOps : 0}
@@ -365,7 +365,7 @@ export default function SyncLocalToBilibiliModal({
 			case 'success':
 				return (
 					<>
-						<Dialog.Title>同步完成</Dialog.Title>
+						<Dialog.Title>同期が完了しました</Dialog.Title>
 						<Dialog.Content>
 							<View style={styles.center}>
 								<Text
@@ -375,12 +375,12 @@ export default function SyncLocalToBilibiliModal({
 										marginBottom: 10,
 									}}
 								>
-									{failCount > 0 ? '同步部分成功' : '同步成功'}
+									{failCount > 0 ? '一部の同期に成功しました' : '同期に成功しました'}
 								</Text>
 								{failCount > 0 && (
 									<Text style={{ color: 'gray' }}>
-										有 {failCount} 首歌曲未能同步成功，请稍后重试。（可能是你的
-										IP 被风控了，R.I.P.）
+										{failCount} 曲を同期できませんでした。しばらくしてからもう一度お試しください。（IPがリスク制御の対象になった可能性があります）
+										
 									</Text>
 								)}
 							</View>
@@ -390,7 +390,7 @@ export default function SyncLocalToBilibiliModal({
 								mode='contained'
 								onPress={() => close('SyncLocalToBilibili')}
 							>
-								我知道了
+								OK
 							</Button>
 						</Dialog.Actions>
 					</>
@@ -398,7 +398,7 @@ export default function SyncLocalToBilibiliModal({
 			case 'error':
 				return (
 					<>
-						<Dialog.Title>出错了</Dialog.Title>
+						<Dialog.Title>エラーが発生しました</Dialog.Title>
 						<Dialog.Content>
 							<View style={styles.center}>
 								<Text style={{ color: 'red', marginBottom: 10 }}>
@@ -407,7 +407,7 @@ export default function SyncLocalToBilibiliModal({
 							</View>
 						</Dialog.Content>
 						<Dialog.Actions>
-							<Button onPress={() => close('SyncLocalToBilibili')}>关闭</Button>
+							<Button onPress={() => close('SyncLocalToBilibili')}>閉じる</Button>
 						</Dialog.Actions>
 					</>
 				)

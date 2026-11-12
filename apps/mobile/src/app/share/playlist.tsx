@@ -111,10 +111,10 @@ export default function SharedPlaylistPreviewPage() {
 	// 引导提示：说明点击按钮后的权限
 	const getActionHint = () => {
 		if (isFullMember) return null // 已是成员，无需提示
-		if (canUpgradeToEditor) return '升级后你将可以添加、删除和排序曲目'
+		if (canUpgradeToEditor) return 'アップグレードすると、曲の追加、削除、並べ替えができるようになります'
 		if (parsedInviteCode)
-			return '你将以协作编辑者身份加入，可以添加、删除和排序曲目'
-		return '订阅后你只能查看此歌单的最新内容，无法修改'
+			return '共同編集者として参加し、曲の追加、削除、並べ替えができます'
+		return '購読すると、このプレイリストの最新の内容を見られますが、編集はできません'
 	}
 	const actionHint = getActionHint()
 
@@ -154,7 +154,7 @@ export default function SharedPlaylistPreviewPage() {
 
 	const subtitleParts: string[] = []
 	if (data) {
-		subtitleParts.push(`${data.playlist.trackCount} 首歌曲`)
+		subtitleParts.push(`${data.playlist.trackCount} 曲`)
 	}
 
 	const handleSubscribe = () => {
@@ -176,7 +176,7 @@ export default function SharedPlaylistPreviewPage() {
 	if (isError || !data) {
 		return (
 			<PlaylistError
-				text='加载共享歌单失败'
+				text='共有プレイリストの読み込みに失敗しました'
 				onRetry={refetch}
 			/>
 		)
@@ -220,8 +220,8 @@ export default function SharedPlaylistPreviewPage() {
 												const ok = await Clipboard.setStringAsync(
 													data.playlist.title,
 												)
-												if (!ok) toast.error('复制失败')
-												else toast.success('已复制标题到剪贴板')
+												if (!ok) toast.error('コピーに失敗しました')
+												else toast.success('タイトルをクリップボードにコピーしました')
 											}}
 										>
 											<Text
@@ -270,7 +270,7 @@ export default function SharedPlaylistPreviewPage() {
 											buttonColor={primaryButtonColor}
 											textColor={primaryButtonTextColor}
 										>
-											前往歌单
+											プレイリストへ移動
 										</Button>
 									) : canUpgradeToEditor ? (
 										<Button
@@ -283,7 +283,7 @@ export default function SharedPlaylistPreviewPage() {
 											buttonColor={primaryButtonColor}
 											textColor={primaryButtonTextColor}
 										>
-											升级为协作编辑者
+											共同編集者にアップグレード
 										</Button>
 									) : isAlreadyJoined ? (
 										<Button
@@ -293,7 +293,7 @@ export default function SharedPlaylistPreviewPage() {
 											testID='playlist-header-main-button'
 											textColor={secondaryButtonIconColor}
 										>
-											已订阅，前往查看
+											購読済み。プレイリストを見る
 										</Button>
 									) : (
 										<Button
@@ -306,7 +306,7 @@ export default function SharedPlaylistPreviewPage() {
 											buttonColor={primaryButtonColor}
 											textColor={primaryButtonTextColor}
 										>
-											{parsedInviteCode ? '加入协作编辑' : '订阅共享歌单'}
+											{parsedInviteCode ? '共同編集に参加' : '共有プレイリストを購読'}
 										</Button>
 									)}
 								</View>
@@ -337,7 +337,7 @@ export default function SharedPlaylistPreviewPage() {
 									variant='bodySmall'
 									style={styles.previewHint}
 								>
-									仅展示前 {data.previewLimit} 首，订阅后会自动拉取完整曲目。
+									先頭の {data.previewLimit} 曲のみ表示しています。購読すると、すべての曲を自動で取得します。
 								</Text>
 							)}
 						</>

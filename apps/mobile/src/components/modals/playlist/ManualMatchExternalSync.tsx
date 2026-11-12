@@ -164,19 +164,19 @@ export default function ManualMatchExternalSync({
 		}
 		return (
 			<View style={styles.centerContainer}>
-				<Text style={styles.centerText}>没有找到匹配的视频</Text>
+				<Text style={styles.centerText}>一致する動画が見つかりません</Text>
 			</View>
 		)
 	}
 
 	return (
 		<>
-			<Dialog.Title>手动匹配视频</Dialog.Title>
+			<Dialog.Title>動画を手動で照合</Dialog.Title>
 			<Dialog.Content>
 				<SearchBar
 					value={query}
 					onChangeText={setQuery}
-					placeholder='输入关键词搜索'
+					placeholder='キーワードで検索'
 					onSubmitEditing={() => setFinalQuery(query)}
 				/>
 			</Dialog.Content>
@@ -184,7 +184,7 @@ export default function ManualMatchExternalSync({
 				{renderContent()}
 			</Dialog.ScrollArea>
 			<Dialog.Actions>
-				<Button onPress={() => close('ManualMatchExternalSync')}>取消</Button>
+				<Button onPress={() => close('ManualMatchExternalSync')}>キャンセル</Button>
 			</Dialog.Actions>
 		</>
 	)

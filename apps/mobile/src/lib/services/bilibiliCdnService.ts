@@ -10,10 +10,10 @@ export const BILIBILI_CDN_OPTIONS: {
 	id: BilibiliCdnPreference
 	label: string
 }[] = [
-	{ id: 'auto', label: '自动（常规 CDN 优先）' },
-	{ id: 'ali', label: '阿里云' },
-	{ id: 'tencent', label: '腾讯云' },
-	{ id: 'huawei', label: '华为云' },
+	{ id: 'auto', label: '自動（通常のCDNを優先）' },
+	{ id: 'ali', label: 'Alibaba Cloud' },
+	{ id: 'tencent', label: 'Tencent Cloud' },
+	{ id: 'huawei', label: 'Huawei Cloud' },
 	{ id: 'akamai', label: 'Akamai' },
 ]
 

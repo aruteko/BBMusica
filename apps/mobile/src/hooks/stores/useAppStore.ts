@@ -35,8 +35,8 @@ function migratePlayerBackgroundToFluid(
 		return { settings, migrated: false }
 	}
 
-	toast.info('已自动切换播放器背景到流体效果', {
-		description: '如果不喜欢，可在「设置 → 外观与主题」中切换回普通渐变',
+	toast.info('プレーヤーの背景を流体エフェクトに自動で切り替えました', {
+		description: 'お好みでなければ、「設定 → 外観とテーマ」で通常のグラデーションに戻せます',
 	})
 
 	return {
@@ -75,14 +75,14 @@ export const parseCookieToObject = (
 		}
 
 		if (hasInvalidKeys) {
-			toast.error('检测到 Cookie 包含无效字符（如换行符），已自动修复')
+			toast.error('Cookieに無効な文字（改行など）が含まれていたため、自動で修正しました')
 		}
 
 		return ok(sanitizedObj)
 	} catch (error) {
 		return err(
 			new Error(
-				`无效的 cookie 字符串: ${error instanceof Error ? error.message : String(error)}`,
+				`無効なCookie文字列です: ${error instanceof Error ? error.message : String(error)}`,
 			),
 		)
 	}
@@ -242,12 +242,12 @@ export const useAppStore = create<AppState>()(
 					void analyticsService.setAnalyticsCollectionEnabled(value)
 
 					alert(
-						'重启？',
-						'切换隐私设置后，需要重启应用才能完全生效。',
+						'再起動しますか？',
+						'プライバシー設定を変更すると、完全に反映するにはアプリの再起動が必要です。',
 						[
-							{ text: '取消' },
+							{ text: 'キャンセル' },
 							{
-								text: '确定',
+								text: 'OK',
 								onPress: () => {
 									expoDb.closeSync()
 									void Expo.reloadAppAsync()

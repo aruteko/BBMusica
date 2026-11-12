@@ -93,7 +93,7 @@ export async function startStation(seed?: Track | Track[]): Promise<boolean> {
 		stationSeeds = seedBvids
 		toast.success(
 			seeds.length > 0
-				? 'ステーションを開始しました：選んだ曲をもとにおすすめ'
+				? 'ステーションを開始しました'
 				: 'ステーションを開始しました',
 		)
 		return true

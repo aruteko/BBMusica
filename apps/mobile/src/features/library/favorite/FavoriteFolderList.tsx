@@ -59,7 +59,7 @@ const FavoriteFolderListComponent = memo(() => {
 	if (playlistsIsError) {
 		return (
 			<DataFetchingError
-				text='加载失败'
+				text='読み込みに失敗しました'
 				onRetry={() => onRefresh()}
 			/>
 		)
@@ -76,14 +76,14 @@ const FavoriteFolderListComponent = memo(() => {
 					variant='titleMedium'
 					style={styles.headerTitle}
 				>
-					我的收藏夹
+					マイお気に入り
 				</Text>
 				<Text variant='bodyMedium'>
-					{playlists.length ?? 0}&thinsp;个收藏夹
+					{playlists.length ?? 0}&thinsp;件のお気に入り
 				</Text>
 			</View>
 			<SearchBar
-				placeholder='搜索我的收藏夹内容'
+				placeholder='お気に入りの内容を検索'
 				value={query}
 				mode='bar'
 				inputStyle={styles.searchInput}
@@ -112,7 +112,7 @@ const FavoriteFolderListComponent = memo(() => {
 					/>
 				}
 				keyExtractor={keyExtractor}
-				ListEmptyComponent={<Text style={styles.emptyList}>没有收藏夹</Text>}
+				ListEmptyComponent={<Text style={styles.emptyList}>お気に入りがありません</Text>}
 			/>
 		</View>
 	)

@@ -55,7 +55,7 @@ export default function CdnSettingsPage() {
 			setPreferredBilibiliCdn(option.id)
 			setPreferred(option.id)
 		} catch (error) {
-			toastAndLogError('设置首选 CDN 失败', error, 'Settings.CDN')
+			toastAndLogError('優先CDNの設定に失敗しました', error, 'Settings.CDN')
 		}
 	}
 
@@ -68,8 +68,8 @@ export default function CdnSettingsPage() {
 			items.map((item) => ({
 				...item,
 				status:
-					item.status === '等待测速' || item.status === '测速中…'
-						? '已取消'
+					item.status === '速度テスト待ち' || item.status === '速度テスト中…'
+						? 'キャンセルしました'
 						: item.status,
 			})),
 		)
@@ -85,12 +85,12 @@ export default function CdnSettingsPage() {
 		setPreparing(true)
 		setResults([])
 		const track = currentTrack?.source === 'bilibili' ? currentTrack : null
-		setSampleName(track?.title ?? '预设视频 BV1fK4y1t7hj')
+		setSampleName(track?.title ?? 'プリセット動画 BV1fK4y1t7hj')
 		try {
 			const nodes = await getCdnTestNodes(track, controller.signal)
 			if (!active()) return
 			setPreparing(false)
-			setResults(nodes.map((node) => ({ node, status: '等待测速' })))
+			setResults(nodes.map((node) => ({ node, status: '速度テスト待ち' })))
 			for (const node of nodes) {
 				if (!active()) break
 				const update = (status: string) => {
@@ -101,18 +101,18 @@ export default function CdnSettingsPage() {
 						),
 					)
 				}
-				update('测速中…')
+				update('速度テスト中…')
 				try {
 					const result = await measureCdnSpeed(node.url, controller.signal)
 					update(
-						`${result.megabytesPerSecond.toFixed(2)} MB/s · 响应 ${Math.round(result.latencyMs)} ms`,
+						`${result.megabytesPerSecond.toFixed(2)} MB/s · 応答 ${Math.round(result.latencyMs)} ms`,
 					)
 				} catch (error) {
-					update(error instanceof Error ? error.message : '测速失败')
+					update(error instanceof Error ? error.message : '速度テストに失敗しました')
 				}
 			}
 		} catch (error) {
-			if (active()) toastAndLogError('获取测速节点失败', error, 'Settings.CDN')
+			if (active()) toastAndLogError('テスト用ノードの取得に失敗しました', error, 'Settings.CDN')
 		} finally {
 			if (operation.current === controller) {
 				operation.current = null
@@ -126,14 +126,14 @@ export default function CdnSettingsPage() {
 		if (id === 'auto' || !results.length) return undefined
 		return results.some(({ node }) => node.provider === id)
 			? undefined
-			: '本次未返回该 CDN 节点'
+			: '今回はこのCDNノードが返されませんでした'
 	}
 
 	return (
 		<View style={[styles.container, { backgroundColor: colors.background }]}>
 			<Appbar.Header>
 				<Appbar.BackAction onPress={() => router.back()} />
-				<Appbar.Content title='CDN 设置' />
+				<Appbar.Content title='CDN設定' />
 			</Appbar.Header>
 			<ScrollView
 				contentContainerStyle={[
@@ -142,16 +142,16 @@ export default function CdnSettingsPage() {
 				]}
 			>
 				<SettingsSectionTitle
-					title='首选 CDN'
+					title='優先CDN'
 					first
 				/>
 				<Text
 					variant='bodySmall'
 					style={{ color: colors.onSurfaceVariant }}
 				>
-					优先使用所选服务商的常规节点，再尝试其他常规节点，最后尝试
-					mcdn。自动模式优先使用常规
-					CDN。对之后的播放和下载请求生效，已缓存内容不受影响。
+					選んだ事業者の通常ノードを優先し、次に他の通常ノード、最後に mcdn を試します。自動モードでは通常のCDNを優先します。以降の再生とダウンロードに適用され、キャッシュ済みの内容には影響しません。
+					
+					
 				</Text>
 				<RadioButton.Group
 					onValueChange={selectCdn}
@@ -167,34 +167,34 @@ export default function CdnSettingsPage() {
 						/>
 					))}
 				</RadioButton.Group>
-				<SettingsSectionTitle title='CDN 测速' />
+				<SettingsSectionTitle title='CDN速度テスト' />
 				<Text
 					variant='bodySmall'
 					style={{ color: colors.onSurfaceVariant }}
 				>
-					优先使用当前播放的 B
-					站内容，没有时使用预设视频。逐个测试实际返回的节点，每个节点最多采样约
-					2 MB，超时 8 秒，会消耗网络流量。结果仅供参考。
+					再生中のBilibiliの音声を優先して使い、なければプリセット動画を使います。実際に返されたノードを1つずつテストし、各ノードで最大約2 MBを取得します（タイムアウト8秒）。通信量を消費します。結果は参考値です。
+					
+					
 				</Text>
 				<Button
 					mode='contained-tonal'
 					style={styles.button}
 					onPress={running ? cancel : () => void start()}
 				>
-					{running ? '取消测速' : '开始测速'}
+					{running ? 'テストを中止' : 'テストを開始'}
 				</Button>
 				{sampleName ? (
-					<Text variant='bodySmall'>测速音源：{sampleName}</Text>
+					<Text variant='bodySmall'>テスト音源：{sampleName}</Text>
 				) : null}
 				{preparing ? (
-					<Text style={styles.preparing}>正在获取音频节点…</Text>
+					<Text style={styles.preparing}>音声ノードを取得中…</Text>
 				) : null}
 				{results.map(({ node, status }) => (
 					<List.Item
 						key={node.host}
 						title={
 							node.provider === 'auto'
-								? 'B 站分配节点'
+								? 'Bilibiliの割り当てノード'
 								: BILIBILI_CDN_OPTIONS.find(
 										(option) => option.id === node.provider,
 									)?.label
