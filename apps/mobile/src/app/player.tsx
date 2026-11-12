@@ -30,6 +30,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import Lyrics from '@/features/player/components/lyrics/PlayerLyrics'
+import PlayerVideo from '@/features/player/components/video/PlayerVideo'
 import { PodcastSubtitles } from '@/features/player/components/lyrics/PodcastSubtitles'
 import { PlayerChaptersSheet } from '@/features/player/components/main/PlayerChaptersSheet'
 import { PlayerHeader } from '@/features/player/components/main/PlayerHeader'
@@ -167,7 +168,7 @@ export default function PlayerPage() {
 	}, [isPreventingBack])
 
 	const handleDismiss = () => {
-		if (index === 1) {
+		if (index > 0) {
 			pagerRef.current?.setPage(0)
 			return
 		}
@@ -197,7 +198,7 @@ export default function PlayerPage() {
 	const [menuVisible, setMenuVisible] = useState(false)
 
 	const jumpTo = (key: string) => {
-		const targetIndex = key === 'lyrics' ? 1 : 0
+		const targetIndex = key === 'video' ? 2 : key === 'lyrics' ? 1 : 0
 		pagerRef.current?.setPage(targetIndex)
 	}
 
@@ -392,6 +393,19 @@ export default function PlayerPage() {
 											/>
 										)}
 									</View>,
+									// 歌词的右側：動画（MV）。ポッドキャストモードでは出さない
+									...(playbackContextStore$.context.mode.get() === 'podcast'
+										? []
+										: [
+												<View
+													key='video'
+													style={styles.tabView}
+												>
+													<PlayerVideo
+														active={index === 2 && isFocused && isForeground}
+													/>
+												</View>,
+											]),
 								]}
 							</AnimatedPagerView>
 						</Computed>

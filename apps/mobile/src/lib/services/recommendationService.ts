@@ -1,4 +1,9 @@
 import { bilibiliApi } from '@/lib/api/bilibili/api'
+import {
+	NON_SONG_PARTITION_TIDS,
+	SONG_PARTITION_TIDS,
+	looksLikeNonSongTitle,
+} from '@/lib/api/bilibili/partitions'
 import { syncFacade } from '@/lib/facades/syncBilibiliPlaylist'
 import { trackService } from '@/lib/services/trackService'
 import type { BilibiliFeedVideo } from '@/types/apis/bilibili'
@@ -7,8 +12,8 @@ import type { BilibiliTrack, Track } from '@/types/core/media'
 /** B 站「音乐」分区的排行榜 rid */
 const MUSIC_PARTITION = '3'
 /** 过滤掉过短（片段、预告）与过长（合集、直播回放）的视频，保证更像「歌曲」 */
-const MIN_DURATION_SECONDS = 60
-const MAX_DURATION_SECONDS = 15 * 60
+const MIN_DURATION_SECONDS = 90
+const MAX_DURATION_SECONDS = 10 * 60
 
 const BILIBILI_KEY_PREFIX = 'bilibili::'
 
@@ -66,10 +71,17 @@ export function bvidFromUniqueKey(uniqueKey: string): string | undefined {
 }
 
 function isSongLike(video: BilibiliFeedVideo) {
-	return (
-		video.duration >= MIN_DURATION_SECONDS &&
-		video.duration <= MAX_DURATION_SECONDS
-	)
+	if (
+		video.duration < MIN_DURATION_SECONDS ||
+		video.duration > MAX_DURATION_SECONDS
+	) {
+		return false
+	}
+	// 乐评盘点 / 音乐教学 / 电台不是歌曲
+	if (video.tid !== undefined && NON_SONG_PARTITION_TIDS.includes(video.tid)) {
+		return false
+	}
+	return !looksLikeNonSongTitle(video.title)
 }
 
 function shuffle<T>(items: T[]): T[] {
@@ -99,15 +111,55 @@ export async function getFrequentTracks({
 		.filter((track): track is BilibiliTrack => track.source === 'bilibili')
 }
 
-/** 音乐分区热门榜 */
+/**
+ * 人气音乐。
+ *
+ * 音乐区的总排行榜里有大量乐评盘点、解说、短视频，并不是歌曲。这里改为：
+ * 1. 取各个「歌曲」子分区（原创 / 翻唱 / VOCALOID / 现场 / MV）的热门榜，
+ * 2. 再取总排行榜，但只保留歌曲分区的视频，
+ * 3. 去掉标题像盘点 / 解说 / 合集的，以及时长不像一首歌的，
+ * 4. 各来源轮流取一个，避免被某一个分区占满。
+ */
 export async function fetchPopularMusicTracks(
 	limit = 30,
 ): Promise<BilibiliTrack[]> {
-	const result = await bilibiliApi.getPopularVideos({
-		partition: MUSIC_PARTITION,
-	})
-	if (result.isErr()) throw result.error
-	return result.value.filter(isSongLike).slice(0, limit).map(feedVideoToTrack)
+	const [overall, ...regions] = await Promise.all([
+		bilibiliApi.getPopularVideos({ partition: MUSIC_PARTITION }),
+		...SONG_PARTITION_TIDS.map((tid) => bilibiliApi.getRegionRanking({ tid })),
+	])
+
+	const sources: BilibiliFeedVideo[][] = []
+	if (overall.isOk()) {
+		sources.push(
+			overall.value.filter(
+				(video) =>
+					video.tid !== undefined && SONG_PARTITION_TIDS.includes(video.tid),
+			),
+		)
+	}
+	for (const region of regions) {
+		if (region.isOk()) sources.push(region.value)
+	}
+	if (sources.every((list) => list.length === 0)) {
+		// 所有来源都失败：交给调用方处理（首页会显示为空）
+		const firstError = [overall, ...regions].find((r) => r.isErr())
+		if (firstError?.isErr()) throw firstError.error
+	}
+
+	const seen = new Set<string>()
+	const picked: BilibiliFeedVideo[] = []
+	const queues = sources.map((list) => list.filter(isSongLike))
+	// 轮流从每个来源取一个
+	while (picked.length < limit && queues.some((queue) => queue.length > 0)) {
+		for (const queue of queues) {
+			const video = queue.shift()
+			if (!video || seen.has(video.bvid)) continue
+			seen.add(video.bvid)
+			picked.push(video)
+			if (picked.length >= limit) break
+		}
+	}
+	return picked.map(feedVideoToTrack)
 }
 
 /**

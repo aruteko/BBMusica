@@ -3,6 +3,7 @@ import { fetch } from 'react-native-nitro-fetch'
 
 import { useAppStore } from '@/hooks/stores/useAppStore'
 import { BilibiliApiError } from '@/lib/errors/thirdparty/bilibili'
+import { parseDurationString } from '@/utils/time'
 import type {
 	BilibiliCaptchaTokenData,
 	BilibiliCommentsResponse,
@@ -98,6 +99,52 @@ export class BilibiliApi {
 	}
 
 	/**
+	 * 获取子分区的热门视频（旧版分区排行接口，支持 28/30/31 等子分区）。
+	 * 返回的结构和 ranking/v2 不同，这里转换成 BilibiliFeedVideo。
+	 */
+	getRegionRanking({
+		tid,
+		days = 7,
+		signal,
+	}: {
+		tid: number
+		days?: number
+		signal?: AbortSignal
+	}): ResultAsync<BilibiliFeedVideo[], BilibiliApiError> {
+		interface RegionRankingItem {
+			aid: number
+			bvid: string
+			title: string
+			pic: string
+			duration: string | number
+			create?: string
+			mid: number
+			author: string
+		}
+		return bilibiliApiClient
+			.get<RegionRankingItem[] | null>({
+				endpoint: '/x/web-interface/ranking/region',
+				params: { rid: String(tid), day: String(days), original: '0' },
+				signal,
+			})
+			.map((items) =>
+				(items ?? []).map((item) => ({
+					aid: item.aid,
+					bvid: item.bvid,
+					title: item.title,
+					pic: item.pic,
+					pubdate: item.create ? Math.floor(Date.parse(item.create) / 1000) || 0 : 0,
+					duration:
+						typeof item.duration === 'number'
+							? item.duration
+							: parseDurationString(item.duration),
+					owner: { name: item.author, mid: item.mid, face: '' },
+					tid,
+				})),
+			)
+	}
+
+	/**
 	 * 获取与指定视频相关的推荐视频（B 站「相关视频」）
 	 */
 	getRelatedVideos({
@@ -175,11 +222,14 @@ export class BilibiliApi {
 	searchVideos({
 		keyword,
 		page,
+		tids,
 		skipCookie,
 		signal,
 	}: {
 		keyword: string
 		page: number
+		/** 限定分区（例如 3 = 音乐区，包含所有子分区） */
+		tids?: number
 		skipCookie?: boolean
 		signal?: AbortSignal
 	}): ResultAsync<
@@ -190,6 +240,7 @@ export class BilibiliApi {
 			keyword,
 			search_type: 'video',
 			page: page.toString(),
+			...(tids !== undefined ? { tids: tids.toString() } : {}),
 		})
 
 		return params
@@ -496,6 +547,49 @@ export class BilibiliApi {
 
 			return okAsync(stream)
 		})
+	}
+
+	/**
+	 * 获取视频的 MP4 播放地址（音视频合一，供 WebView 的 <video> 直接播放，不需要 DASH）。
+	 * 清晰度 quality 是 B 站的 qn：16=360P, 32=480P, 64=720P。
+	 */
+	getVideoMp4Stream({
+		bvid,
+		cid,
+		quality = 32,
+		signal,
+	}: {
+		bvid: string
+		cid: number
+		quality?: number
+		signal?: AbortSignal
+	}): ResultAsync<string, BilibiliApiError> {
+		return bilibiliApiClient
+			.get<{ durl?: { url: string }[] } | null>({
+				endpoint: '/x/player/playurl',
+				params: {
+					bvid,
+					cid: String(cid),
+					qn: String(quality),
+					fnval: '1',
+					platform: 'html5',
+					high_quality: '1',
+					fourk: '0',
+				},
+				signal,
+			})
+			.andThen((data) => {
+				const url = data?.durl?.[0]?.url
+				if (!url) {
+					return errAsync(
+						new BilibiliApiError({
+							message: '未找到视频播放地址',
+							type: 'AudioStreamError',
+						}),
+					)
+				}
+				return okAsync(url.replace(/^http:/, 'https:'))
+			})
 	}
 
 	/**
