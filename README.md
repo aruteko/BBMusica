@@ -82,13 +82,13 @@ Bilibili 向けのサードパーティー製音楽クライアント．
 
 ## プロジェクトの構成
 
-- **[apps/mobile](./apps/mobile)**: BBMusica 本体（モバイルアプリ）のコード．
+- **[apps/mobile](./apps/mobile)**: BBMusica 本体のコード．
 - **[packages/](./packages)**: 共有ライブラリおよびツール．
   - **[@bbplayer/splash](./packages/splash)**: 歌詞の解析・変換ライブラリ．
   - **[@bbplayer/eslint-plugin](./packages/eslint-plugin)**: プロジェクト固有の lint ルール．oxlint の jsPlugins 経由で実行．
   - **[@bbplayer/orpheus](./packages/orpheus)**: Media3 ベースの音声再生エンジン．
   - **[@bbplayer/logs](./packages/logs)**: ロギングライブラリ．
-  - **[@bbplayer/image-theme-colors](./packages/image-theme-colors)**: 画像（カバー）からのテーマカラー抽出モジュール．
+  - **[@bbplayer/image-theme-colors](./packages/image-theme-colors)**: カバーからのテーマカラー抽出モジュール．
   - **[@bbplayer/native](./packages/native)**: ネイティブ機能の統合モジュール．
   - **[@bbplayer/heatmap](./packages/heatmap)**: SVG ベースの日付ヒートマップコンポーネント．
   - **[expo-wavy-slider](./packages/expo-wavy-slider)**: Jetpack Compose の WavySlider を Expo モジュールとして提供．
