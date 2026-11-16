@@ -16,6 +16,7 @@ import type { WebDavEntry } from '@/lib/backup/webdav-client'
 import { queryClient } from '@/lib/config/queryClient'
 import { toastAndLogError } from '@/utils/error-handling'
 import toast from '@/utils/toast'
+import { t } from '@/i18n'
 
 interface WebDavCredentials {
 	config: WebDavBackupConfig
@@ -31,9 +32,9 @@ export function useTestWebDavConnectionMutation() {
 			await client.ensureDirectory(config.directory)
 			await client.checkConnection(config.directory)
 		},
-		onSuccess: () => toast.success('WebDAVに接続しました'),
+		onSuccess: () => toast.success(t('WebDAVに接続しました')),
 		onError: (error) =>
-			toastAndLogError('WebDAVへの接続に失敗しました', error, 'UI.Settings.Backup'),
+			toastAndLogError(t('WebDAVへの接続に失敗しました'), error, 'UI.Settings.Backup'),
 	})
 }
 
@@ -61,13 +62,13 @@ export function useCloudBackupMutation() {
 			}
 		},
 		onSuccess: async () => {
-			toast.success('クラウドバックアップが完了しました')
+			toast.success(t('クラウドバックアップが完了しました'))
 			await queryClient.invalidateQueries({
 				queryKey: webDavBackupQueryKeys.all,
 			})
 		},
 		onError: (error) =>
-			toastAndLogError('クラウドバックアップに失敗しました', error, 'UI.Settings.Backup'),
+			toastAndLogError(t('クラウドバックアップに失敗しました'), error, 'UI.Settings.Backup'),
 	})
 }
 
@@ -94,6 +95,6 @@ export function useCloudRestoreMutation(onSuccess: () => void) {
 		},
 		onSuccess,
 		onError: (error) =>
-			toastAndLogError('クラウドバックアップの復元に失敗しました', error, 'UI.Settings.Backup'),
+			toastAndLogError(t('クラウドバックアップの復元に失敗しました'), error, 'UI.Settings.Backup'),
 	})
 }

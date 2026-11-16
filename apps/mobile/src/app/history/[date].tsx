@@ -10,6 +10,7 @@ import { HistoryListItem } from '@/features/history/HistoryListItem'
 import useCurrentTrack from '@/hooks/player/useCurrentTrack'
 import { usePlayHistoryByDate } from '@/hooks/queries/playHistory'
 import type { Track } from '@/types/core/media'
+import { t } from '@/i18n'
 
 interface HistoryItemData {
 	track: Track
@@ -25,7 +26,7 @@ const formatDurationToWords = (seconds: number) => {
 	const s = Math.floor(seconds % 60)
 
 	const parts = []
-	if (h > 0) parts.push(`${h}\u2009時間`)
+	if (h > 0) parts.push(`${h}${t('\u2009時間')}`)
 	if (m > 0) parts.push(`${m}\u2009分`)
 	if (s > 0 || parts.length === 0) parts.push(`${s}\u2009秒`)
 
@@ -100,7 +101,7 @@ export default function DateHistoryPage() {
 		if (isHistoryError) {
 			return (
 				<View style={styles.centeredContainer}>
-					<Text>読み込みに失敗しました</Text>
+					<Text>{t('読み込みに失敗しました')}</Text>
 				</View>
 			)
 		}
@@ -108,7 +109,7 @@ export default function DateHistoryPage() {
 		if (aggregatedTracks.length === 0) {
 			return (
 				<View style={styles.centeredContainer}>
-					<Text>データがありません</Text>
+					<Text>{t('データがありません')}</Text>
 				</View>
 			)
 		}
@@ -139,7 +140,7 @@ export default function DateHistoryPage() {
 						style={styles.totalDurationSurface}
 						elevation={2}
 					>
-						<Text variant='titleMedium'>当日の再生時間</Text>
+						<Text variant='titleMedium'>{t('当日の再生時間')}</Text>
 						<Text
 							variant='headlineMedium'
 							style={[styles.totalDurationText, { color: colors.primary }]}

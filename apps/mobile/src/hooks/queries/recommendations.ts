@@ -1,17 +1,14 @@
 import { useQuery } from '@tanstack/react-query'
 
-import {
-	fetchHomeRecommendations,
-	fetchPopularMusicTracks,
-} from '@/lib/services/recommendationService'
+import { fetchHomeRecommendations } from '@/lib/services/recommendationService'
 import log from '@/utils/log'
+import { t } from '@/i18n'
 
 const logger = log.extend('Queries.Recommendations')
 
 export const recommendationKeys = {
 	all: ['recommendations'] as const,
 	home: () => [...recommendationKeys.all, 'home'] as const,
-	popular: () => [...recommendationKeys.all, 'popular'] as const,
 }
 
 const STALE_TIME = 15 * 60 * 1000
@@ -27,26 +24,8 @@ export const useHomeRecommendations = () => {
 			try {
 				return await fetchHomeRecommendations(20)
 			} catch (error) {
-				logger.warning('获取首页推荐失败', error)
+				logger.warning(t('ホームのおすすめを取得できませんでした'), error)
 				return { tracks: [], seeded: false }
-			}
-		},
-		staleTime: STALE_TIME,
-		retry: false,
-		meta: { silent: true },
-	})
-}
-
-/** 首页「热门音乐」（音乐分区排行榜） */
-export const usePopularMusic = () => {
-	return useQuery({
-		queryKey: recommendationKeys.popular(),
-		queryFn: async () => {
-			try {
-				return await fetchPopularMusicTracks(20)
-			} catch (error) {
-				logger.warning('获取热门音乐失败', error)
-				return []
 			}
 		},
 		staleTime: STALE_TIME,

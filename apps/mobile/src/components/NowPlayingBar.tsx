@@ -43,6 +43,7 @@ import * as Haptics from '@/utils/haptics'
 import { resolveTrackCover } from '@/utils/imageUrl'
 
 import ActivityIndicator from './common/ActivityIndicator'
+import { t } from '@/i18n'
 
 const ProgressBar = memo(function ProgressBar() {
 	const { position: sharedProgress, duration: sharedDuration } =
@@ -301,7 +302,7 @@ const NowPlayingBarContent = memo(function NowPlayingBarContent() {
 								testID='now-playing-open-player'
 								onPress={() => router.navigate('/player')}
 								accessibilityRole='button'
-								accessibilityLabel='プレーヤーを開く'
+								accessibilityLabel={t('プレーヤーを開く')}
 							>
 								<Image
 									source={{
@@ -341,14 +342,14 @@ const NowPlayingBarContent = memo(function NowPlayingBarContent() {
 											numberOfLines={1}
 											style={{ color: colors.onSurface }}
 										>
-											{currentTrack.title ?? '不明な曲'}
+											{currentTrack.title ?? t('不明な曲')}
 										</Text>
 										<Text
 											variant='bodySmall'
 											numberOfLines={1}
 											style={{ color: colors.onSurfaceVariant }}
 										>
-											{currentTrack.artist?.name ?? '不明'}
+											{currentTrack.artist?.name ?? t('不明')}
 										</Text>
 									</Animated.View>
 
@@ -365,9 +366,7 @@ const NowPlayingBarContent = memo(function NowPlayingBarContent() {
 											variant='titleSmall'
 											numberOfLines={1}
 											style={{ color: colors.onSurface, fontWeight: 'bold' }}
-										>
-											前の曲
-										</Text>
+										>{t('前の曲')}</Text>
 										<Text
 											variant='bodySmall'
 											numberOfLines={1}
@@ -389,9 +388,7 @@ const NowPlayingBarContent = memo(function NowPlayingBarContent() {
 											variant='titleSmall'
 											numberOfLines={1}
 											style={{ color: colors.onSurface, fontWeight: 'bold' }}
-										>
-											次の曲
-										</Text>
+										>{t('次の曲')}</Text>
 										<Text
 											variant='bodySmall'
 											numberOfLines={1}

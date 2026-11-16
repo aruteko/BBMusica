@@ -15,6 +15,8 @@ import {
 	KeyboardAvoidingView,
 	Platform,
 	Pressable,
+	RefreshControl,
+	ScrollView,
 	StyleSheet,
 	ToastAndroid,
 	View,
@@ -34,12 +36,15 @@ import SearchHistory, {
 import SearchSuggestions from '@/features/search/SearchSuggestions'
 import useCurrentTrack from '@/hooks/player/useCurrentTrack'
 import useSkinForegroundColor from '@/hooks/theme/useSkinForegroundColor'
+import { recommendationKeys } from '@/hooks/queries/recommendations'
+import { queryClient } from '@/lib/config/queryClient'
 import { markPerfInteractive } from '@/lib/performance'
 import { toastAndLogError } from '@/utils/error-handling'
 import {
 	matchSearchStrategies,
 	navigateWithSearchStrategy,
 } from '@/utils/search'
+import { t } from '@/i18n'
 
 const SEARCH_HISTORY_KEY = 'bilibili_search_history'
 const MAX_SEARCH_HISTORY = 10
@@ -60,6 +65,19 @@ function SearchPageContent() {
 		searchFocused &&
 		searchQuery.trim().length > 0 &&
 		deferredSearchQuery.trim().length > 0
+	const [refreshing, setRefreshing] = useState(false)
+	const handleRefresh = useCallback(async () => {
+		setRefreshing(true)
+		try {
+			// 読み込みが終わるまで、くるくるを出し続ける
+			await queryClient.invalidateQueries({
+				queryKey: recommendationKeys.home(),
+			})
+		} finally {
+			setRefreshing(false)
+		}
+	}, [])
+	const historyVisible = searchFocused && searchQuery.trim().length === 0
 	const searchBarRef = useRef<ComponentRef<typeof Searchbar>>(null)
 	const dismissPanel = useCallback(() => {
 		setSearchFocused(false)
@@ -103,7 +121,7 @@ function SearchPageContent() {
 			try {
 				setSearchHistory(history)
 			} catch (error) {
-				toastAndLogError('検索履歴の保存に失敗しました', error, 'UI.Search')
+				toastAndLogError(t('検索履歴の保存に失敗しました'), error, 'UI.Search')
 			}
 		},
 		[setSearchHistory],
@@ -158,7 +176,7 @@ function SearchPageContent() {
 				}
 				setSearchQuery('')
 			} catch (error) {
-				toastAndLogError('検索に失敗しました。もう一度お試しください', error, 'UI.Search')
+				toastAndLogError(t('検索に失敗しました。もう一度お試しください'), error, 'UI.Search')
 			} finally {
 				setIsLoading(false)
 			}
@@ -175,12 +193,12 @@ function SearchPageContent() {
 
 	const handleClearHistory = useCallback(() => {
 		alert(
-			'検索履歴を消去しますか？',
-			'すべて消去しますか？',
+			t('検索履歴を消去しますか？'),
+			t('すべて消去しますか？'),
 			[
-				{ text: 'キャンセル' },
+				{ text: t('キャンセル') },
 				{
-					text: 'OK',
+					text: t('OK'),
 					onPress: () => {
 						setSearchHistory([])
 					},
@@ -195,12 +213,12 @@ function SearchPageContent() {
 			const item = searchHistory?.find((h) => h.id === id)
 			if (!item) return
 			alert(
-				'検索履歴を削除しますか？',
-				`「${item.text}」を削除しますか？`,
+				t('検索履歴を削除しますか？'),
+				t('「{0}」を削除しますか？', item.text),
 				[
-					{ text: 'キャンセル' },
+					{ text: t('キャンセル') },
 					{
-						text: 'OK',
+						text: t('OK'),
 						onPress: () => {
 							const newHistory = searchHistory?.filter((h) => h.id !== id)
 							setSearchHistory(newHistory)
@@ -217,12 +235,12 @@ function SearchPageContent() {
 		if (resolvedSharedPayloads.length === 0) return
 		if (resolvedSharedPayloads.length > 1) {
 			if (Platform.OS === 'android') {
-				ToastAndroid.show('複数の共有コンテンツを受け取ったため、無視しました', ToastAndroid.SHORT)
+				ToastAndroid.show(t('複数の共有コンテンツを受け取ったため、無視しました'), ToastAndroid.SHORT)
 			} else {
 				alert(
-					'複数の共有コンテンツを受け取ったため、無視しました',
-					'現在のバージョンでは共有コンテンツを1件のみ処理できます。他の内容は無視しました',
-					[{ text: 'OK' }],
+					t('複数の共有コンテンツを受け取ったため、無視しました'),
+					t('共有コンテンツは1件のみ処理します'),
+					[{ text: t('OK') }],
 				)
 			}
 		}
@@ -250,7 +268,7 @@ function SearchPageContent() {
 				<Pressable
 					style={StyleSheet.absoluteFill}
 					onPress={dismissPanel}
-					accessibilityLabel='検索候補を閉じる'
+					accessibilityLabel={t('検索候補を閉じる')}
 					testID='search-panel-backdrop'
 					// 只用来点空白处收起；遥控器用返回键收起，焦点不能落在这层上。
 					focusable={false}
@@ -263,9 +281,7 @@ function SearchPageContent() {
 				<Text
 					variant='headlineSmall'
 					style={[styles.title, { color: headerForegroundColor }]}
-				>
-					ホーム
-				</Text>
+				>{t('ホーム')}</Text>
 			</View>
 			<View
 				pointerEvents='box-none'
@@ -273,7 +289,7 @@ function SearchPageContent() {
 			>
 				<Searchbar
 					ref={searchBarRef}
-					placeholder='キーワード / b23.tv / 動画リンク / av / BV'
+					placeholder={t('キーワード / b23.tv / 動画リンク / av / BV')}
 					value={searchQuery}
 					onChangeText={setSearchQuery}
 					onSubmitEditing={() => void handleEnter(searchQuery)}
@@ -301,15 +317,39 @@ function SearchPageContent() {
 					<ActivityIndicator style={styles.resolving} />
 				) : (
 					<>
-						<SearchHistory
-							searchHistory={searchHistory}
-							onHistoryPress={handleSuggestionPress}
-							onClearHistory={handleClearHistory}
-							onRemoveHistoryItem={handleRemoveHistoryItem}
-							onDismiss={dismissPanel}
-							panelVisible={suggestionsVisible}
-							footer={<HomeRecommendations />}
-						/>
+						<ScrollView
+							style={styles.homeScroll}
+							contentContainerStyle={styles.homeScrollContent}
+							keyboardShouldPersistTaps='handled'
+							keyboardDismissMode='on-drag'
+							showsVerticalScrollIndicator={false}
+							// 上から引き下げると、おすすめを読み込み直す
+							refreshControl={
+								<RefreshControl
+									refreshing={refreshing}
+									onRefresh={() => void handleRefresh()}
+									colors={[colors.primary]}
+								/>
+							}
+						>
+							<HomeRecommendations />
+						</ScrollView>
+						{/* 検索欄をタップして、何も入力していないときだけ、履歴を出す */}
+						{historyVisible && (
+							<View
+								style={[
+									styles.historyPanel,
+									{ backgroundColor: colors.background },
+								]}
+							>
+								<SearchHistory
+									searchHistory={searchHistory}
+									onHistoryPress={handleSuggestionPress}
+									onClearHistory={handleClearHistory}
+									onRemoveHistoryItem={handleRemoveHistoryItem}
+								/>
+							</View>
+						)}
 						<View
 							pointerEvents='box-none'
 							style={styles.suggestions}
@@ -335,6 +375,17 @@ const styles = StyleSheet.create({
 	searchbarContainer: { paddingHorizontal: 16, paddingBottom: 16 },
 	searchbar: { borderRadius: 9999 },
 	content: { flex: 1, paddingHorizontal: 16 },
+	// 画像を画面の端まで広げるため、左右の余白を打ち消してから、中身に余白を付け直す
+	homeScroll: { flex: 1, marginHorizontal: -16 },
+	homeScrollContent: { paddingHorizontal: 16 },
+	historyPanel: {
+		position: 'absolute',
+		top: 0,
+		bottom: 0,
+		left: 0,
+		right: 0,
+		paddingHorizontal: 16,
+	},
 	suggestions: { position: 'absolute', top: 0, left: 16, right: 16, zIndex: 1 },
 	resolving: { flex: 1 },
 })

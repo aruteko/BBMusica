@@ -6,6 +6,7 @@ import type { WebViewMessageEvent } from 'react-native-webview'
 
 import ActivityIndicator from '@/components/common/ActivityIndicator'
 import Button from '@/components/common/Button'
+import { t } from '@/i18n'
 
 interface Props {
 	gt: string
@@ -40,7 +41,7 @@ function buildGeetestHtml(gt: string, challenge: string): string {
 </head>
 <body>
   <div class="card">
-    <h3>セキュリティ認証を完了してください</h3>
+    <h3>${t('セキュリティ認証を完了してください')}</h3>
     <div id="captcha"></div>
     <div class="err" id="err-msg"></div>
   </div>
@@ -65,7 +66,7 @@ function buildGeetestHtml(gt: string, challenge: string): string {
         }));
       });
       captchaObj.onError(function() {
-        document.getElementById('err-msg').textContent = '認証でエラーが発生しました。閉じてもう一度お試しください';
+        document.getElementById('err-msg').textContent = ${JSON.stringify(t('認証でエラーが発生しました。閉じてもう一度お試しください'))};
       });
     });
   </script>
@@ -88,15 +89,11 @@ export default function GeetestVerifyStep({
 				<Text
 					variant='headlineMedium'
 					style={styles.title}
-				>
-					セキュリティ認証
-				</Text>
+				>{t('セキュリティ認証')}</Text>
 				<Text
 					variant='bodyMedium'
 					style={[styles.subtitle, { color: colors.onSurfaceVariant }]}
-				>
-					下でBilibiliのセキュリティ認証を完了してください。
-				</Text>
+				>{t('下でBilibiliのセキュリティ認証を完了してください。')}</Text>
 			</View>
 
 			<View style={styles.loadingContainer}>
@@ -108,9 +105,7 @@ export default function GeetestVerifyStep({
 				<Text
 					variant='bodyMedium'
 					style={{ color: colors.onSurfaceVariant }}
-				>
-					認証モジュールを読み込み中...
-				</Text>
+				>{t('認証モジュールを読み込み中...')}</Text>
 			</View>
 
 			<View style={styles.actions}>
@@ -118,9 +113,7 @@ export default function GeetestVerifyStep({
 					mode='text'
 					onPress={onCancel}
 					style={styles.button}
-				>
-					キャンセル
-				</Button>
+				>{t('キャンセル')}</Button>
 			</View>
 
 			<Portal>
@@ -147,9 +140,7 @@ export default function GeetestVerifyStep({
 						<Text
 							variant='titleMedium'
 							style={[styles.geetestModalTitle, { color: colors.onSurface }]}
-						>
-							セキュリティ認証
-						</Text>
+						>{t('セキュリティ認証')}</Text>
 						<Pressable
 							onPress={onCancel}
 							style={styles.geetestModalClose}
@@ -157,9 +148,7 @@ export default function GeetestVerifyStep({
 							<Text
 								variant='labelLarge'
 								style={{ color: colors.primary }}
-							>
-								キャンセル
-							</Text>
+							>{t('キャンセル')}</Text>
 						</Pressable>
 					</View>
 					<WebView

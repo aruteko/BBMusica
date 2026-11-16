@@ -2,6 +2,7 @@ import { StyleSheet, View } from 'react-native'
 import { HelperText, Icon, Text, TextInput, useTheme } from 'react-native-paper'
 
 import Button from '@/components/common/Button'
+import { t } from '@/i18n'
 
 interface Props {
 	compact?: boolean
@@ -38,22 +39,18 @@ export default function InputPhoneStep({
 						<Text
 							variant='headlineLarge'
 							style={styles.title}
-						>
-							電話番号でログイン
-						</Text>
+						>{t('電話番号でログイン')}</Text>
 					</>
 				)}
 				<Text
 					variant={compact ? 'bodyMedium' : 'bodyLarge'}
 					style={[styles.subtitle, { color: colors.onSurfaceVariant }]}
-				>
-					未登録の電話番号は、認証後にアカウントが自動で作成されます
-				</Text>
+				>{t('未登録の電話番号は、認証後にアカウントが自動で作成されます')}</Text>
 			</View>
 
 			<View style={[styles.form, compact && { minHeight: 0 }]}>
 				<TextInput
-					label='電話番号を入力'
+					label={t('電話番号を入力')}
 					value={tel}
 					onChangeText={(v) => {
 						setTel(v)
@@ -84,9 +81,7 @@ export default function InputPhoneStep({
 					style={styles.button}
 					contentStyle={styles.buttonContent}
 					labelStyle={styles.buttonLabel}
-				>
-					認証コードを取得
-				</Button>
+				>{t('認証コードを取得')}</Button>
 			</View>
 		</View>
 	)

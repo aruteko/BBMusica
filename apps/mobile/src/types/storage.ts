@@ -10,6 +10,8 @@ export interface AppStorageSchema {
 	'download-manager-storage-v2': string
 	'player-storage-full': string
 	wbi_keys: string
+	app_language: string
+	bilibili_guest_cookie: string
 	enable_old_school_style_lyric: boolean
 	player_background_style: 'gradient' | 'md3' | 'streamer'
 	now_playing_bar_style: 'float' | 'bottom'
@@ -25,6 +27,7 @@ export interface AppStorageSchema {
 	sort_key_migrated_v3: boolean
 	play_history_migrated_v1: boolean
 	independent_account_migrated_v1: boolean
+	account_removed_migrated_v1: boolean
 	play_history_ms_migrated_v1: boolean
 	'shared-playlist-members': string
 	'skin-storage': string

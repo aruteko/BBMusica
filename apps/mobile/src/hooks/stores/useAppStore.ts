@@ -1,6 +1,7 @@
 import { Orpheus } from '@bbplayer/orpheus'
 import * as parseCookie from 'cookie'
 import * as Expo from 'expo'
+import * as Application from 'expo-application'
 import { err, ok, type Result } from 'neverthrow'
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
@@ -18,6 +19,7 @@ import { migrateStartupScreen } from '@/utils/startup-screen'
 const logger = log.extend('Store.App')
 
 import toast from '@/utils/toast'
+import { t } from '@/i18n'
 
 /**
  * 旧版本的播放器背景默认是普通渐变（以及 md3 / streamer 等历史值）。
@@ -35,8 +37,8 @@ function migratePlayerBackgroundToFluid(
 		return { settings, migrated: false }
 	}
 
-	toast.info('プレーヤーの背景を流体エフェクトに自動で切り替えました', {
-		description: 'お好みでなければ、「設定 → 外観とテーマ」で通常のグラデーションに戻せます',
+	toast.info(t('プレーヤーの背景を流体エフェクトに自動で切り替えました'), {
+		description: t('「外観とテーマ」で戻せます'),
 	})
 
 	return {
@@ -75,14 +77,14 @@ export const parseCookieToObject = (
 		}
 
 		if (hasInvalidKeys) {
-			toast.error('Cookieに無効な文字（改行など）が含まれていたため、自動で修正しました')
+			toast.error(t('Cookieの無効な文字を修正しました'))
 		}
 
 		return ok(sanitizedObj)
 	} catch (error) {
 		return err(
 			new Error(
-				`無効なCookie文字列です: ${error instanceof Error ? error.message : String(error)}`,
+				`${t('無効なCookie文字列です: ')}${error instanceof Error ? error.message : String(error)}`,
 			),
 		)
 	}
@@ -125,7 +127,6 @@ export const useAppStore = create<AppState>()(
 		immer((set, get) => {
 			return {
 				bilibiliCookie: null,
-				bbplayerToken: null,
 				settings: {
 					defaultPlayerMode: 'music',
 					sendPlayHistory: false,
@@ -133,10 +134,13 @@ export const useAppStore = create<AppState>()(
 					enableOldSchoolStyleLyric: false,
 					playerBackgroundStyle: 'fluid',
 					pureWhiteBackground: false,
+					skinAccentColor: true,
 					nowPlayingBarStyle: 'float',
 					lyricSource: 'netease',
 					enableVerbatimLyrics: true,
-					enableDataCollection: true,
+					// 公式（com.roitium.*）以外は既定でオフ（クラッシュレポート・利用統計を送らない）
+					enableDataCollection:
+						Application.applicationId?.startsWith('com.roitium.') ?? false,
 					downloadMaxParallelTasks: 1,
 					enableMinimalistMode: false,
 					allowSimultaneousPlayback: false,
@@ -145,7 +149,6 @@ export const useAppStore = create<AppState>()(
 					hideStarPrompt: false,
 				},
 				bilibiliUserInfo: null,
-				bbplayerAccount: null,
 
 				hasBilibiliCookie: () => {
 					const { bilibiliCookie } = get()
@@ -193,31 +196,6 @@ export const useAppStore = create<AppState>()(
 					})
 				},
 
-				setBbplayerToken: (token) => {
-					set((state) => {
-						state.bbplayerToken = token
-					})
-				},
-
-				setBBPlayerAccount: (account) => {
-					set((state) => {
-						state.bbplayerAccount = account
-					})
-				},
-
-				clearBbplayerToken: () => {
-					set((state) => {
-						state.bbplayerToken = null
-					})
-				},
-
-				clearBBPlayerAccount: () => {
-					set((state) => {
-						state.bbplayerToken = null
-						state.bbplayerAccount = null
-					})
-				},
-
 				setSettings: (updates) => {
 					set((state) => {
 						Object.assign(state.settings, updates)
@@ -242,12 +220,12 @@ export const useAppStore = create<AppState>()(
 					void analyticsService.setAnalyticsCollectionEnabled(value)
 
 					alert(
-						'再起動しますか？',
-						'プライバシー設定を変更すると、完全に反映するにはアプリの再起動が必要です。',
+						t('再起動しますか？'),
+						t('再起動すると反映されます'),
 						[
-							{ text: 'キャンセル' },
+							{ text: t('キャンセル') },
 							{
-								text: 'OK',
+								text: t('OK'),
 								onPress: () => {
 									expoDb.closeSync()
 									void Expo.reloadAppAsync()
@@ -275,8 +253,6 @@ export const useAppStore = create<AppState>()(
 			partialize: (state) => ({
 				bilibiliCookie: state.bilibiliCookie,
 				bilibiliUserInfo: state.bilibiliUserInfo,
-				bbplayerToken: state.bbplayerToken,
-				bbplayerAccount: state.bbplayerAccount,
 				settings: state.settings,
 			}),
 
@@ -289,13 +265,6 @@ export const useAppStore = create<AppState>()(
 				}
 				let migratedState = state
 
-				if (version < 2) {
-					migratedState = {
-						...migratedState,
-						bbplayerToken: null,
-						bbplayerAccount: null,
-					}
-				}
 				if (version < 3) {
 					migratedState = {
 						...migratedState,
@@ -363,6 +332,10 @@ export const useAppStore = create<AppState>()(
 					delete mergedState.settings.enableSentryReport
 					// @ts-expect-error -- cleanup
 					delete mergedState.settings.enableAnalytics
+						// @ts-expect-error -- BBMusicaアカウントは廃止した。古い保存データを捨てる
+						delete mergedState.bbplayerToken
+						// @ts-expect-error -- 同上
+						delete mergedState.bbplayerAccount
 
 					return mergedState
 				}
@@ -383,12 +356,6 @@ export const useAppStore = create<AppState>()(
 						}
 					}
 
-					const oldToken = storage.getString('bbplayer_jwt')
-					if (oldToken) {
-						migratedState.bbplayerToken = oldToken
-						hasOldData = true
-						storage.remove('bbplayer_jwt')
-					}
 				} catch (e) {
 					logger.error('解析并迁移旧的 bilibili 数据失败', e)
 				}

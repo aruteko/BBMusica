@@ -1,16 +1,17 @@
+import { sql } from 'drizzle-orm'
+
 import { bilibiliApi } from '@/lib/api/bilibili/api'
 import {
 	NON_SONG_PARTITION_TIDS,
-	SONG_PARTITION_TIDS,
 	looksLikeNonSongTitle,
 } from '@/lib/api/bilibili/partitions'
+import drizzleDb from '@/lib/db/db'
+import * as schema from '@/lib/db/schema'
 import { syncFacade } from '@/lib/facades/syncBilibiliPlaylist'
 import { trackService } from '@/lib/services/trackService'
 import type { BilibiliFeedVideo } from '@/types/apis/bilibili'
 import type { BilibiliTrack, Track } from '@/types/core/media'
 
-/** B 站「音乐」分区的排行榜 rid */
-const MUSIC_PARTITION = '3'
 /** 过滤掉过短（片段、预告）与过长（合集、直播回放）的视频，保证更像「歌曲」 */
 const MIN_DURATION_SECONDS = 90
 const MAX_DURATION_SECONDS = 10 * 60
@@ -95,7 +96,7 @@ function shuffle<T>(items: T[]): T[] {
 
 /**
  * 取「最近常听」的 B 站曲目，作为推荐的种子 / 首页展示。
- * 查询失败时返回空数组，推荐会退回到热门榜。
+ * 查询失败时返回空数组。
  */
 export async function getFrequentTracks({
 	days = 30,
@@ -112,54 +113,19 @@ export async function getFrequentTracks({
 }
 
 /**
- * 人气音乐。
- *
- * 音乐区的总排行榜里有大量乐评盘点、解说、短视频，并不是歌曲。这里改为：
- * 1. 取各个「歌曲」子分区（原创 / 翻唱 / VOCALOID / 现场 / MV）的热门榜，
- * 2. 再取总排行榜，但只保留歌曲分区的视频，
- * 3. 去掉标题像盘点 / 解说 / 合集的，以及时长不像一首歌的，
- * 4. 各来源轮流取一个，避免被某一个分区占满。
+ * 还没有播放记录时，用本地已有的曲目（歌单里的 B 站曲目）随机挑几首作为种子。
  */
-export async function fetchPopularMusicTracks(
-	limit = 30,
-): Promise<BilibiliTrack[]> {
-	const [overall, ...regions] = await Promise.all([
-		bilibiliApi.getPopularVideos({ partition: MUSIC_PARTITION }),
-		...SONG_PARTITION_TIDS.map((tid) => bilibiliApi.getRegionRanking({ tid })),
-	])
-
-	const sources: BilibiliFeedVideo[][] = []
-	if (overall.isOk()) {
-		sources.push(
-			overall.value.filter(
-				(video) =>
-					video.tid !== undefined && SONG_PARTITION_TIDS.includes(video.tid),
-			),
-		)
+export async function getLibrarySeedBvids(limit = 8): Promise<string[]> {
+	try {
+		const rows = await drizzleDb
+			.select({ bvid: schema.bilibiliMetadata.bvid })
+			.from(schema.bilibiliMetadata)
+			.orderBy(sql`random()`)
+			.limit(limit)
+		return rows.map((row) => row.bvid).filter(Boolean)
+	} catch {
+		return []
 	}
-	for (const region of regions) {
-		if (region.isOk()) sources.push(region.value)
-	}
-	if (sources.every((list) => list.length === 0)) {
-		// 所有来源都失败：交给调用方处理（首页会显示为空）
-		const firstError = [overall, ...regions].find((r) => r.isErr())
-		if (firstError?.isErr()) throw firstError.error
-	}
-
-	const seen = new Set<string>()
-	const picked: BilibiliFeedVideo[] = []
-	const queues = sources.map((list) => list.filter(isSongLike))
-	// 轮流从每个来源取一个
-	while (picked.length < limit && queues.some((queue) => queue.length > 0)) {
-		for (const queue of queues) {
-			const video = queue.shift()
-			if (!video || seen.has(video.bvid)) continue
-			seen.add(video.bvid)
-			picked.push(video)
-			if (picked.length >= limit) break
-		}
-	}
-	return picked.map(feedVideoToTrack)
 }
 
 /**
@@ -215,35 +181,22 @@ export async function fetchRecommendedTracks({
 }
 
 /**
- * 首页「为你推荐」：用最近常听的曲目做种子；没有听歌记录或相关视频获取失败时，
- * 用音乐分区热门榜补足。
+ * 首页「为你推荐」：用最近常听的曲目做种子；还没有播放记录时，用本地歌单里的曲目做种子。
+ * 都没有的话返回空列表（首页不显示这个区块）。
  */
 export async function fetchHomeRecommendations(
 	limit = 20,
 ): Promise<{ tracks: BilibiliTrack[]; seeded: boolean }> {
 	const frequent = await getFrequentTracks()
-	const seedBvids = frequent
+	let seedBvids = frequent
 		.map((track) => track.bilibiliMetadata.bvid)
 		.filter(Boolean)
 	const excludeKeys = new Set(frequent.map((track) => track.uniqueKey))
+	if (seedBvids.length === 0) seedBvids = await getLibrarySeedBvids()
+	if (seedBvids.length === 0) return { tracks: [], seeded: false }
 
-	const recommended =
-		seedBvids.length > 0
-			? await fetchRecommendedTracks({ seedBvids, excludeKeys, limit })
-			: []
-	if (recommended.length >= Math.min(limit, 8)) {
-		return { tracks: recommended, seeded: true }
-	}
-
-	const popular = await fetchPopularMusicTracks(limit * 2)
-	const seen = new Set(recommended.map((track) => track.uniqueKey))
-	const filler = popular.filter(
-		(track) => !seen.has(track.uniqueKey) && !excludeKeys.has(track.uniqueKey),
-	)
-	return {
-		tracks: [...recommended, ...filler].slice(0, limit),
-		seeded: recommended.length > 0,
-	}
+	const tracks = await fetchRecommendedTracks({ seedBvids, excludeKeys, limit })
+	return { tracks, seeded: true }
 }
 
 /** 供类型使用：把任意 Track 当作种子时取 bvid（仅 B 站曲目有） */

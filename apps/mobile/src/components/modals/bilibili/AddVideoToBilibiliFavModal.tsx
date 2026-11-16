@@ -16,6 +16,7 @@ import { usePersonalInformation } from '@/hooks/queries/bilibili/user'
 import useAppStore from '@/hooks/stores/useAppStore'
 import { useModalStore } from '@/hooks/stores/useModalStore'
 import type { BilibiliPlaylist } from '@/types/apis/bilibili'
+import { t } from '@/i18n'
 
 const FavoriteListItem = memo(function FavoriteListItem({
 	name,
@@ -167,18 +168,14 @@ const AddToFavoriteListsModal = memo(function AddToFavoriteListsModal({
 					<Text
 						variant='titleMedium'
 						style={styles.loginPromptText}
-					>
-						Bilibiliアカウントにログインすると、お気に入りを確認できます
-					</Text>
+					>{t('Bilibiliアカウントにログインすると、お気に入りを確認できます')}</Text>
 					<Button
 						mode='contained'
 						onPress={() => {
 							router.navigate('/settings/bilibili-account/qrcode-login')
 							close()
 						}}
-					>
-						ログイン
-					</Button>
+					>{t('ログイン')}</Button>
 				</View>
 			)
 		}
@@ -194,18 +191,14 @@ const AddToFavoriteListsModal = memo(function AddToFavoriteListsModal({
 			return (
 				<>
 					<Dialog.Content>
-						<Text style={[styles.errorText, { color: colors.error }]}>
-							お気に入りの読み込みに失敗しました
-						</Text>
+						<Text style={[styles.errorText, { color: colors.error }]}>{t('お気に入りの読み込みに失敗しました')}</Text>
 					</Dialog.Content>
 					<Dialog.Actions>
 						<Button
 							onPress={close}
 							disabled={isMutating}
-						>
-							閉じる
-						</Button>
-						<Button onPress={() => refetch()}>再試行</Button>
+						>{t('閉じる')}</Button>
+						<Button onPress={() => refetch()}>{t('再試行')}</Button>
 					</Dialog.Actions>
 				</>
 			)
@@ -221,7 +214,7 @@ const AddToFavoriteListsModal = memo(function AddToFavoriteListsModal({
 						keyExtractor={keyExtractor}
 						ListEmptyComponent={
 							<View style={styles.emptyListContainer}>
-								<Text style={styles.emptyListText}>お気に入りがありません</Text>
+								<Text style={styles.emptyListText}>{t('お気に入りがありません')}</Text>
 							</View>
 						}
 					/>
@@ -230,9 +223,7 @@ const AddToFavoriteListsModal = memo(function AddToFavoriteListsModal({
 					<Button
 						onPress={close}
 						disabled={isMutating}
-					>
-						キャンセル
-					</Button>
+					>{t('キャンセル')}</Button>
 					<Button
 						onPress={handleConfirm}
 						loading={isMutating}
@@ -247,7 +238,7 @@ const AddToFavoriteListsModal = memo(function AddToFavoriteListsModal({
 
 	return (
 		<>
-			<Dialog.Title>お気に入りに追加</Dialog.Title>
+			<Dialog.Title>{t('お気に入りに追加')}</Dialog.Title>
 			{renderContent()}
 		</>
 	)

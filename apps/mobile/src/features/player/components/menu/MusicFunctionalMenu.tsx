@@ -13,6 +13,7 @@ import {
 	ShareSongAction,
 	type PlayerMenuContentProps,
 } from './PlayerMenuContent'
+import { t } from '@/i18n'
 
 export function MusicFunctionalMenu({
 	onAction: handleAction,
@@ -24,14 +25,14 @@ export function MusicFunctionalMenu({
 			<HighFreqRow style={{ paddingBottom: 12 }}>
 				<HighFreqButton
 					icon='speedometer'
-					label='再生速度'
+					label={t('再生速度')}
 					onPress={() =>
 						handleAction(() => openModal('PlaybackSpeed', undefined))
 					}
 				/>
 				<HighFreqButton
 					icon='timer-outline'
-					label='スリープタイマー'
+					label={t('スリープタイマー')}
 					onPress={() => handleAction(() => openModal('SleepTimer', undefined))}
 				/>
 				<PlayerDownloadButton onAction={handleAction} />
@@ -40,7 +41,7 @@ export function MusicFunctionalMenu({
 			<Divider />
 			<SharedTrackActions onAction={handleAction} />
 			<List.Item
-				title='この曲からステーション'
+				title={t('この曲からステーション')}
 				left={(props) => (
 					<List.Icon
 						{...props}
@@ -55,7 +56,7 @@ export function MusicFunctionalMenu({
 				}
 			/>
 			<List.Item
-				title='歌詞を検索'
+				title={t('歌詞を検索')}
 				left={(props) => (
 					<List.Icon
 						{...props}
@@ -73,7 +74,7 @@ export function MusicFunctionalMenu({
 				}
 			/>
 			<List.Item
-				title='歌詞を共有'
+				title={t('歌詞を共有')}
 				left={(props) => (
 					<List.Icon
 						{...props}

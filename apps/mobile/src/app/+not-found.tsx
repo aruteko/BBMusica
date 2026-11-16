@@ -1,5 +1,6 @@
 import { useRouter } from 'expo-router'
 import { Button, StyleSheet, Text, View } from 'react-native'
+import { t } from '@/i18n'
 
 const NotFoundScreen: React.FC = () => {
 	const router = useRouter()
@@ -10,9 +11,9 @@ const NotFoundScreen: React.FC = () => {
 	return (
 		<View style={styles.container}>
 			<Text style={styles.title}>404</Text>
-			<Text style={styles.message}>お探しのページが見つかりません</Text>
+			<Text style={styles.message}>{t('お探しのページが見つかりません')}</Text>
 			<Button
-				title='ホームに戻る'
+				title={t('ホームに戻る')}
 				onPress={handleGoHome}
 			/>
 		</View>

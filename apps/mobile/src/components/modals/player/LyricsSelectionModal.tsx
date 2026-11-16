@@ -22,6 +22,7 @@ import type { ModalPropsMap } from '@/types/navigation'
 import { resolveTrackCover } from '@/utils/imageUrl'
 import log, { reportErrorToSentry } from '@/utils/log'
 import toast from '@/utils/toast'
+import { t } from '@/i18n'
 
 const LyricItem = memo(function LyricItem({
 	item,
@@ -101,39 +102,39 @@ async function performShare(
 					fileName,
 				})
 			} catch {
-				toast.error('画像の生成に失敗しました')
+				toast.error(t('画像の生成に失敗しました'))
 				return
 			}
 		}
 
 		if (!uri) {
-			toast.error('画像の生成に失敗しました')
+			toast.error(t('画像の生成に失敗しました'))
 			return
 		}
 
 		if (action === 'save' && permissionStatus !== PermissionStatus.GRANTED) {
 			const { status } = await requestPermission()
 			if (status !== PermissionStatus.GRANTED) {
-				toast.error('画像を保存できません', { description: 'アルバムへのアクセスを許可してください' })
+				toast.error(t('画像を保存できません'), { description: t('アルバムへのアクセスを許可してください') })
 				return
 			}
 		}
 
 		if (action === 'save') {
 			await MediaLibrary.Asset.create(uri)
-			toast.success('アルバムに保存しました')
+			toast.success(t('アルバムに保存しました'))
 		} else {
 			const sharingAvailable = await Sharing.isAvailableAsync()
 			if (sharingAvailable) {
 				await Sharing.shareAsync(uri)
 			} else {
-				toast.error('共有は利用できません')
+				toast.error(t('共有は利用できません'))
 				return
 			}
 		}
 		close('LyricsSelection')
 	} catch {
-		toast.error('操作に失敗しました')
+		toast.error(t('操作に失敗しました'))
 	} finally {
 		setIsSharing(false)
 		isSharingRef.current = false
@@ -213,11 +214,11 @@ const LyricsSelectionModal = () => {
 	const isPageListPending = !!cid && isPageListQueryPending
 
 	// 计算 shareUrl
-	let shareUrl = `https://bbplayer.roitium.com/share/track?id=${encodeURIComponent(currentTrack?.uniqueKey ?? '')}&title=${encodeURIComponent(currentTrack?.title ?? '')}&cover=${encodeURIComponent(currentTrack?.coverUrl ?? '')}`
-	if (cid && pageList) {
+	let shareUrl = bvid ? `https://www.bilibili.com/video/${bvid}` : ''
+	if (bvid && cid && pageList) {
 		const page = pageList.find((p) => p.cid === cid)
 		if (page) {
-			shareUrl += `&p=${page.page}`
+			shareUrl += `?p=${page.page}`
 		}
 	}
 
@@ -259,7 +260,7 @@ const LyricsSelectionModal = () => {
 				newSelected.delete(index)
 			} else {
 				if (newSelected.size >= 5) {
-					toast.error('歌詞は最大5行まで選べます')
+					toast.error(t('歌詞は最大5行まで選べます'))
 					return prev
 				}
 				newSelected.add(index)
@@ -277,12 +278,12 @@ const LyricsSelectionModal = () => {
 
 	const generatePreview = async () => {
 		if (!viewShotRef.current) {
-			toast.error('プレビューを生成できません')
+			toast.error(t('プレビューを生成できません'))
 			return
 		}
 
 		if (isPageListPending) {
-			toast.info('共有リンクを取得中です。しばらくお待ちください')
+			toast.info(t('共有リンクを取得中です。しばらくお待ちください'))
 			return
 		}
 
@@ -299,7 +300,7 @@ const LyricsSelectionModal = () => {
 			setShowPreview(true)
 			setIsGenerating(false)
 		} catch {
-			toast.error('プレビューの生成に失敗しました')
+			toast.error(t('プレビューの生成に失敗しました'))
 			setIsGenerating(false)
 		}
 	}
@@ -308,7 +309,7 @@ const LyricsSelectionModal = () => {
 
 	const handleShare = (action: 'save' | 'share') => {
 		if (selectedIndices.size === 0) {
-			toast.error('先に歌詞を選んでください')
+			toast.error(t('先に歌詞を選んでください'))
 			return
 		}
 
@@ -350,17 +351,15 @@ const LyricsSelectionModal = () => {
 	if (!currentTrack) {
 		return (
 			<>
-				<Dialog.Title>共有する歌詞を選択</Dialog.Title>
+				<Dialog.Title>{t('共有する歌詞を選択')}</Dialog.Title>
 				<Dialog.Content style={styles.errorContainer}>
 					<Text
 						variant='bodyMedium'
 						style={styles.errorText}
-					>
-						再生中の曲がありません
-					</Text>
+					>{t('再生中の曲がありません')}</Text>
 				</Dialog.Content>
 				<Dialog.Actions>
-					<Button onPress={() => close('LyricsSelection')}>閉じる</Button>
+					<Button onPress={() => close('LyricsSelection')}>{t('閉じる')}</Button>
 				</Dialog.Actions>
 			</>
 		)
@@ -369,17 +368,15 @@ const LyricsSelectionModal = () => {
 	if (currentTrack.source !== 'bilibili') {
 		return (
 			<>
-				<Dialog.Title>共有する歌詞を選択</Dialog.Title>
+				<Dialog.Title>{t('共有する歌詞を選択')}</Dialog.Title>
 				<Dialog.Content style={styles.errorContainer}>
 					<Text
 						variant='bodyMedium'
 						style={styles.errorText}
-					>
-						現在は、Bilibiliの曲のみ共有できます
-					</Text>
+					>{t('現在は、Bilibiliの曲のみ共有できます')}</Text>
 				</Dialog.Content>
 				<Dialog.Actions>
-					<Button onPress={() => close('LyricsSelection')}>閉じる</Button>
+					<Button onPress={() => close('LyricsSelection')}>{t('閉じる')}</Button>
 				</Dialog.Actions>
 			</>
 		)
@@ -388,18 +385,16 @@ const LyricsSelectionModal = () => {
 	if (isPending) {
 		return (
 			<>
-				<Dialog.Title>共有する歌詞を選択</Dialog.Title>
+				<Dialog.Title>{t('共有する歌詞を選択')}</Dialog.Title>
 				<Dialog.Content style={styles.loadingContainer}>
 					<ActivityIndicator size='large' />
 					<Text
 						variant='bodyMedium'
 						style={styles.loadingText}
-					>
-						歌詞を読み込み中...
-					</Text>
+					>{t('歌詞を読み込み中...')}</Text>
 				</Dialog.Content>
 				<Dialog.Actions>
-					<Button onPress={() => close('LyricsSelection')}>閉じる</Button>
+					<Button onPress={() => close('LyricsSelection')}>{t('閉じる')}</Button>
 				</Dialog.Actions>
 			</>
 		)
@@ -408,17 +403,16 @@ const LyricsSelectionModal = () => {
 	if (isError) {
 		return (
 			<>
-				<Dialog.Title>共有する歌詞を選択</Dialog.Title>
+				<Dialog.Title>{t('共有する歌詞を選択')}</Dialog.Title>
 				<Dialog.Content style={styles.errorContainer}>
 					<Text
 						variant='bodyMedium'
 						style={styles.errorText}
-					>
-						歌詞の読み込みに失敗しました：{error?.message ?? '不明なエラー'}
+					>{t('歌詞の読み込みに失敗しました：')}{error?.message ?? t('不明なエラー')}
 					</Text>
 				</Dialog.Content>
 				<Dialog.Actions>
-					<Button onPress={() => close('LyricsSelection')}>閉じる</Button>
+					<Button onPress={() => close('LyricsSelection')}>{t('閉じる')}</Button>
 				</Dialog.Actions>
 			</>
 		)
@@ -427,17 +421,15 @@ const LyricsSelectionModal = () => {
 	if (!lyrics || lyrics.length === 0) {
 		return (
 			<>
-				<Dialog.Title>共有する歌詞を選択</Dialog.Title>
+				<Dialog.Title>{t('共有する歌詞を選択')}</Dialog.Title>
 				<Dialog.Content style={styles.errorContainer}>
 					<Text
 						variant='bodyMedium'
 						style={styles.errorText}
-					>
-						歌詞がありません
-					</Text>
+					>{t('歌詞がありません')}</Text>
 				</Dialog.Content>
 				<Dialog.Actions>
-					<Button onPress={() => close('LyricsSelection')}>閉じる</Button>
+					<Button onPress={() => close('LyricsSelection')}>{t('閉じる')}</Button>
 				</Dialog.Actions>
 			</>
 		)
@@ -447,7 +439,7 @@ const LyricsSelectionModal = () => {
 	if (showPreview && previewUri) {
 		return (
 			<>
-				<Dialog.Title>共有カードのプレビュー</Dialog.Title>
+				<Dialog.Title>{t('共有カードのプレビュー')}</Dialog.Title>
 				<Dialog.Content style={styles.previewContentArea}>
 					<Image
 						source={{ uri: previewUri }}
@@ -461,9 +453,7 @@ const LyricsSelectionModal = () => {
 						onPress={() => setShowPreview(false)}
 						icon='arrow-left'
 						compact
-					>
-						選択に戻る
-					</Button>
+					>{t('選択に戻る')}</Button>
 					<View style={{ flex: 1 }} />
 					<Button
 						mode='outlined'
@@ -480,9 +470,7 @@ const LyricsSelectionModal = () => {
 						loading={isSharing}
 						disabled={isSharing}
 						icon='share-variant'
-					>
-						共有
-					</Button>
+					>{t('共有')}</Button>
 				</Dialog.Actions>
 			</>
 		)
@@ -490,7 +478,7 @@ const LyricsSelectionModal = () => {
 
 	return (
 		<>
-			<Dialog.Title>共有する歌詞を選択 ({selectedIndices.size}/5)</Dialog.Title>
+			<Dialog.Title>{t('共有する歌詞を選択 {0}/5', selectedIndices.size)}</Dialog.Title>
 			<Dialog.ScrollArea style={styles.scrollArea}>
 				<LegendList
 					data={lyrics}
@@ -508,9 +496,7 @@ const LyricsSelectionModal = () => {
 					compact
 					disabled={selectedIndices.size === 0 || isGenerating}
 					loading={isGenerating}
-				>
-					プレビュー
-				</Button>
+				>{t('プレビュー')}</Button>
 				<View style={{ flex: 1 }} />
 				<Button
 					mode='outlined'
@@ -527,10 +513,8 @@ const LyricsSelectionModal = () => {
 					loading={isSharing}
 					disabled={isSharing || selectedIndices.size === 0}
 					icon='share-variant'
-				>
-					共有
-				</Button>
-				<Button onPress={() => close('LyricsSelection')}>閉じる</Button>
+				>{t('共有')}</Button>
+				<Button onPress={() => close('LyricsSelection')}>{t('閉じる')}</Button>
 			</Dialog.Actions>
 
 			{/* Hidden Capture View - 始终渲染以确保 viewShotRef 可用 */}

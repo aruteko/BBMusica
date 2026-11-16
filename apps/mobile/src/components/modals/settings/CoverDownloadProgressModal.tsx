@@ -7,6 +7,7 @@ import Button from '@/components/common/Button'
 import LinearProgressIndicator from '@/components/common/LinearProgressIndicator'
 import { useModalStore } from '@/hooks/stores/useModalStore'
 import { toastAndLogError } from '@/utils/error-handling'
+import { t } from '@/i18n'
 
 interface ProgressState {
 	current: number
@@ -23,7 +24,7 @@ const CoverDownloadProgressModal = memo(function CoverDownloadProgressModal() {
 		total: 0,
 		failed: 0,
 		stage: 'pending',
-		message: '準備中...',
+		message: t('準備中...'),
 	})
 	const hasStarted = useRef(false)
 
@@ -44,9 +45,9 @@ const CoverDownloadProgressModal = memo(function CoverDownloadProgressModal() {
 						stage: isLast ? 'completed' : 'downloading',
 						message: isLast
 							? failed > 0
-								? `完了：${event.total - failed} 件成功、${failed} 件失敗`
-								: `${event.total} 件のカバーをすべてダウンロードしました`
-							: `ダウンロード中 ${event.current}/${event.total}...`,
+								? `${t('完了：')}${event.total - failed}${t(' 件成功、')}${failed}${t(' 件失敗')}`
+								: `${event.total}${t(' 件のカバーをすべてダウンロードしました')}`
+							: `${t('ダウンロード中 ')}${event.current}/${event.total}...`,
 					}
 				})
 			},
@@ -60,16 +61,16 @@ const CoverDownloadProgressModal = memo(function CoverDownloadProgressModal() {
 						total: 0,
 						failed: 0,
 						stage: 'completed',
-						message: 'すべてのカバーがそろっているため、ダウンロードは不要です',
+						message: t('すべてのカバーがそろっているため、ダウンロードは不要です'),
 					})
 				}
 			})
 			.catch((e: unknown) => {
-				toastAndLogError('不足しているカバーのダウンロードに失敗しました', e, 'Modal.CoverDownloadProgress')
+				toastAndLogError(t('不足しているカバーのダウンロードに失敗しました'), e, 'Modal.CoverDownloadProgress')
 				setProgress((prev) => ({
 					...prev,
 					stage: 'error',
-					message: 'ダウンロードを開始できませんでした',
+					message: t('ダウンロードを開始できませんでした'),
 				}))
 			})
 
@@ -87,10 +88,10 @@ const CoverDownloadProgressModal = memo(function CoverDownloadProgressModal() {
 		<>
 			<Dialog.Title>
 				{progress.stage === 'completed'
-					? 'ダウンロードが完了しました'
+					? t('ダウンロードが完了しました')
 					: progress.stage === 'error'
-						? 'ダウンロードに失敗しました'
-						: '不足しているカバーをダウンロード中'}
+						? t('ダウンロードに失敗しました')
+						: t('不足しているカバーをダウンロード中')}
 			</Dialog.Title>
 			<Dialog.Content>
 				<View style={styles.content}>
@@ -112,7 +113,7 @@ const CoverDownloadProgressModal = memo(function CoverDownloadProgressModal() {
 					onPress={() => close('CoverDownloadProgress')}
 					disabled={!isFinished}
 				>
-					{isFinished ? '閉じる' : 'お待ちください'}
+					{isFinished ? t('閉じる') : t('お待ちください')}
 				</Button>
 			</Dialog.Actions>
 		</>

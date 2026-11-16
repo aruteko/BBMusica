@@ -15,6 +15,7 @@ import { usePlaylistBackgroundColor } from '@/hooks/ui/usePlaylistBackgroundColo
 import type { BilibiliTrack, Track } from '@/types/core/media'
 import { addToQueue } from '@/utils/player'
 import toast from '@/utils/toast'
+import { t } from '@/i18n'
 
 export default function RecentlyPlayedPage() {
 	const isListReady = useScreenTransitionReady()
@@ -72,7 +73,7 @@ export default function RecentlyPlayedPage() {
 
 	const handlePlayAll = useCallback(async () => {
 		if (!tracksData) {
-			toast.error('再生できる曲がありません')
+			toast.error(t('再生できる曲がありません'))
 			return
 		}
 		const playlistTracks = tracksData.map((item) => item.track)
@@ -95,7 +96,7 @@ export default function RecentlyPlayedPage() {
 	}
 
 	if (isError) {
-		return <PlaylistError text='読み込みに失敗しました' />
+		return <PlaylistError text={t('読み込みに失敗しました')} />
 	}
 
 	const isEmpty = !tracksData || tracksData.length === 0
@@ -107,13 +108,13 @@ export default function RecentlyPlayedPage() {
 				style={{ backgroundColor: 'transparent' }}
 			>
 				<Appbar.BackAction onPress={() => router.back()} />
-				<Appbar.Content title='よく聴いている曲' />
+				<Appbar.Content title={t('よく聴いている曲')} />
 			</Appbar.Header>
 
 			<View style={styles.listContainer}>
 				{isEmpty ? (
 					<View style={styles.emptyContainer}>
-						<Text variant='bodyLarge'>再生履歴がありません</Text>
+						<Text variant='bodyLarge'>{t('再生履歴がありません')}</Text>
 					</View>
 				) : (
 					<TrackList
@@ -123,11 +124,11 @@ export default function RecentlyPlayedPage() {
 						selection={selection}
 						ListHeaderComponent={
 							<PlaylistHeader
-								title='よく聴いている曲'
-								subtitles='直近14日でよく再生した曲'
+								title={t('よく聴いている曲')}
+								subtitles={t('直近14日でよく再生した曲')}
 								description={undefined}
 								mainButtonIcon='play'
-								mainButtonText='すべて再生'
+								mainButtonText={t('すべて再生')}
 								id='recently-played'
 								onClickMainButton={handlePlayAll}
 								primaryButtonColor={primaryButtonColor}

@@ -11,6 +11,7 @@ import type { ModalPropsMap } from '@/types/navigation'
 import { toastAndLogError } from '@/utils/error-handling'
 import Log from '@/utils/log'
 import toast from '@/utils/toast'
+import { t } from '@/i18n'
 
 const logger = Log.extend('SaveQueueToPlaylistModal')
 
@@ -29,7 +30,7 @@ export default function SaveQueueToPlaylistModal({
 
 		if (res.isErr()) {
 			toastAndLogError(
-				'プレイリストの保存に失敗しました',
+				t('プレイリストの保存に失敗しました'),
 				res.error,
 				'SaveQueueToPlaylistModal',
 			)
@@ -38,7 +39,7 @@ export default function SaveQueueToPlaylistModal({
 		}
 
 		logger.info('キューをプレイリストに保存しました', res.value)
-		toast.success('キューをプレイリストに保存しました')
+		toast.success(t('キューをプレイリストに保存しました'))
 		await Promise.all([
 			queryClient.invalidateQueries({
 				queryKey: playlistKeys.playlistLists(),
@@ -56,10 +57,10 @@ export default function SaveQueueToPlaylistModal({
 
 	return (
 		<>
-			<Dialog.Title>キューをプレイリストに保存</Dialog.Title>
+			<Dialog.Title>{t('キューをプレイリストに保存')}</Dialog.Title>
 			<Dialog.Content>
 				<TextInput
-					label='プレイリスト名'
+					label={t('プレイリスト名')}
 					value={name}
 					onChangeText={setName}
 					mode='outlined'
@@ -70,9 +71,7 @@ export default function SaveQueueToPlaylistModal({
 				<Button
 					onPress={() => close('SaveQueueToPlaylist')}
 					disabled={loading}
-				>
-					キャンセル
-				</Button>
+				>{t('キャンセル')}</Button>
 				<Button
 					onPress={handleSave}
 					loading={loading}

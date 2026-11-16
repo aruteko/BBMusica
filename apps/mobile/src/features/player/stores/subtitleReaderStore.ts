@@ -4,6 +4,7 @@ import { batch, observable, ObservableHint } from '@legendapp/state'
 import { subtitleParagraphs } from '@/features/player/utils/subtitles'
 import { seekWithinTrack } from '@/lib/player/seek'
 import { toastAndLogError } from '@/utils/error-handling'
+import { t } from '@/i18n'
 
 /** One reader session per track/subtitle source. Content stays immutable. */
 export function createSubtitleReaderStore(
@@ -133,7 +134,7 @@ export function createSubtitleReaderStore(
 					resumeFollowing()
 				}
 			} catch (error) {
-				toastAndLogError('字幕への移動に失敗しました', error, 'Player.Subtitles')
+				toastAndLogError(t('字幕への移動に失敗しました'), error, 'Player.Subtitles')
 			}
 		},
 	}

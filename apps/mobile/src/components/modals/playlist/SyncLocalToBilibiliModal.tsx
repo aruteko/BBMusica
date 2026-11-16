@@ -11,6 +11,7 @@ import { useModalStore } from '@/hooks/stores/useModalStore'
 import { playlistService } from '@/lib/services/playlistService'
 import { syncLocalToBilibiliService } from '@/lib/services/syncLocalToBilibiliService'
 import toast from '@/utils/toast'
+import { t } from '@/i18n'
 
 interface SyncLocalToBilibiliModalProps {
 	playlistId: number
@@ -111,7 +112,7 @@ export default function SyncLocalToBilibiliModal({
 		if (step !== 'checking') return
 
 		if (!userInfo?.mid) {
-			dispatch({ type: 'SET_ERROR', payload: 'Bilibiliにログインしていません。先にログインしてください' })
+			dispatch({ type: 'SET_ERROR', payload: t('Bilibiliにログインしていません。先にログインしてください') })
 			return
 		}
 		if (!playlist) return // 等待加载
@@ -161,7 +162,7 @@ export default function SyncLocalToBilibiliModal({
 			// 获取本地歌单
 			const tracksRes = await playlistService.getPlaylistTracks(playlistId)
 			if (tracksRes.isErr()) {
-				dispatch({ type: 'SET_ERROR', payload: 'ローカルのプレイリストの取得に失敗しました' })
+				dispatch({ type: 'SET_ERROR', payload: t('ローカルのプレイリストの取得に失敗しました') })
 				return
 			}
 
@@ -203,7 +204,7 @@ export default function SyncLocalToBilibiliModal({
 				(p) => dispatch({ type: 'SET_PROGRESS', payload: p }),
 			)
 			if (res.isErr()) {
-				toast.error('一部の曲の追加に失敗しました。ログを確認してください')
+				toast.error(t('一部の曲の追加に失敗しました。ログを確認してください'))
 			} else {
 				addsFailed = res.value
 			}
@@ -216,7 +217,7 @@ export default function SyncLocalToBilibiliModal({
 				diffResult.toRemove,
 			)
 			if (res.isErr()) {
-				toast.error('一部の曲の削除に失敗しました')
+				toast.error(t('一部の曲の削除に失敗しました'))
 			}
 		}
 
@@ -229,15 +230,12 @@ export default function SyncLocalToBilibiliModal({
 			case 'checking':
 				return (
 					<>
-						<Dialog.Title>B站に同期</Dialog.Title>
+						<Dialog.Title>{t('B站に同期')}</Dialog.Title>
 						<Dialog.Content>
 							<View style={styles.center}>
 								<ActivityIndicator size='large' />
-								<Text style={{ marginTop: 20 }}>リモートのお気に入りを検索中...</Text>
-								<Text style={{ marginTop: 10, color: 'red', fontSize: 12 }}>
-									警告：Bilibili APIの制限により、この機能はリスク制御に引っかかりやすく、IPが{' '}
-									一時的に制限される可能性があります。慎重に使ってください。
-								</Text>
+								<Text style={{ marginTop: 20 }}>{t('リモートのお気に入りを検索中...')}</Text>
+								<Text style={{ marginTop: 10, color: 'red', fontSize: 12 }}>{t('警告：リスク制御の対象になりやすく、')}{' '}{t('一時的に制限される可能性があります')}</Text>
 							</View>
 						</Dialog.Content>
 					</>
@@ -245,37 +243,33 @@ export default function SyncLocalToBilibiliModal({
 			case 'confirm_create':
 				return (
 					<>
-						<Dialog.Title>B站に同期</Dialog.Title>
+						<Dialog.Title>{t('B站に同期')}</Dialog.Title>
 						<Dialog.Content>
 							<Text variant='bodyLarge'>
-								&quot;{playlist?.title}&quot; という名前のBilibiliのお気に入りが見つかりません。
+								{t('「{0}」という名前のBilibiliお気に入りが見つかりません', playlist?.title ?? '')}
 							</Text>
 							<Text
 								variant='bodyMedium'
 								style={{ marginTop: 8, color: 'gray' }}
-							>
-								新しい公開のお気に入りを作成しますか？
-							</Text>
+							>{t('新しい公開のお気に入りを作成しますか？')}</Text>
 						</Dialog.Content>
 						<Dialog.Actions>
-							<Button onPress={() => close('SyncLocalToBilibili')}>キャンセル</Button>
+							<Button onPress={() => close('SyncLocalToBilibili')}>{t('キャンセル')}</Button>
 							<Button
 								mode='contained'
 								onPress={handleCreate}
-							>
-								作成して続ける
-							</Button>
+							>{t('作成して続ける')}</Button>
 						</Dialog.Actions>
 					</>
 				)
 			case 'diffing':
 				return (
 					<>
-						<Dialog.Title>B站に同期</Dialog.Title>
+						<Dialog.Title>{t('B站に同期')}</Dialog.Title>
 						<Dialog.Content>
 							<View style={styles.center}>
 								<ActivityIndicator size='large' />
-								<Text style={{ marginTop: 20 }}>リストの差分を比較中...</Text>
+								<Text style={{ marginTop: 20 }}>{t('リストの差分を比較中...')}</Text>
 							</View>
 						</Dialog.Content>
 					</>
@@ -287,37 +281,33 @@ export default function SyncLocalToBilibiliModal({
 				if (nothingToSync) {
 					return (
 						<>
-							<Dialog.Title>同期の確認</Dialog.Title>
+							<Dialog.Title>{t('同期の確認')}</Dialog.Title>
 							<Dialog.Content>
-								<Text variant='bodyLarge'>同期は不要です</Text>
+								<Text variant='bodyLarge'>{t('同期は不要です')}</Text>
 								<Text
 									variant='bodyMedium'
 									style={{ marginTop: 8, color: 'gray' }}
-								>
-									ローカルのリストとリモートのお気に入りは、完全に一致しています。
-								</Text>
+								>{t('ローカルのリストとリモートのお気に入りは、完全に一致しています。')}</Text>
 							</Dialog.Content>
 							<Dialog.Actions>
-								<Button onPress={() => close('SyncLocalToBilibili')}>
-									閉じる
-								</Button>
+								<Button onPress={() => close('SyncLocalToBilibili')}>{t('閉じる')}</Button>
 							</Dialog.Actions>
 						</>
 					)
 				}
 				return (
 					<>
-						<Dialog.Title>同期の確認</Dialog.Title>
+						<Dialog.Title>{t('同期の確認')}</Dialog.Title>
 						<Dialog.Content>
 							<View style={styles.statRow}>
-								<Text>追加する曲</Text>
+								<Text>{t('追加する曲')}</Text>
 								<Text style={{ color: 'green', fontWeight: 'bold' }}>
 									+{diffResult?.toAdd.length}
 								</Text>
 							</View>
 							<Divider style={{ marginVertical: 4 }} />
 							<View style={styles.statRow}>
-								<Text>削除する曲（リモートにのみある曲）</Text>
+								<Text>{t('削除する曲')}</Text>
 								<Text style={{ color: 'red', fontWeight: 'bold' }}>
 									-{diffResult?.toRemove.length}
 								</Text>
@@ -325,18 +315,14 @@ export default function SyncLocalToBilibiliModal({
 							<Text
 								variant='bodySmall'
 								style={{ marginTop: 10, color: 'gray', fontWeight: 'bold' }}
-							>
-								注意：これはミラー同期です。ローカルにない曲は、リモートから削除されます。
-							</Text>
+							>{t('ローカルにない曲は、リモートから削除されます')}</Text>
 						</Dialog.Content>
 						<Dialog.Actions>
-							<Button onPress={() => close('SyncLocalToBilibili')}>キャンセル</Button>
+							<Button onPress={() => close('SyncLocalToBilibili')}>{t('キャンセル')}</Button>
 							<Button
 								mode='contained'
 								onPress={handleSync}
-							>
-								同期を開始
-							</Button>
+							>{t('同期を開始')}</Button>
 						</Dialog.Actions>
 					</>
 				)
@@ -344,13 +330,11 @@ export default function SyncLocalToBilibiliModal({
 			case 'syncing':
 				return (
 					<>
-						<Dialog.Title>B站に同期</Dialog.Title>
+						<Dialog.Title>{t('B站に同期')}</Dialog.Title>
 						<Dialog.Content>
 							<View style={styles.center}>
 								<ActivityIndicator size='large' />
-								<Text style={{ marginTop: 20, marginBottom: 10 }}>
-									同期中...
-								</Text>
+								<Text style={{ marginTop: 20, marginBottom: 10 }}>{t('同期中...')}</Text>
 								<LinearProgressIndicator
 									progress={totalOps > 0 ? progress / totalOps : 0}
 									style={{ width: '100%' }}
@@ -365,7 +349,7 @@ export default function SyncLocalToBilibiliModal({
 			case 'success':
 				return (
 					<>
-						<Dialog.Title>同期が完了しました</Dialog.Title>
+						<Dialog.Title>{t('同期が完了しました')}</Dialog.Title>
 						<Dialog.Content>
 							<View style={styles.center}>
 								<Text
@@ -375,13 +359,11 @@ export default function SyncLocalToBilibiliModal({
 										marginBottom: 10,
 									}}
 								>
-									{failCount > 0 ? '一部の同期に成功しました' : '同期に成功しました'}
+									{failCount > 0 ? t('一部の同期に成功しました') : t('同期に成功しました')}
 								</Text>
 								{failCount > 0 && (
 									<Text style={{ color: 'gray' }}>
-										{failCount} 曲を同期できませんでした。しばらくしてからもう一度お試しください。（IPがリスク制御の対象になった可能性があります）
-										
-									</Text>
+										{failCount}{t(' 曲を同期できませんでした。しばらくしてからお試しください')}</Text>
 								)}
 							</View>
 						</Dialog.Content>
@@ -398,7 +380,7 @@ export default function SyncLocalToBilibiliModal({
 			case 'error':
 				return (
 					<>
-						<Dialog.Title>エラーが発生しました</Dialog.Title>
+						<Dialog.Title>{t('エラーが発生しました')}</Dialog.Title>
 						<Dialog.Content>
 							<View style={styles.center}>
 								<Text style={{ color: 'red', marginBottom: 10 }}>
@@ -407,7 +389,7 @@ export default function SyncLocalToBilibiliModal({
 							</View>
 						</Dialog.Content>
 						<Dialog.Actions>
-							<Button onPress={() => close('SyncLocalToBilibili')}>閉じる</Button>
+							<Button onPress={() => close('SyncLocalToBilibili')}>{t('閉じる')}</Button>
 						</Dialog.Actions>
 					</>
 				)

@@ -9,6 +9,7 @@ import { runes } from 'runes2'
 
 import { getGradientColors } from '@/utils/color'
 import { resolveBilibiliImageUrl } from '@/utils/imageUrl'
+import { CORNER_RADIUS } from '@/theme/dimensions'
 
 /**
  * 组件 Props 定义
@@ -61,7 +62,7 @@ const CoverWithPlaceHolder = memo(function CoverWithPlaceHolder({
 	const colorScheme = useColorScheme()
 	const isDark: boolean = colorScheme === 'dark'
 
-	const computedBorderRadius = borderRadius ?? size * 0.22
+	const computedBorderRadius = borderRadius ?? CORNER_RADIUS
 
 	const validTitle = title.trim()
 	const { color1, color2 } = getGradientColors(

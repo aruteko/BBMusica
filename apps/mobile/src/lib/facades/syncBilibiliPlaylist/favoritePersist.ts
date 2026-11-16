@@ -14,6 +14,7 @@ import type {
 	FavoriteSyncDeps,
 	FavoriteTrackDetails,
 } from './types'
+import { t } from '@/i18n'
 
 /**
  * 阶段 6：落库事务。
@@ -156,7 +157,7 @@ export async function persistFavoriteSync(
 					if (id === undefined)
 						throw createFacadeError(
 							'SyncFavoriteFailed',
-							'已完了 tracks 作成后，却依然没有找到 uniqueKey 对应的 ID',
+							t('已完了 tracks 作成后，却依然没有找到 uniqueKey 对应的 ID'),
 						)
 					return id !== undefined
 				})
@@ -182,7 +183,7 @@ export async function persistFavoriteSync(
 			return playlistResult.value.id
 		}),
 		(e) =>
-			createFacadeError('SyncFavoriteFailed', 'お気に入りを同期失败', {
+			createFacadeError('SyncFavoriteFailed', t('お気に入りを同期できませんでした'), {
 				cause: e,
 			}),
 	)

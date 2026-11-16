@@ -16,6 +16,8 @@ import useAppStore from '@/hooks/stores/useAppStore'
 import type { BilibiliFavoriteListContent } from '@/types/apis/bilibili'
 
 import MultiPageVideosItem from './MultiPageVideosItem'
+import { t } from '@/i18n'
+import { GRID_COLUMNS } from '@/components/common/GridCard'
 
 const renderPlaylistItem = ({
 	item,
@@ -71,7 +73,7 @@ const MultiPageVideosListComponent = memo(() => {
 	if (playlistsIsError || isFavoriteDataError) {
 		return (
 			<DataFetchingError
-				text='読み込みに失敗しました'
+				text={t('読み込みに失敗しました')}
 				onRetry={() => onRefresh()}
 			/>
 		)
@@ -83,9 +85,7 @@ const MultiPageVideosListComponent = memo(() => {
 				<Text
 					variant='titleMedium'
 					style={styles.noMpText}
-				>
-					分割P動画のお気に入りが見つかりません。先にお気に入りを作成し、名前を&thinsp;[mp]&thinsp;で始めてください
-				</Text>
+				>{t('[mp] で始まるお気に入りが見つかりません')}</Text>
 			</View>
 		)
 	}
@@ -96,13 +96,9 @@ const MultiPageVideosListComponent = memo(() => {
 				<Text
 					variant='titleMedium'
 					style={styles.headerTitle}
-				>
-					分割P動画
-				</Text>
+				>{t('分割P動画')}</Text>
 				<Text variant='bodyMedium'>
-					{favoriteData.pages[0]?.info?.media_count ?? 0}
-					&thinsp;件の分割P動画
-				</Text>
+					{favoriteData.pages[0]?.info?.media_count ?? 0}{t('\u2009件の分割P動画')}</Text>
 			</View>
 			<LegendList
 				contentContainerStyle={{ paddingBottom: haveTrack ? 90 : 10 }}
@@ -110,6 +106,7 @@ const MultiPageVideosListComponent = memo(() => {
 				data={favoriteData.pages.flatMap((page) => page.medias ?? []) ?? []}
 				renderItem={renderPlaylistItem}
 				recycleItems
+				numColumns={GRID_COLUMNS}
 				keyExtractor={keyExtractor}
 				refreshControl={
 					<RefreshControl
@@ -122,7 +119,7 @@ const MultiPageVideosListComponent = memo(() => {
 					/>
 				}
 				ListEmptyComponent={
-					<Text style={styles.emptyList}>分割P動画がありません</Text>
+					<Text style={styles.emptyList}>{t('分割P動画がありません')}</Text>
 				}
 				onEndReached={hasNextPage ? () => fetchNextPage() : undefined}
 			/>

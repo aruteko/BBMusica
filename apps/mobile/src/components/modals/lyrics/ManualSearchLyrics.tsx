@@ -12,10 +12,11 @@ import { useModalStore } from '@/hooks/stores/useModalStore'
 import type { ListRenderItemInfoWithExtraData } from '@/types/legendlist'
 import type { LyricSearchResult } from '@/types/player/lyrics'
 import { formatDurationToHHMMSS } from '@/utils/time'
+import { t } from '@/i18n'
 
 const SOURCE_MAP = {
 	netease: 'NetEase Cloud Music',
-	qqmusic: 'QQ音楽',
+	qqmusic: t('QQ音楽'),
 	kuwo: 'Kuwo',
 	kugou: 'KuGou',
 	baidu: 'Baidu',
@@ -31,7 +32,7 @@ const renderItem = ({
 		handlePressItem: (item: LyricSearchResult[0]) => void
 	}
 >) => {
-	if (!extraData) throw new Error('Extradata 不存在')
+	if (!extraData) throw new Error(t('Extradata がありません'))
 	return (
 		<SearchItem
 			item={item}
@@ -108,7 +109,7 @@ const ManualSearchLyricsModal = ({
 		if (!searchResult) {
 			return (
 				<View style={styles.centerContainer}>
-					<Text style={styles.centerText}>検索キーワードを変更して、Enterで検索してください</Text>
+					<Text style={styles.centerText}>{t('検索キーワードを変更して、Enterで検索してください')}</Text>
 				</View>
 			)
 		}
@@ -138,7 +139,7 @@ const ManualSearchLyricsModal = ({
 		if (!isSearching && searchResult.length === 0) {
 			return (
 				<View style={styles.centerContainer}>
-					<Text style={styles.centerText}>一致する歌詞が見つかりません</Text>
+					<Text style={styles.centerText}>{t('一致する歌詞が見つかりません')}</Text>
 				</View>
 			)
 		}
@@ -151,7 +152,7 @@ const ManualSearchLyricsModal = ({
 		<>
 			<Dialog.Title style={styles.dialogTitle}>
 				<View style={styles.titleContainer}>
-					<Text variant='headlineSmall'>歌詞を手動で検索</Text>
+					<Text variant='headlineSmall'>{t('歌詞を手動で検索')}</Text>
 					{isSearching && (
 						<ActivityIndicator
 							size='small'
@@ -164,7 +165,7 @@ const ManualSearchLyricsModal = ({
 				<SearchBar
 					value={query}
 					onChangeText={setQuery}
-					placeholder='曲名を入力'
+					placeholder={t('曲名を入力')}
 					onSubmitEditing={() => searchIt(query)}
 				/>
 			</Dialog.Content>
@@ -175,9 +176,7 @@ const ManualSearchLyricsModal = ({
 				<Button
 					onPress={() => close('ManualSearchLyrics')}
 					disabled={isFetchingLyrics}
-				>
-					キャンセル
-				</Button>
+				>{t('キャンセル')}</Button>
 			</Dialog.Actions>
 		</>
 	)

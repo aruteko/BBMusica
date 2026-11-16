@@ -6,9 +6,11 @@ import { Dialog, Text } from 'react-native-paper'
 import Button from '@/components/common/Button'
 import useAppStore from '@/hooks/stores/useAppStore'
 import { useModalStore } from '@/hooks/stores/useModalStore'
+import { GITHUB_REPO_URL } from '@/lib/config/links'
 import toast from '@/utils/toast'
+import { t } from '@/i18n'
 
-export const GITHUB_REPO_URL = 'https://github.com/bbplayer-app/BBPlayer'
+export { GITHUB_REPO_URL }
 
 export default function StarPromptModal() {
 	const close = useModalStore((state) => state.close)
@@ -26,7 +28,7 @@ export default function StarPromptModal() {
 			await WebBrowser.openBrowserAsync(GITHUB_REPO_URL)
 		} catch (e) {
 			await Clipboard.setStringAsync(GITHUB_REPO_URL)
-			toast.error('ブラウザを開けないため、リンクをクリップボードにコピーしました', {
+			toast.error(t('ブラウザを開けないため、リンクをクリップボードにコピーしました'), {
 				description: String(e),
 			})
 		}
@@ -35,17 +37,15 @@ export default function StarPromptModal() {
 
 	return (
 		<>
-			<Dialog.Title>BBPlayerを気に入っていただけましたか？</Dialog.Title>
+			<Dialog.Title>{t('BBMusicaはいかがですか？')}</Dialog.Title>
 			<Dialog.Content>
-				<Text variant='bodyMedium'>
-					気に入っていただけたら、GitHubでStarを付けて応援してください 🥺
-				</Text>
+				<Text variant='bodyMedium'>{t('GitHubでStarを付けて応援してください')}</Text>
 			</Dialog.Content>
 			<Dialog.Actions style={styles.actionsContainer}>
-				<Button onPress={handleDontShowAgain}>今後表示しない</Button>
+				<Button onPress={handleDontShowAgain}>{t('今後表示しない')}</Button>
 				<View style={styles.rightActionsContainer}>
-					<Button onPress={handleClose}>キャンセル</Button>
-					<Button onPress={() => void handleGoStar()}>Starを付ける</Button>
+					<Button onPress={handleClose}>{t('キャンセル')}</Button>
+					<Button onPress={() => void handleGoStar()}>{t('Starを付ける')}</Button>
 				</View>
 			</Dialog.Actions>
 		</>

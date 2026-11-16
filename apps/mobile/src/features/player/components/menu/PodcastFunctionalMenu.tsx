@@ -19,6 +19,7 @@ import {
 	ShareSongAction,
 	type PlayerMenuContentProps,
 } from './PlayerMenuContent'
+import { t } from '@/i18n'
 
 export function PodcastFunctionalMenu({ onAction }: PlayerMenuContentProps) {
 	const currentTrack = useCurrentTrack()
@@ -29,7 +30,7 @@ export function PodcastFunctionalMenu({ onAction }: PlayerMenuContentProps) {
 				<PlayerDownloadButton onAction={onAction} />
 				{currentTrack?.source === 'bilibili' && (
 					<HighFreqButton
-						label='コメント'
+						label={t('コメント')}
 						icon='comment-text-outline'
 						onPress={() =>
 							onAction(() =>
@@ -52,7 +53,7 @@ export function PodcastFunctionalMenu({ onAction }: PlayerMenuContentProps) {
 }
 
 const report = (error: unknown) =>
-	toastAndLogError('再生設定の更新に失敗しました', error, 'Player.Mode')
+	toastAndLogError(t('再生設定の更新に失敗しました'), error, 'Player.Mode')
 
 function PodcastPlaybackSettings() {
 	const { shuffle, repeat } = usePlaybackOptions()
@@ -60,8 +61,8 @@ function PodcastPlaybackSettings() {
 	return (
 		<>
 			<List.Item
-				title='シャッフル'
-				description={shuffle ? 'オン' : 'オフ'}
+				title={t('シャッフル')}
+				description={shuffle ? t('オン') : t('オフ')}
 				left={(props) => (
 					<List.Icon
 						{...props}
@@ -74,13 +75,13 @@ function PodcastPlaybackSettings() {
 				}}
 			/>
 			<List.Item
-				title='リピートモード'
+				title={t('リピートモード')}
 				description={
 					repeat === RepeatMode.OFF
-						? 'リピートなし'
+						? t('リピートなし')
 						: repeat === RepeatMode.TRACK
-							? '1曲リピート'
-							: 'キューをリピート'
+							? t('1曲リピート')
+							: t('キューをリピート')
 				}
 				left={(props) => (
 					<List.Icon

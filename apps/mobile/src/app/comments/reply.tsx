@@ -9,12 +9,13 @@ import { CommentItem } from '@/features/comments/components/CommentItem'
 import { useReplyComments } from '@/hooks/queries/bilibili/comments'
 import type { BilibiliCommentItem } from '@/types/apis/bilibili'
 import type { ListRenderItemInfoWithExtraData } from '@/types/legendlist'
+import { t } from '@/i18n'
 
 const renderItem = ({
 	item,
 	extraData,
 }: ListRenderItemInfoWithExtraData<BilibiliCommentItem, { bvid: string }>) => {
-	if (!extraData) throw new Error('Extradata 不存在')
+	if (!extraData) throw new Error(t('Extradata がありません'))
 	const { bvid } = extraData
 	return (
 		<CommentItem
@@ -53,7 +54,7 @@ export default function ReplyCommentsPage() {
 	if (!bvid || !rpid) {
 		return (
 			<View style={styles.center}>
-				<Text>パラメーターが正しくありません</Text>
+				<Text>{t('パラメーターが正しくありません')}</Text>
 			</View>
 		)
 	}
@@ -62,7 +63,7 @@ export default function ReplyCommentsPage() {
 	if (isNaN(rpidNumber)) {
 		return (
 			<View style={styles.center}>
-				<Text>無効なコメントIDです</Text>
+				<Text>{t('無効なコメントIDです')}</Text>
 			</View>
 		)
 	}
@@ -72,7 +73,7 @@ export default function ReplyCommentsPage() {
 			style={[styles.container, { backgroundColor: theme.colors.background }]}
 		>
 			<Appbar.Header elevated>
-				<Appbar.Content title={'コメント'} />
+				<Appbar.Content title={t('コメント')} />
 				<Appbar.BackAction onPress={() => router.back()} />
 			</Appbar.Header>
 			{isLoading ? (

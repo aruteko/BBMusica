@@ -9,6 +9,7 @@ import { useStorageDirectory } from '@/hooks/queries/native/storage'
 import usePreventRemove from '@/hooks/router/usePreventRemove'
 import { useScreenTransitionReady } from '@/hooks/router/useScreenTransitionReady'
 import { formatBytes } from '@/utils/format'
+import { t } from '@/i18n'
 
 interface Row {
 	isDirectory: boolean
@@ -56,7 +57,7 @@ export default function AppPrivateDataPage() {
 		if (path) {
 			list.push({
 				key: '..',
-				name: '親フォルダー',
+				name: t('親フォルダー'),
 				parent: true,
 				path: path.includes('/') ? path.slice(0, path.lastIndexOf('/')) : '',
 				isDirectory: true,
@@ -80,7 +81,7 @@ export default function AppPrivateDataPage() {
 		<View style={[styles.container, { backgroundColor: colors.background }]}>
 			<Appbar.Header>
 				<Appbar.BackAction onPress={handleBack} />
-				<Appbar.Content title='アプリ専用フォルダー' />
+				<Appbar.Content title={t('アプリ専用フォルダー')} />
 			</Appbar.Header>
 			<View style={styles.header}>
 				<Text
@@ -93,9 +94,7 @@ export default function AppPrivateDataPage() {
 				<Text
 					variant='bodySmall'
 					style={{ color: colors.onSurfaceVariant }}
-				>
-					読み取り専用 · アプリ専用フォルダー
-				</Text>
+				>{t('読み取り専用 · アプリ専用フォルダー')}</Text>
 			</View>
 			<FlatList
 				style={styles.list}
@@ -149,7 +148,7 @@ export default function AppPrivateDataPage() {
 								variant='bodyMedium'
 								style={{ color: colors.onSurfaceVariant }}
 							>
-								{isError ? '読み込みに失敗しました' : 'このフォルダーは空です'}
+								{isError ? t('読み込みに失敗しました') : t('このフォルダーは空です')}
 							</Text>
 						</View>
 					)
@@ -160,9 +159,7 @@ export default function AppPrivateDataPage() {
 							<Text
 								variant='bodyMedium'
 								style={{ color: colors.onSurfaceVariant }}
-							>
-								計算中...
-							</Text>
+							>{t('計算中...')}</Text>
 						</View>
 					) : undefined
 				}

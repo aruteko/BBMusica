@@ -21,6 +21,7 @@ import * as Haptics from '@/utils/haptics'
 import { formatDurationToHHMMSS } from '@/utils/time'
 
 import ProgressRing from './ProgressRing'
+import { t } from '@/i18n'
 
 export interface TrackMenuItem {
 	title: string
@@ -162,7 +163,7 @@ export const ToViewTrackListItem = memo(function ToViewTrackListItem({
 										variant='bodySmall'
 										numberOfLines={1}
 									>
-										{data.artistName ?? '不明'}
+										{data.artistName ?? t('不明')}
 									</VariantPlainText>
 									<VariantPlainText
 										style={styles.dotSeparator}
@@ -257,7 +258,7 @@ const renderToViewItem = ({
 	BilibiliTrack & { progress: number },
 	ExtraData
 >) => {
-	if (!extraData) throw new Error('Extradata 不存在')
+	if (!extraData) throw new Error(t('Extradata がありません'))
 	const { playTrack, trackMenuItems, selection, showItemCover } = extraData
 
 	return (

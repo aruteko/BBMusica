@@ -4,11 +4,12 @@ import type {
 	BilibiliSubtitleBody,
 	BilibiliSubtitleTrack,
 } from '@/types/apis/bilibili'
+import { t } from '@/i18n'
 
 export function subtitleKind(track: BilibiliSubtitleTrack) {
-	if (track.ai_type === 1) return '機械翻訳'
-	if (track.lan.startsWith('ai-')) return '自動生成'
-	return '人が作成した字幕'
+	if (track.ai_type === 1) return t('機械翻訳')
+	if (track.lan.startsWith('ai-')) return t('自動生成')
+	return t('人が作成した字幕')
 }
 
 export function subtitleLabel(track: BilibiliSubtitleTrack) {
@@ -29,7 +30,7 @@ export function subtitlesToLrc(lines: LyricLine[], title: string): string {
 	const metadataTitle = singleLine(title)
 		.replace(/\[/g, '［')
 		.replace(/\]/g, '］')
-	const output = [`[ti:${metadataTitle}]`, '[by:BBPlayer]']
+	const output = [`[ti:${metadataTitle}]`, '[by:BBMusica]']
 	for (const [index, line] of lines.entries()) {
 		output.push(`${timestamp(line.startTime)}${singleLine(line.content)}`)
 		const next = lines[index + 1]

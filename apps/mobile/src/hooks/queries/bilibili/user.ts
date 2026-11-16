@@ -75,9 +75,8 @@ export const useInfiniteGetUserUploadedVideos = (
 	mid: number,
 	keyword?: string,
 ) => {
-	// 这个接口有风控校验
-	const hasCookie = useAppStore((s) => s.hasBilibiliCookie())
-	const enabled = !!mid && hasCookie
+	// ログインしていなくても取得できる（アカウント登録なしでも使えるようにするため）
+	const enabled = !!mid
 	return useInfiniteQuery({
 		queryKey: userQueryKeys.uploadedVideos(mid, keyword),
 		queryFn: ({ pageParam, signal }) =>
@@ -102,10 +101,9 @@ export const useInfiniteGetUserUploadedVideos = (
 	})
 }
 
-export const useOtherUserInfo = (mid: number, requireCookie = true) => {
-	// 这个接口有风控校验
-	const hasCookie = useAppStore((s) => s.hasBilibiliCookie())
-	const enabled = !!mid && (!requireCookie || hasCookie)
+export const useOtherUserInfo = (mid: number) => {
+	// ログインしていなくても取得できる
+	const enabled = !!mid
 	return useQuery({
 		queryKey: userQueryKeys.otherUserInfo(mid),
 		queryFn: ({ signal }) =>

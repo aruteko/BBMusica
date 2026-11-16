@@ -6,6 +6,7 @@ import { useModalStore } from '@/hooks/stores/useModalStore'
 import { startStation } from '@/lib/player/station'
 import type { BilibiliTrack } from '@/types/core/media'
 import toast from '@/utils/toast'
+import { t } from '@/i18n'
 
 const PLAY_NEXT_ICON = Icon.select({
 	ios: 'arrow.right.to.line.circle',
@@ -42,19 +43,19 @@ export function usePlaylistMenu(
 	return useCallback(
 		(item: BilibiliTrack) => [
 			{
-				title: '次に再生',
+				title: t('次に再生'),
 				leadingIcon: PLAY_NEXT_ICON,
 				onPress: () => {
 					playTrack(item, true)
-					toast.success('次に再生に追加しました')
+					toast.success(t('次に再生に追加しました'))
 				},
 			},
 			{
-				title: '詳細を表示',
+				title: t('詳細を表示'),
 				leadingIcon: INFO_ICON,
 				onPress: () => {
 					if (pathname.includes('multipage')) {
-						toast.info('すでにここにいます。これ以上は深く進めません！')
+						toast.info(t('すでにここにいます。これ以上は深く進めません！'))
 						return
 					}
 					router.navigate({
@@ -64,25 +65,25 @@ export function usePlaylistMenu(
 				},
 			},
 			{
-				title: 'この曲からステーション',
+				title: t('この曲からステーション'),
 				leadingIcon: RADIO_ICON,
 				onPress: () => {
 					void startStation(item)
 				},
 			},
 			{
-				title: 'ローカルプレイリストに追加',
+				title: t('ローカルプレイリストに追加'),
 				leadingIcon: ADD_TO_PLAYLIST_ICON,
 				onPress: () => {
 					openModal('UpdateTrackLocalPlaylists', { track: item })
 				},
 			},
 			{
-				title: '投稿者の動画を表示',
+				title: t('投稿者の動画を表示'),
 				leadingIcon: ARTIST_ICON,
 				onPress: () => {
 					if (!item.artist?.remoteId) {
-						toast.error('投稿者の情報が見つかりません')
+						toast.error(t('投稿者の情報が見つかりません'))
 						return
 					}
 					router.navigate({

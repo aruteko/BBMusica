@@ -12,6 +12,7 @@ import {
 } from '@/types/core/playback'
 import log from '@/utils/log'
 import { legendPersistStorage } from '@/utils/mmkv'
+import { t } from '@/i18n'
 
 export const PLAYBACK_CONTEXT_STORAGE_KEY = 'playback-context-store'
 
@@ -35,7 +36,7 @@ let initialized = false
 let restoringBackup = false
 
 export function assertPlaybackContextAvailable() {
-	if (restoringBackup) throw new Error('备份已恢复，请重启应用后继续播放')
+	if (restoringBackup) throw new Error(t('復元しました。再起動してから再生してください'))
 }
 
 export function createPlaybackContext(mode: PlayerMode): PlaybackContext {

@@ -16,6 +16,7 @@ import type { Track } from '@/types/core/media'
 import { toastAndLogError } from './error-handling'
 import { AndroidHaptics, performHaptics } from './haptics'
 import log, { flatErrorMessage } from './log'
+import { t } from '@/i18n'
 
 const logger = log.extend('Utils.Player')
 
@@ -37,7 +38,7 @@ function convertToOrpheusTrack(
 
 	// 如果没有有效的 URL，返回错误
 	if (!url) {
-		const errorMsg = '有効な音声ストリームのURLが見つかりません'
+		const errorMsg = t('有効な音声ストリームのURLが見つかりません')
 		logger.warning(errorMsg, track)
 		return err(
 			createPlayerError('AudioUrlNotFound', `${errorMsg}: ${track.id}`),
@@ -176,7 +177,7 @@ async function addToQueue({
 		})
 		return true
 	} catch (error) {
-		toastAndLogError('再生キューへの追加に失敗しました', error, 'Utils.Player')
+		toastAndLogError(t('再生キューへの追加に失敗しました'), error, 'Utils.Player')
 		return false
 	}
 }

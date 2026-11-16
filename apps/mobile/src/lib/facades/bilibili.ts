@@ -7,6 +7,7 @@ import {
 import { av2bv } from '@/lib/api/bilibili/utils'
 import { createFacadeError } from '@/lib/errors/facade'
 import type { Playlist } from '@/types/core/media'
+import { t } from '@/i18n'
 
 export class BilibiliFacade {
 	constructor(private readonly bilibiliApi: typeof BilibiliApiService) {}
@@ -24,7 +25,7 @@ export class BilibiliFacade {
 					return err(
 						createFacadeError(
 							'fetchRemotePlaylistMetadataFailed',
-							'シリーズ情報の取得に失敗しました',
+							t('シリーズ情報の取得に失敗しました'),
 							{ cause: result.error },
 						),
 					)
@@ -38,7 +39,7 @@ export class BilibiliFacade {
 					return err(
 						createFacadeError(
 							'fetchRemotePlaylistMetadataFailed',
-							'シリーズのカバーの取得に失敗しました',
+							t('シリーズのカバーの取得に失敗しました'),
 							{ cause: firstPage.error },
 						),
 					)
@@ -57,7 +58,7 @@ export class BilibiliFacade {
 					return err(
 						createFacadeError(
 							'fetchRemotePlaylistMetadataFailed',
-							'コレクション情報の取得に失敗しました',
+							t('コレクション情報の取得に失敗しました'),
 							{ cause: result.error },
 						),
 					)
@@ -77,7 +78,7 @@ export class BilibiliFacade {
 					return err(
 						createFacadeError(
 							'fetchRemotePlaylistMetadataFailed',
-							'複数パートの動画情報の取得に失敗しました',
+							t('複数パートの動画情報の取得に失敗しました'),
 							{ cause: result.error },
 						),
 					)
@@ -98,7 +99,7 @@ export class BilibiliFacade {
 					return err(
 						createFacadeError(
 							'fetchRemotePlaylistMetadataFailed',
-							'お気に入りの情報の取得に失敗しました',
+							t('お気に入りの情報の取得に失敗しました'),
 							{ cause: result.error },
 						),
 					)
@@ -108,7 +109,7 @@ export class BilibiliFacade {
 					return err(
 						createFacadeError(
 							'fetchRemotePlaylistMetadataFailed',
-							'お気に入りの情報を取得できません（データが空です。お気に入りが存在しない可能性があります）',
+							t('お気に入りの情報を取得できません'),
 						),
 					)
 				}
@@ -122,7 +123,7 @@ export class BilibiliFacade {
 				return err(
 					createFacadeError(
 						'fetchRemotePlaylistMetadataFailed',
-						`プレイリスト情報の取得に失敗しました：不明なプレイリストの種類：${type}`,
+						`${t('プレイリスト情報の取得に失敗しました：不明なプレイリストの種類：')}${type}`,
 					),
 				)
 		}

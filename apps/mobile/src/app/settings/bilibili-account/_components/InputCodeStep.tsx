@@ -2,6 +2,7 @@ import { StyleSheet, View } from 'react-native'
 import { HelperText, Icon, Text, TextInput, useTheme } from 'react-native-paper'
 
 import Button from '@/components/common/Button'
+import { t } from '@/i18n'
 
 interface Props {
 	compact?: boolean
@@ -41,29 +42,23 @@ export default function InputCodeStep({
 						<Text
 							variant='headlineLarge'
 							style={styles.title}
-						>
-							認証コードを入力
-						</Text>
+						>{t('認証コードを入力')}</Text>
 					</>
 				)}
 				<Text
 					variant={compact ? 'bodyMedium' : 'bodyLarge'}
 					style={[styles.subtitle, { color: colors.onSurfaceVariant }]}
-				>
-					認証コードを +86 {tel} に送信しました
-					<Text
+				>{t('認証コードを +86 ')}{tel}{t(' に送信しました')}<Text
 						onPress={onPrev}
 						style={{ color: colors.primary }}
 					>
-						{' '}
-						(変更)
-					</Text>
+						{' '}{t('変更')}</Text>
 				</Text>
 			</View>
 
 			<View style={[styles.form, compact && { minHeight: 0 }]}>
 				<TextInput
-					label='SMS認証コード'
+					label={t('SMS認証コード')}
 					value={smsCode}
 					onChangeText={(v) => {
 						setSmsCode(v)
@@ -94,9 +89,7 @@ export default function InputCodeStep({
 					style={styles.button}
 					contentStyle={styles.buttonContent}
 					labelStyle={styles.buttonLabel}
-				>
-					ログイン
-				</Button>
+				>{t('ログイン')}</Button>
 			</View>
 		</View>
 	)

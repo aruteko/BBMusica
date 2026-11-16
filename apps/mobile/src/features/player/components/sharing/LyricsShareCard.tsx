@@ -7,6 +7,7 @@ import SquircleView from 'react-native-fast-squircle'
 import { Icon, Text } from 'react-native-paper'
 import QRCode from 'react-native-qrcode-svg'
 import ViewShot, { ViewShotRef } from 'react-native-view-shot'
+import { t } from '@/i18n'
 
 interface LyricsShareCardProps {
 	title: string
@@ -128,21 +129,17 @@ export const LyricsShareCard = ({
 						<Text
 							variant='bodyMedium'
 							style={{ color: 'rgba(255,255,255,0.8)', fontWeight: 'bold' }}
-						>
-							長押しでQRコードを読み取って見る
-						</Text>
+						>{t('長押しでQRコードを読み取って見る')}</Text>
 						<Text
 							variant='labelSmall'
 							style={{ color: 'rgba(255,255,255,0.6)', marginTop: 4 }}
-						>
-							いっしょに聴こう！
-						</Text>
+						>{t('いっしょに聴こう！')}</Text>
 						<View style={styles.logoContainer}>
 							<Text
 								variant='labelLarge'
 								style={{ color: '#fff', fontWeight: '900', letterSpacing: 1 }}
 							>
-								BBPLAYER
+								BBMUSICA
 							</Text>
 						</View>
 					</View>

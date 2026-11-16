@@ -17,6 +17,7 @@ import type { TrackService } from '@/lib/services/trackService'
 import { trackService as trackServiceInstance } from '@/lib/services/trackService'
 import log from '@/utils/log'
 import { parseDurationString } from '@/utils/time'
+import { t } from '@/i18n'
 
 const logger = log.extend('Facade/syncExternalPlaylist')
 
@@ -57,7 +58,7 @@ export class SyncExternalPlaylistFacade {
 				if (validMatches.length === 0) {
 					throw createFacadeError(
 						'SavePlaylistFailed',
-						'一致する曲がなく、保存できません',
+						t('一致する曲がなく、保存できません'),
 					)
 				}
 

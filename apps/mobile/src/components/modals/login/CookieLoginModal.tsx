@@ -10,6 +10,7 @@ import useAppStore, { serializeCookieObject } from '@/hooks/stores/useAppStore'
 import { useModalStore } from '@/hooks/stores/useModalStore'
 import { toastAndLogError } from '@/utils/error-handling'
 import toast from '@/utils/toast'
+import { t } from '@/i18n'
 
 export default function CookieLoginModal() {
 	const queryClient = useQueryClient()
@@ -35,7 +36,7 @@ export default function CookieLoginModal() {
 				clearBilibiliCookie()
 				await queryClient.cancelQueries()
 				queryClient.clear()
-				toast.success('Cookieを消去しました')
+				toast.success(t('Cookieを消去しました'))
 				close()
 				setIsLoading(false)
 				return
@@ -53,7 +54,7 @@ export default function CookieLoginModal() {
 				setIsLoading(false)
 				return
 			}
-			toast.success('Cookieを更新しました')
+			toast.success(t('Cookieを更新しました'))
 			await queryClient.cancelQueries()
 			await queryClient.invalidateQueries({
 				queryKey: favoriteListQueryKeys.all,
@@ -61,7 +62,7 @@ export default function CookieLoginModal() {
 			await queryClient.invalidateQueries({ queryKey: userQueryKeys.all })
 			close()
 		} catch (error) {
-			toastAndLogError('操作に失敗しました', error, 'Components.CookieLoginModal')
+			toastAndLogError(t('操作に失敗しました'), error, 'Components.CookieLoginModal')
 		}
 		setIsLoading(false)
 	}
@@ -73,7 +74,7 @@ export default function CookieLoginModal() {
 
 	return (
 		<>
-			<Dialog.Title>BilibiliのCookieを設定</Dialog.Title>
+			<Dialog.Title>{t('BilibiliのCookieを設定')}</Dialog.Title>
 			<Dialog.Content>
 				<TextInput
 					label='Cookie'
@@ -91,13 +92,11 @@ export default function CookieLoginModal() {
 					variant='bodySmall'
 					style={styles.cookieDescription}
 				>
-					{'\u2009BBPlayer\u2009'}のすべての機能を使うには、{'\u2009Bilibili\u2009Cookie\u2009'}をここに貼り付けてください。
-					
-				</Text>
+					{'\u2009Bilibili\u2009Cookie\u2009'}{t('をここに貼り付けてください。')}</Text>
 				<Divider style={styles.divider} />
 			</Dialog.Content>
 			<Dialog.Actions>
-				<Button onPress={handleDismiss}>キャンセル</Button>
+				<Button onPress={handleDismiss}>{t('キャンセル')}</Button>
 				<Button
 					onPress={handleConfirm}
 					testID='cookie-login-confirm'

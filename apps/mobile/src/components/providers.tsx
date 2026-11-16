@@ -28,17 +28,22 @@ import GlobalErrorFallback from '@/components/ErrorBoundary'
 import { alert } from '@/components/modals/AlertModal'
 import useAppStore from '@/hooks/stores/useAppStore'
 import { useModalStore } from '@/hooks/stores/useModalStore'
+import useSkinStore from '@/hooks/stores/useSkinStore'
+import useActiveSkin from '@/hooks/theme/useActiveSkin'
 import { queryClient } from '@/lib/config/queryClient'
+import { buildSkinPaperColors, pickSkinSeedColor } from '@/lib/theme/skinColors'
 import {
 	captureProfiling,
 	isShakeProfilingEnabled,
 	PROFILING_DURATION_MS,
 } from '@/lib/performance'
 import {
+	applyCrispSurfaces,
 	buildMaterial3PaperColors,
 	buildPureWhitePaperColors,
 } from '@/lib/theme/material3Colors'
 import { storage } from '@/utils/mmkv'
+import { t } from '@/i18n'
 
 function DevTools() {
 	useTanStackQueryDevTools(queryClient)
@@ -64,18 +69,18 @@ function ShakeProfiler() {
 			promptVisibleRef.current = true
 
 			alert(
-				'パフォーマンス分析を記録',
-				'今後10秒間のパフォーマンス分析を記録しますか？完了後、Downloadsフォルダーに保存されます。',
+				t('パフォーマンス分析を記録'),
+				t('10秒間のパフォーマンスを記録しますか？'),
 				[
 					{
-						text: 'キャンセル',
+						text: t('キャンセル'),
 						onPress: () => {
 							promptVisibleRef.current = false
 							useModalStore.getState().close('Alert')
 						},
 					},
 					{
-						text: '記録を開始',
+						text: t('記録を開始'),
 						onPress: () => {
 							promptVisibleRef.current = false
 							void captureProfiling(PROFILING_DURATION_MS)
@@ -107,21 +112,58 @@ export default function AppProviders({ children }: { children: ReactNode }) {
 		return () => Appearance.setColorScheme('unspecified')
 	}, [pureWhiteBackground])
 
-	const paperTheme = useMemo(
-		() =>
-			pureWhiteBackground
-				? { ...MD3LightTheme, colors: buildPureWhitePaperColors() }
-				: colorScheme === 'dark'
-					? {
-							...MD3DarkTheme,
-							colors: buildMaterial3PaperColors(colorScheme ?? 'light'),
-						}
-					: {
-							...MD3LightTheme,
-							colors: buildMaterial3PaperColors(colorScheme ?? 'light'),
-						},
-		[colorScheme, pureWhiteBackground],
+	// テーマ（装扮）のメインカラーを、アプリ全体の配色に使う
+	const followSkinColor = useAppStore(
+		(state) => state.settings.skinAccentColor ?? true,
 	)
+	const activeSkin = useActiveSkin()
+	const activeSkinId = useSkinStore((state) => state.activeSkinId)
+	const activeSkinIndex = useSkinStore((state) => state.activeSkinIndex)
+	const skinSeedColor = useSkinStore((state) => state.activeSeedColor)
+	useEffect(() => {
+		// テーマを外したら、色も元に戻す。読み込めたら、メインカラーを保存する
+		if (!activeSkinId) {
+			useSkinStore.getState().setActiveSeedColor(null)
+			return
+		}
+		if (!activeSkin) return
+		const colors = activeSkin.skins[activeSkinIndex]?.colors
+		useSkinStore.getState().setActiveSeedColor(
+			pickSkinSeedColor([
+				colors?.tailColorSelected,
+				colors?.colorSecondPage,
+				colors?.tailColor,
+				colors?.color,
+			]),
+		)
+	}, [activeSkin, activeSkinId, activeSkinIndex])
+
+	const paperTheme = useMemo(() => {
+		if (pureWhiteBackground) {
+			return { ...MD3LightTheme, colors: buildPureWhitePaperColors() }
+		}
+		const scheme = colorScheme === 'dark' ? 'dark' : 'light'
+		const base = scheme === 'dark' ? MD3DarkTheme : MD3LightTheme
+		if (followSkinColor && activeSkinId && skinSeedColor) {
+			return {
+				...base,
+				colors: applyCrispSurfaces(
+					buildSkinPaperColors(skinSeedColor, scheme),
+					scheme,
+				),
+			}
+		}
+		return {
+			...base,
+			colors: applyCrispSurfaces(buildMaterial3PaperColors(scheme), scheme),
+		}
+	}, [
+		colorScheme,
+		pureWhiteBackground,
+		followSkinColor,
+		activeSkinId,
+		skinSeedColor,
+	])
 
 	useEffect(() => {
 		// 遥控器 / 键盘导航时的焦点框跟随主题色。

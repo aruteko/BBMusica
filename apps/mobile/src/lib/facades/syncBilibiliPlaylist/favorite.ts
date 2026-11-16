@@ -26,6 +26,7 @@ import type {
 	RemoteFavoriteSnapshot,
 	SyncLogger,
 } from './types'
+import { t } from '@/i18n'
 
 const PAGE_LIST_CONCURRENCY = 6
 
@@ -96,7 +97,7 @@ export async function fetchRemoteFavoriteSnapshot(
 	favoriteId: number,
 ): Promise<Result<RemoteFavoriteSnapshot, BilibiliApiError | FacadeError>> {
 	deps.onProgress?.({
-		message: 'お気に入りの情報を取得中...',
+		message: t('お気に入りの情報を取得中...'),
 		stage: 'fetching_metadata',
 	})
 	const bilibiliResult = await ResultAsync.combine([
@@ -111,7 +112,7 @@ export async function fetchRemoteFavoriteSnapshot(
 		return err(
 			createFacadeError(
 				'SyncFavoriteFailed',
-				'お気に入りを同期失败，数据为空，收藏夹可能不存在',
+				t('お気に入りを同期できません。データが空です'),
 			),
 		)
 	}
@@ -119,7 +120,7 @@ export async function fetchRemoteFavoriteSnapshot(
 		(item) => item.type === 2, // 过滤非视频稿件 (type 2 is video)
 	)
 	deps.logger.debug(
-		'step 1: 调用 bilibiliapi getFavoriteListAllContents 完了',
+		t('step 1: 调用 bilibiliapi getFavoriteListAllContents 完了'),
 		{
 			total: allBvids.length,
 		},
@@ -149,7 +150,7 @@ export async function loadLocalFavoriteState(
 		localPlaylistId: localPlaylist.value?.id ?? '不存在',
 	})
 	deps.onProgress?.({
-		message: 'ローカルのデータと照合中...',
+		message: t('ローカルのデータと照合中...'),
 		stage: 'calculating_diff',
 	})
 	if (!localPlaylist.value || localPlaylist.value.itemCount === 0) {
@@ -168,7 +169,7 @@ export async function loadLocalFavoriteState(
 		return err(
 			createFacadeError(
 				'SyncFavoriteFailed',
-				'お気に入りを同期失败，收藏夹中存在非 Bilibili 的 Track，你的数据库似乎已经坏掉惹。',
+				t('お気に入りの同期に失敗しました'),
 			),
 		)
 	}
@@ -191,7 +192,7 @@ export async function fetchFavoriteTrackDetails(
 	const bvidsToAddSet = new Set(plan.bvidsNeedingDetails)
 	const totalToAdd = bvidsToAddSet.size
 	onProgress?.({
-		message: `新しい動画 ${totalToAdd} 件を同期する準備中...`,
+		message: t('新しい動画 {0} 件を同期する準備中...', totalToAdd),
 		current: 0,
 		total: totalToAdd,
 		stage: 'fetching_details',
@@ -208,7 +209,7 @@ export async function fetchFavoriteTrackDetails(
 		}
 		nowPageNumber += 1
 		onProgress?.({
-			message: `${nowPageNumber} ページ目の詳細を取得中...`,
+			message: t('{0} ページ目の詳細を取得中...', nowPageNumber),
 			current: fetchedCount,
 			total: totalToAdd,
 			stage: 'fetching_details',
@@ -227,7 +228,7 @@ export async function fetchFavoriteTrackDetails(
 			return err(
 				createFacadeError(
 					'SyncFavoriteFailed',
-					'お気に入りを同期失败，该收藏夹中没有任何 track',
+					t('お気に入りを同期できません。曲がありません'),
 				),
 			)
 		}
@@ -241,7 +242,7 @@ export async function fetchFavoriteTrackDetails(
 			}
 		}
 		onProgress?.({
-			message: `${fetchedCount}/${totalToAdd} 件の動画の詳細を取得しました...`,
+			message: t('{0}/{1} 件の動画の詳細を取得しました...', fetchedCount, totalToAdd),
 			current: fetchedCount,
 			total: totalToAdd,
 			stage: 'fetching_details',
@@ -279,7 +280,7 @@ export async function buildExpandedTracks(
 	}
 	const { api, logger, onProgress } = deps
 	onProgress?.({
-		message: '分割Pの情報を取得中...',
+		message: t('分割Pの情報を取得中...'),
 		stage: 'fetching_details',
 	})
 	const localGrouped = buildLocalGrouped(local.tracks)
@@ -307,7 +308,7 @@ export async function buildExpandedTracks(
 	}
 	const { pageLists, skippedBvids } = pageListsResult.value
 	if (skippedBvids.length > 0) {
-		logger.warning('展开分 P：以下视频查询失败，已折叠为单条', {
+		logger.warning(t('マルチPを展開できなかった動画があります'), {
 			bvids: skippedBvids,
 		})
 	}
@@ -354,12 +355,12 @@ export async function runFavoriteSync(
 		removed: plan.stats.removed,
 	})
 	if (plan.kind === 'noop') {
-		deps.logger.info('收藏夹为空或与上次相比无变化，无需同步')
+		deps.logger.info(t('お気に入りに変更がないため、同期は不要です'))
 		return ok(plan.playlistId)
 	}
 	if (plan.stats.rebuild) {
 		deps.logger.info(
-			'お気に入りの内容は変わっていませんが、同期モードがローカルの状態と一致しないため、選んだモードで作り直します',
+			t('同期モードに合わせて作り直します'),
 		)
 	}
 
@@ -382,7 +383,7 @@ export async function runFavoriteSync(
 	}
 
 	deps.onProgress?.({
-		message: 'データベースに保存中...',
+		message: t('データベースに保存中...'),
 		stage: 'saving',
 	})
 	const persisted = await persistFavoriteSync(deps, {

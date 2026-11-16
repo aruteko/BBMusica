@@ -11,6 +11,7 @@ import { toastAndLogError } from '@/utils/error-handling'
 import { reportErrorToSentry } from '@/utils/log'
 import { addToQueue } from '@/utils/player'
 import toast from '@/utils/toast'
+import { t } from '@/i18n'
 
 const PLAY_NEXT_ICON = Icon.select({
 	ios: 'arrow.right.to.line.circle',
@@ -57,13 +58,13 @@ export function useSearchInteractions() {
 			const createIt = await syncFacade.addTrackToLocal(track)
 			if (createIt.isErr()) {
 				toastAndLogError(
-					'曲のローカル登録に失敗しました',
+					t('曲のローカル登録に失敗しました'),
 					createIt.error,
 					'UI.Playlist.Remote',
 				)
 				reportErrorToSentry(
 					createIt.error,
-					'曲のローカル登録に失敗しました',
+					t('曲のローカル登録に失敗しました'),
 					'UI.Playlist.Remote',
 				)
 				return
@@ -76,7 +77,7 @@ export function useSearchInteractions() {
 				startFromKey: track.uniqueKey,
 			})
 			if (added && playNext) {
-				toast.success('次に再生に追加しました')
+				toast.success(t('次に再生に追加しました'))
 			}
 		},
 		[router],
@@ -85,19 +86,19 @@ export function useSearchInteractions() {
 	const trackMenuItems = useCallback(
 		(item: BilibiliTrack) => [
 			{
-				title: 'この曲からステーション',
+				title: t('この曲からステーション'),
 				leadingIcon: RADIO_ICON,
 				onPress: () => {
 					void startStation(item)
 				},
 			},
 			{
-				title: '次に再生',
+				title: t('次に再生'),
 				leadingIcon: PLAY_NEXT_ICON,
 				onPress: () => playTrack(item, true),
 			},
 			{
-				title: '詳細を表示',
+				title: t('詳細を表示'),
 				leadingIcon: INFO_ICON,
 				onPress: () => {
 					router.navigate({
@@ -107,14 +108,14 @@ export function useSearchInteractions() {
 				},
 			},
 			{
-				title: 'ローカルプレイリストに追加',
+				title: t('ローカルプレイリストに追加'),
 				leadingIcon: ADD_TO_PLAYLIST_ICON,
 				onPress: () => {
 					openModal('UpdateTrackLocalPlaylists', { track: item })
 				},
 			},
 			{
-				title: '投稿者の動画を表示',
+				title: t('投稿者の動画を表示'),
 				leadingIcon: ARTIST_ICON,
 				onPress: () => {
 					if (!item.artist?.remoteId) {

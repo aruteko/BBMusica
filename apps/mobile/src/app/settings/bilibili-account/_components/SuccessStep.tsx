@@ -1,5 +1,6 @@
 import { StyleSheet, View } from 'react-native'
 import { Text, useTheme, Icon } from 'react-native-paper'
+import { t } from '@/i18n'
 
 export default function SuccessStep() {
 	const { colors } = useTheme()
@@ -16,15 +17,11 @@ export default function SuccessStep() {
 			<Text
 				variant='headlineMedium'
 				style={styles.title}
-			>
-				ログインしました
-			</Text>
+			>{t('ログインしました')}</Text>
 			<Text
 				variant='bodyMedium'
 				style={[styles.description, { color: colors.onSurfaceVariant }]}
-			>
-				Bilibiliアカウントにログインしました 🎉
-			</Text>
+			>{t('Bilibiliアカウントにログインしました 🎉')}</Text>
 		</View>
 	)
 }

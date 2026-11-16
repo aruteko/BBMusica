@@ -40,6 +40,7 @@ import {
 import type { WebDavEntry } from '@/lib/backup/webdav-client'
 import { toastAndLogError } from '@/utils/error-handling'
 import toast from '@/utils/toast'
+import { t } from '@/i18n'
 
 export default function BackupSettingsPage() {
 	const router = useRouter()
@@ -53,7 +54,7 @@ export default function BackupSettingsPage() {
 	const [username, setUsername] = useState(initialConfig?.username ?? '')
 	const [password, setPassword] = useState('')
 	const [directory, setDirectory] = useState(
-		initialConfig?.directory ?? '/BBPlayer',
+		initialConfig?.directory ?? '/BBMusica',
 	)
 	const [isExporting, setIsExporting] = useState(false)
 	const [isImporting, setIsImporting] = useState(false)
@@ -79,7 +80,7 @@ export default function BackupSettingsPage() {
 		if (!initialConfig || didInitialRefresh.current) return
 		didInitialRefresh.current = true
 		void refetchBackups({ throwOnError: true }).catch((error) =>
-			toastAndLogError('クラウドバックアップの読み込みに失敗しました', error, 'UI.Settings.Backup'),
+			toastAndLogError(t('クラウドバックアップの読み込みに失敗しました'), error, 'UI.Settings.Backup'),
 		)
 	}, [initialConfig, refetchBackups])
 
@@ -97,18 +98,18 @@ export default function BackupSettingsPage() {
 			const config = currentConfig()
 			await createMobileWebDavClient(config, password)
 			await saveWebDavConfig(config, password || undefined)
-			toast.success('WebDAVの設定を保存しました')
+			toast.success(t('WebDAVの設定を保存しました'))
 		} catch (error) {
-			toastAndLogError('WebDAV設定の保存に失敗しました', error, 'UI.Settings.Backup')
+			toastAndLogError(t('WebDAV設定の保存に失敗しました'), error, 'UI.Settings.Backup')
 		}
 	}
 
 	const handleRefreshBackups = async () => {
 		try {
 			await refetchBackups({ throwOnError: true })
-			toast.success('クラウドバックアップの一覧を更新しました')
+			toast.success(t('クラウドバックアップの一覧を更新しました'))
 		} catch (error) {
-			toastAndLogError('クラウドバックアップの読み込みに失敗しました', error, 'UI.Settings.Backup')
+			toastAndLogError(t('クラウドバックアップの読み込みに失敗しました'), error, 'UI.Settings.Backup')
 		}
 	}
 
@@ -125,10 +126,10 @@ export default function BackupSettingsPage() {
 				`backup-${Date.now()}.zip`,
 				'application/zip',
 			)
-			if (!downloadsUri) throw new Error('无法写入文件')
-			toast.success('ダウンロード/bbplayer-backup にエクスポートしました')
+			if (!downloadsUri) throw new Error(t('ファイルを書き込めません'))
+			toast.success(t('ダウンロード/bbplayer-backup にエクスポートしました'))
 		} catch (error) {
-			toastAndLogError('エクスポートに失敗しました', error, 'UI.Settings.Backup')
+			toastAndLogError(t('エクスポートに失敗しました'), error, 'UI.Settings.Backup')
 		} finally {
 			setIsExporting(false)
 			isExportingRef.current = false
@@ -147,7 +148,7 @@ export default function BackupSettingsPage() {
 			await restoreBackup(file.uri)
 			showRestartPrompt()
 		} catch (error) {
-			toastAndLogError('インポートに失敗しました', error, 'UI.Settings.Backup')
+			toastAndLogError(t('インポートに失敗しました'), error, 'UI.Settings.Backup')
 		} finally {
 			setIsImporting(false)
 			isImportingRef.current = false
@@ -158,7 +159,7 @@ export default function BackupSettingsPage() {
 		<View style={[styles.container, { backgroundColor: colors.background }]}>
 			<Appbar.Header>
 				<Appbar.BackAction onPress={() => router.back()} />
-				<Appbar.Content title='データとバックアップ' />
+				<Appbar.Content title={t('データとバックアップ')} />
 			</Appbar.Header>
 			<ScrollView
 				style={styles.scrollView}
@@ -168,7 +169,7 @@ export default function BackupSettingsPage() {
 				]}
 			>
 				<SettingsSectionTitle
-					title='ローカルバックアップ'
+					title={t('ローカルバックアップ')}
 					first
 				/>
 				<View style={styles.buttonRow}>
@@ -178,24 +179,20 @@ export default function BackupSettingsPage() {
 						loading={isExporting}
 						disabled={isExporting}
 						onPress={() => void handleLocalExport()}
-					>
-						データをエクスポート
-					</Button>
+					>{t('データをエクスポート')}</Button>
 					<Button
 						mode='outlined'
 						icon='import'
 						loading={isImporting}
 						disabled={isImporting}
 						onPress={() => void handleLocalImport()}
-					>
-						データをインポート
-					</Button>
+					>{t('データをインポート')}</Button>
 				</View>
 
 				<Divider style={styles.divider} />
 				<SettingsSectionTitle title='WebDAV' />
 				<TextInput
-					label='サーバーのアドレス'
+					label={t('サーバーのアドレス')}
 					placeholder='https://example.com/dav'
 					mode='outlined'
 					value={baseUrl}
@@ -206,7 +203,7 @@ export default function BackupSettingsPage() {
 					style={styles.input}
 				/>
 				<TextInput
-					label='ユーザー名'
+					label={t('ユーザー名')}
 					mode='outlined'
 					value={username}
 					autoCapitalize='none'
@@ -215,7 +212,7 @@ export default function BackupSettingsPage() {
 					style={styles.input}
 				/>
 				<TextInput
-					label='パスワード'
+					label={t('パスワード')}
 					mode='outlined'
 					value={password}
 					secureTextEntry
@@ -228,7 +225,7 @@ export default function BackupSettingsPage() {
 					style={styles.input}
 				/>
 				<TextInput
-					label='リモートのフォルダー'
+					label={t('リモートのフォルダー')}
 					mode='outlined'
 					value={directory}
 					autoCapitalize='none'
@@ -247,16 +244,12 @@ export default function BackupSettingsPage() {
 								password,
 							})
 						}
-					>
-						接続をテスト
-					</Button>
+					>{t('接続をテスト')}</Button>
 					<Button
 						mode='contained-tonal'
 						disabled={!baseUrl.trim()}
 						onPress={() => void handleSaveConfig()}
-					>
-						設定を保存
-					</Button>
+					>{t('設定を保存')}</Button>
 				</View>
 				<Button
 					mode='contained'
@@ -270,7 +263,7 @@ export default function BackupSettingsPage() {
 								onSuccess: () => {
 									void refetchBackups({ throwOnError: true }).catch((error) =>
 										toastAndLogError(
-											'クラウドバックアップの読み込みに失敗しました',
+											t('クラウドバックアップの読み込みに失敗しました'),
 											error,
 											'UI.Settings.Backup',
 										),
@@ -280,12 +273,10 @@ export default function BackupSettingsPage() {
 						)
 					}
 					style={styles.primaryButton}
-				>
-					今すぐクラウドにバックアップ
-				</Button>
+				>{t('今すぐクラウドにバックアップ')}</Button>
 
 				<View style={styles.listHeader}>
-					<Text variant='titleMedium'>クラウドバックアップ</Text>
+					<Text variant='titleMedium'>{t('クラウドバックアップ')}</Text>
 					<IconButton
 						icon='refresh'
 						size={20}
@@ -298,9 +289,7 @@ export default function BackupSettingsPage() {
 					<Text
 						variant='bodyMedium'
 						style={{ color: colors.onSurfaceVariant }}
-					>
-						クラウドバックアップはありません
-					</Text>
+					>{t('クラウドバックアップはありません')}</Text>
 				) : (
 					entries?.map((entry) => (
 						<List.Item
@@ -345,21 +334,21 @@ function confirmCloudRestore(
 	entry: WebDavEntry,
 	restore: (entry: WebDavEntry) => void,
 ) {
-	alert('クラウドバックアップを復元', '復元すると、現在のローカルのプレイリストとアプリの設定が上書きされます。続けますか？', [
-		{ text: 'キャンセル' },
-		{ text: '復元', onPress: () => restore(entry) },
+	alert(t('クラウドバックアップを復元'), t('復元すると、現在のデータが上書きされます。続けますか？'), [
+		{ text: t('キャンセル') },
+		{ text: t('復元'), onPress: () => restore(entry) },
 	])
 }
 
 function showRestartPrompt() {
-	alert('復元が完了しました', 'データを復元しました。完全に反映するにはアプリの再起動が必要です。今すぐ再起動しますか？', [
-		{ text: 'あとで' },
-		{ text: '今すぐ再起動', onPress: () => void Expo.reloadAppAsync() },
+	alert(t('復元が完了しました'), t('復元しました。再起動しますか？'), [
+		{ text: t('あとで') },
+		{ text: t('今すぐ再起動'), onPress: () => void Expo.reloadAppAsync() },
 	])
 }
 
 function formatBackupDate(entry: WebDavEntry): string {
-	return entry.lastModified?.toLocaleString() ?? '日時不明'
+	return entry.lastModified?.toLocaleString() ?? t('日時不明')
 }
 
 function formatBytes(size: number): string {

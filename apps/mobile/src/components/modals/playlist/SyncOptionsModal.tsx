@@ -6,6 +6,7 @@ import Button from '@/components/common/Button'
 import UniversalCheckbox from '@/components/common/UniversalCheckbox'
 import useAppStore from '@/hooks/stores/useAppStore'
 import { useModalStore } from '@/hooks/stores/useModalStore'
+import { t } from '@/i18n'
 
 const SyncOptionsModal = memo(function SyncOptionsModal({
 	favoriteId,
@@ -49,32 +50,26 @@ const SyncOptionsModal = memo(function SyncOptionsModal({
 
 	return (
 		<>
-			<Dialog.Title>お気に入りを同期</Dialog.Title>
+			<Dialog.Title>{t('お気に入りを同期')}</Dialog.Title>
 			<Dialog.Content>
 				<View style={styles.checkboxRow}>
 					<UniversalCheckbox
 						status={expandMultiPage ? 'checked' : 'unchecked'}
 						onPress={() => setExpandMultiPage((v) => !v)}
 					/>
-					<Text variant='bodyLarge'>分割P動画を展開</Text>
+					<Text variant='bodyLarge'>{t('分割P動画を展開')}</Text>
 				</View>
 				<Text
 					variant='bodySmall'
 					style={[styles.hint, { color: colors.onSurfaceVariant }]}
-				>
-					オンにすると、分割P動画の各Pを個別のメディアとして同期します。分割P動画が多いお気に入りに向いています。
-					初めてオンにするときは、分割Pの情報を追加で取得するため、同期に時間がかかる場合があります。この設定は
-					初回の同期時にだけ確認されます。あとから「一般設定」で変更できます。
-				</Text>
+				>{t('分割P動画を、各Pごとの曲として同期します')}</Text>
 			</Dialog.Content>
 			<Dialog.Actions>
-				<Button onPress={() => close('SyncOptions')}>キャンセル</Button>
+				<Button onPress={() => close('SyncOptions')}>{t('キャンセル')}</Button>
 				<Button
 					mode='contained'
 					onPress={handleStart}
-				>
-					同期を開始
-				</Button>
+				>{t('同期を開始')}</Button>
 			</Dialog.Actions>
 		</>
 	)

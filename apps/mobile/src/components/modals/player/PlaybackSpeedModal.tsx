@@ -7,6 +7,7 @@ import { Dialog, Text } from 'react-native-paper'
 import Button from '@/components/common/Button'
 import { useModalStore } from '@/hooks/stores/useModalStore'
 import { toastAndLogError } from '@/utils/error-handling'
+import { t } from '@/i18n'
 
 const MIN_SPEED = 0.1
 const MAX_SPEED = 3.0
@@ -45,7 +46,7 @@ const PlaybackSpeedModal = () => {
 			await Orpheus.setPlaybackSpeed(clampedSpeed)
 		} catch (e) {
 			setSpeed(committedSpeedRef.current)
-			toastAndLogError('再生速度の設定に失敗しました', e, 'Modal.PlaybackSpeed')
+			toastAndLogError(t('再生速度の設定に失敗しました'), e, 'Modal.PlaybackSpeed')
 		}
 	}
 
@@ -67,14 +68,13 @@ const PlaybackSpeedModal = () => {
 
 	return (
 		<>
-			<Dialog.Title>再生速度</Dialog.Title>
+			<Dialog.Title>{t('再生速度')}</Dialog.Title>
 			<Dialog.Content>
 				<View style={styles.headerContainer}>
 					<Text
 						variant='headlineMedium'
 						style={styles.speedDisplay}
-					>
-						現在: {speed.toFixed(2)}x
+					>{t('現在: ')}{speed.toFixed(2)}x
 					</Text>
 				</View>
 
@@ -95,8 +95,8 @@ const PlaybackSpeedModal = () => {
 				</View>
 			</Dialog.Content>
 			<Dialog.Actions>
-				<Button onPress={handleReset}>リセット</Button>
-				<Button onPress={() => close('PlaybackSpeed')}>閉じる</Button>
+				<Button onPress={handleReset}>{t('リセット')}</Button>
+				<Button onPress={() => close('PlaybackSpeed')}>{t('閉じる')}</Button>
 			</Dialog.Actions>
 		</>
 	)

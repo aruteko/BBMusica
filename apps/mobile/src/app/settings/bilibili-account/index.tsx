@@ -24,6 +24,8 @@ import useSkinStore from '@/hooks/stores/useSkinStore'
 import useActiveSkin from '@/hooks/theme/useActiveSkin'
 import { queryClient } from '@/lib/config/queryClient'
 import toast from '@/utils/toast'
+import { t } from '@/i18n'
+import { CORNER_RADIUS } from '@/theme/dimensions'
 
 export default function BilibiliAccountSettingsPage() {
 	const router = useRouter()
@@ -45,17 +47,17 @@ export default function BilibiliAccountSettingsPage() {
 
 	const clearAccount = () => {
 		alert(
-			'Bilibiliアカウントからログアウトしますか？',
-			'ログアウトすると、お気に入り、あとで見る、再生履歴の送信などの機能が停止します。',
+			t('Bilibiliアカウントからログアウトしますか？'),
+			t('ログアウトすると、お気に入りなどが使えなくなります。'),
 			[
-				{ text: 'キャンセル' },
+				{ text: t('キャンセル') },
 				{
-					text: 'OK',
+					text: t('OK'),
 					onPress: async () => {
 						clearBilibiliCookie()
 						await queryClient.cancelQueries()
 						queryClient.clear()
-						toast.success('Bilibiliアカウントからログアウトしました')
+						toast.success(t('Bilibiliアカウントからログアウトしました'))
 					},
 				},
 			],
@@ -67,7 +69,7 @@ export default function BilibiliAccountSettingsPage() {
 		<View style={[styles.container, { backgroundColor: colors.background }]}>
 			<Appbar.Header>
 				<Appbar.BackAction onPress={() => router.back()} />
-				<Appbar.Content title='Bilibiliアカウント' />
+				<Appbar.Content title={t('Bilibiliアカウント')} />
 			</Appbar.Header>
 			<ScrollView
 				style={styles.scrollView}
@@ -79,7 +81,7 @@ export default function BilibiliAccountSettingsPage() {
 				{hasBilibiliCookie ? (
 					<>
 						<SettingsSectionTitle
-							title='プロフィール'
+							title={t('プロフィール')}
 							first
 						/>
 						<Surface
@@ -116,28 +118,26 @@ export default function BilibiliAccountSettingsPage() {
 									variant='titleLarge'
 									numberOfLines={1}
 								>
-									{profile?.name ?? 'Bilibili 用户'}
+									{profile?.name ?? t('Bilibiliユーザー')}
 								</Text>
 								<Text
 									variant='bodyMedium'
 									style={{ color: colors.onSurfaceVariant }}
 									numberOfLines={1}
 								>
-									{profile?.mid ? `UID ${profile.mid}` : 'Cookieを保存済み'}
+									{profile?.mid ? `UID ${profile.mid}` : t('Cookieを保存済み')}
 								</Text>
 							</View>
 						</Surface>
-						<SettingsSectionTitle title='プライバシー' />
+						<SettingsSectionTitle title={t('プライバシー')} />
 						<View style={styles.section}>
 							<View style={styles.settingRow}>
 								<View style={styles.settingText}>
-									<Text variant='bodyLarge'>視聴の進み具合を送信</Text>
+									<Text variant='bodyLarge'>{t('視聴の進み具合を送信')}</Text>
 									<Text
 										variant='bodySmall'
 										style={{ color: colors.onSurfaceVariant }}
-									>
-										Bilibiliの曲を再生するときに、視聴履歴を同期します
-									</Text>
+									>{t('Bilibiliの曲を再生するときに、視聴履歴を同期します')}</Text>
 								</View>
 								<UniversalSwitch
 									value={sendPlayHistory}
@@ -147,11 +147,11 @@ export default function BilibiliAccountSettingsPage() {
 								/>
 							</View>
 						</View>
-						<SettingsSectionTitle title='ログイン方法' />
+						<SettingsSectionTitle title={t('ログイン方法')} />
 						<View style={styles.section}>
 							<List.Item
-								title='QRコードで再ログイン'
-								description='Cookieが無効になったときの再認証に'
+								title={t('QRコードで再ログイン')}
+								description={t('Cookieが無効になったときの再認証に')}
 								left={(props) => (
 									<List.Icon
 										{...props}
@@ -170,8 +170,8 @@ export default function BilibiliAccountSettingsPage() {
 							/>
 							<Divider />
 							<List.Item
-								title='電話番号でログイン'
-								description='SMSの認証コードでBilibiliにログインします'
+								title={t('電話番号でログイン')}
+								description={t('SMSの認証コードでBilibiliにログインします')}
 								left={(props) => (
 									<List.Icon
 										{...props}
@@ -190,8 +190,8 @@ export default function BilibiliAccountSettingsPage() {
 							/>
 							<Divider />
 							<List.Item
-								title='Cookieを編集'
-								description='BilibiliのCookieを手動で貼り付け、または消去します'
+								title={t('Cookieを編集')}
+								description={t('BilibiliのCookieを手動で貼り付け、または消去します')}
 								left={(props) => (
 									<List.Icon
 										{...props}
@@ -210,9 +210,7 @@ export default function BilibiliAccountSettingsPage() {
 						<Button
 							mode='outlined'
 							onPress={clearAccount}
-						>
-							Bilibiliアカウントからログアウト
-						</Button>
+						>{t('Bilibiliアカウントからログアウト')}</Button>
 					</>
 				) : (
 					<>
@@ -232,16 +230,14 @@ export default function BilibiliAccountSettingsPage() {
 								) : null}
 							</View>
 							<View style={styles.loginHeroText}>
-								<Text variant='headlineSmall'>Bilibiliに接続</Text>
+								<Text variant='headlineSmall'>{t('Bilibiliに接続')}</Text>
 								<Text
 									variant='bodyMedium'
 									style={{ color: colors.onSurfaceVariant }}
-								>
-									ログインすると、お気に入りやあとで見るの読み込み、再生履歴の送信、アカウントが必要な内容の閲覧ができます。
-								</Text>
+								>{t('ログインすると、お気に入りやあとで見るを使えます。')}</Text>
 							</View>
 						</View>
-						<SettingsSectionTitle title='ログイン方法' />
+						<SettingsSectionTitle title={t('ログイン方法')} />
 						<View style={styles.loginActions}>
 							<Button
 								mode='contained'
@@ -249,25 +245,19 @@ export default function BilibiliAccountSettingsPage() {
 								onPress={() =>
 									router.navigate('/settings/bilibili-account/qrcode-login')
 								}
-							>
-								QRコードでログイン
-							</Button>
+							>{t('QRコードでログイン')}</Button>
 							<Button
 								mode='outlined'
 								icon='cellphone-key'
 								onPress={() =>
 									router.navigate('/settings/bilibili-account/phone-login')
 								}
-							>
-								電話番号でログイン
-							</Button>
+							>{t('電話番号でログイン')}</Button>
 							<Button
 								mode='outlined'
 								icon='cookie'
 								onPress={() => openModal('CookieLogin', undefined)}
-							>
-								Cookieを追加
-							</Button>
+							>{t('Cookieを追加')}</Button>
 						</View>
 					</>
 				)}
@@ -292,7 +282,7 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: 16,
-		borderRadius: 8,
+		borderRadius: CORNER_RADIUS,
 		padding: 18,
 	},
 	profileImage: {
@@ -317,7 +307,7 @@ const styles = StyleSheet.create({
 		gap: 4,
 	},
 	section: {
-		borderRadius: 8,
+		borderRadius: CORNER_RADIUS,
 		overflow: 'hidden',
 	},
 	settingRow: {

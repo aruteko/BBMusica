@@ -8,6 +8,7 @@ import { ThirdPartyError } from '@/lib/errors'
 import { BilibiliApiError } from '@/lib/errors/thirdparty/bilibili'
 import { toastAndLogError } from '@/utils/error-handling'
 import toast from '@/utils/toast'
+import { t } from '@/i18n'
 
 /**
  * 用于检查任意变量是否属于 WebDavBackupConfig 类型，用于在上报错误时遮蔽掉敏感信息
@@ -46,20 +47,20 @@ export const queryClient = new QueryClient({
 						error instanceof BilibiliApiError &&
 						error.data.msgCode === -101
 					) {
-						toast.error('登录状态失效，请重新登录')
+						toast.error(t('ログインの期限が切れました。再ログインしてください'))
 						router.navigate('/settings/bilibili-account/qrcode-login')
 						return
 					}
 
 					toastAndLogError(
-						'查询失败: ' + query.queryKey.toString(),
+						t('取得に失敗しました: ') + query.queryKey.toString(),
 						error,
 						'Query',
 					)
 				} catch {
 					// Fallback in case Network check throws
 					toastAndLogError(
-						'查询失败: ' + query.queryKey.toString(),
+						t('取得に失敗しました: ') + query.queryKey.toString(),
 						error,
 						'Query',
 					)

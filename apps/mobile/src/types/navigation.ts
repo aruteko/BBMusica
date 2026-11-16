@@ -30,7 +30,6 @@ export interface ModalPropsMap {
 	EditLyrics: { uniqueKey: string; lyrics: LyricFileData }
 	SleepTimer: undefined
 	SaveQueueToPlaylist: { trackIds: string[] }
-	DonationQR: { type: 'wechat' | 'alipay' }
 	PlaybackSpeed: undefined
 	LyricsSelection: undefined
 	SongShare: undefined
@@ -47,12 +46,6 @@ export interface ModalPropsMap {
 	}
 	CoverDownloadProgress: undefined
 	SkinDownloadProgress: { item: GarbSkinSearchResult }
-	EnableSharing: {
-		playlistId: number
-		shareId?: string | null
-		shareRole?: 'owner' | 'editor' | 'subscriber' | null
-	}
-	SubscribeToSharedPlaylist: undefined
 	MergePlaylists: undefined
 	StarPrompt: undefined
 }

@@ -5,6 +5,7 @@ import type { BilibiliTrack } from '@/types/core/media'
 import { toastAndLogError } from '@/utils/error-handling'
 import { reportErrorToSentry } from '@/utils/log'
 import { addToQueue } from '@/utils/player'
+import { t } from '@/i18n'
 
 export function useRemotePlaylist() {
 	const playTrack = useCallback(
@@ -12,13 +13,13 @@ export function useRemotePlaylist() {
 			const createIt = await syncFacade.addTrackToLocal(track)
 			if (createIt.isErr()) {
 				toastAndLogError(
-					'曲のローカル登録に失敗しました',
+					t('曲のローカル登録に失敗しました'),
 					createIt.error,
 					'UI.Playlist.Remote',
 				)
 				reportErrorToSentry(
 					createIt.error,
-					'曲のローカル登録に失敗しました',
+					t('曲のローカル登録に失敗しました'),
 					'UI.Playlist.Remote',
 				)
 				return

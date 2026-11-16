@@ -1,6 +1,6 @@
 {
 	"name": "@bbplayer/mobile",
-	"version": "2.8.0",
+	"version": "1.0.0",
 	"private": true,
 	"main": "index.js",
 	"scripts": {
@@ -117,7 +117,6 @@
 	},
 	"devDependencies": {
 		"@babel/core": "~7.29.13",
-		"@bbplayer/backend": "workspace:*",
 		"@bbplayer/eslint-plugin": "workspace:*",
 		"@faker-js/faker": "^9.9.0",
 		"@react-native-community/cli": "latest",

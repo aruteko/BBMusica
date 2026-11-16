@@ -4,6 +4,7 @@ import { storage } from '@/utils/mmkv'
 
 import { configureWebDavTransport, createWebDavClient } from './webdav-client'
 import type { WebDavClient } from './webdav-client'
+import { t } from '@/i18n'
 
 const WEBDAV_CREDENTIAL_STORAGE_KEY = 'bbplayer.webdav.password'
 
@@ -22,7 +23,7 @@ export function getStoredWebDavConfig(): StoredWebDavConfig | null {
 		baseUrl,
 		username: storage.getString('webdav_backup_username') ?? '',
 		directory: normalizeDirectory(
-			storage.getString('webdav_backup_directory') ?? '/BBPlayer',
+			storage.getString('webdav_backup_directory') ?? '/BBMusica',
 		),
 	}
 }
@@ -50,7 +51,7 @@ export async function createMobileWebDavClient(
 	const effectivePassword = password || (await getWebDavPassword()) || undefined
 	const username = config.username.trim()
 	if (!username || !effectivePassword) {
-		throw new Error('WebDAV 用户名和密码不能为空')
+		throw new Error(t('WebDAV のユーザー名とパスワードを入力してください'))
 	}
 	return createWebDavClient({
 		baseUrl: config.baseUrl,
@@ -64,7 +65,7 @@ export function normalizeDirectory(value: string): string {
 		.trim()
 		.split('/')
 		.filter((segment) => segment.length > 0)
-	return `/${segments.join('/') || 'BBPlayer'}`
+	return `/${segments.join('/') || 'BBMusica'}`
 }
 
 export function joinWebDavPath(directory: string, name: string): string {

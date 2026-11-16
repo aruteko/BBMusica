@@ -5,10 +5,8 @@ import {
 	useQuery,
 } from '@tanstack/react-query'
 
-import useAppStore from '@/hooks/stores/useAppStore'
 import { queryClient } from '@/lib/config/queryClient'
 import { ServiceError } from '@/lib/errors'
-import { sharedPlaylistFacade } from '@/lib/facades/sharedPlaylist'
 import { playlistService } from '@/lib/services/playlistService'
 import { returnOrThrowAsync } from '@/utils/neverthrow-utils'
 
@@ -46,10 +44,6 @@ export const playlistKeys = {
 			limit,
 			initialLimit,
 		] as const,
-	editorInviteCode: (shareId: string) =>
-		[...playlistKeys.all, 'editorInviteCode', shareId] as const,
-	playlistByShareId: (shareId: string) =>
-		[...playlistKeys.all, 'byShareId', shareId] as const,
 }
 
 export const usePlaylistLists = () => {
@@ -173,29 +167,5 @@ export const usePlaylistContentsInfinite = (
 			| { lastSortKey: string; createdAt: number; lastId: number }
 			| undefined,
 		gcTime: 0,
-	})
-}
-
-export const usePlaylistByShareId = (shareId?: string) => {
-	return useQuery({
-		queryKey: playlistKeys.playlistByShareId(shareId ?? ''),
-		queryFn: shareId
-			? () => returnOrThrowAsync(playlistService.findPlaylistByShareId(shareId))
-			: skipToken,
-		enabled: !!shareId,
-	})
-}
-
-export const useEditorInviteCode = (shareId?: string | null) => {
-	const hasToken = useAppStore((state) => !!state.bbplayerToken)
-	const enabled = !!shareId && hasToken
-	return useQuery({
-		queryKey: playlistKeys.editorInviteCode(shareId ?? ''),
-		queryFn: enabled
-			? () =>
-					returnOrThrowAsync(sharedPlaylistFacade.getEditorInviteCode(shareId))
-			: skipToken,
-		select: (result) => result.editorInviteCode ?? null,
-		enabled,
 	})
 }

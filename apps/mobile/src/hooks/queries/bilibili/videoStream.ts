@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 
 import { bilibiliApi } from '@/lib/api/bilibili/api'
 import type { Track } from '@/types/core/media'
+import { t } from '@/i18n'
 
 export const videoStreamKeys = {
 	all: ['bilibili', 'videoStream'] as const,
@@ -30,7 +31,7 @@ export const useVideoStreamUrl = (track: Track | null, enabled: boolean) => {
 				const pages = await bilibiliApi.getPageList({ bvid: bvid!, signal })
 				if (pages.isErr()) throw pages.error
 				pageCid = pages.value[0]?.cid ?? null
-				if (pageCid === null) throw new Error('動画のページ情報がありません')
+				if (pageCid === null) throw new Error(t('動画のページ情報がありません'))
 			}
 			const result = await bilibiliApi.getVideoMp4Stream({
 				bvid: bvid!,

@@ -10,6 +10,7 @@ import type { Track } from '@/types/core/media'
 import { resolveTrackCover } from '@/utils/imageUrl'
 import { addToQueue } from '@/utils/player'
 import { formatDurationToHHMMSS } from '@/utils/time'
+import { t } from '@/i18n'
 
 interface HistoryListItemProps {
 	item: {
@@ -97,7 +98,7 @@ export const HistoryListItem = memo(function HistoryListItem({
 									numberOfLines={1}
 									style={{ color: colors.onSurfaceVariant }}
 								>
-									{item.track.artist.name ?? '不明'}
+									{item.track.artist.name ?? t('不明')}
 								</Text>
 								<Text
 									style={{
@@ -129,9 +130,7 @@ export const HistoryListItem = memo(function HistoryListItem({
 					<Text
 						variant='bodySmall'
 						style={{ color: colors.onSurfaceVariant }}
-					>
-						回再生
-					</Text>
+					>{t('回再生')}</Text>
 				</View>
 			</View>
 		</Touchable>

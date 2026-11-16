@@ -18,6 +18,7 @@ import useAppStore from '@/hooks/stores/useAppStore'
 import { bilibiliApi } from '@/lib/api/bilibili/api'
 import { BilibiliQrCodeLoginStatus } from '@/types/apis/bilibili'
 import toast from '@/utils/toast'
+import { t } from '@/i18n'
 
 type Status = 'generating' | 'polling' | 'expired' | 'success' | 'error'
 
@@ -40,7 +41,7 @@ type Action =
 
 const initialState: State = {
 	status: 'generating',
-	statusText: 'QRコードを生成中...',
+	statusText: t('QRコードを生成中...'),
 	qrcodeKey: '',
 	qrcodeUrl: '',
 }
@@ -53,7 +54,7 @@ function reducer(state: State, action: Action): State {
 			return {
 				...state,
 				status: 'polling',
-				statusText: '読み取り待ち',
+				statusText: t('読み取り待ち'),
 				qrcodeKey: action.payload.qrcode_key,
 				qrcodeUrl: action.payload.url,
 			}
@@ -61,19 +62,19 @@ function reducer(state: State, action: Action): State {
 			return {
 				...state,
 				status: 'error',
-				statusText: `QRコードの取得に失敗しました: ${action.payload}`,
+				statusText: `${t('QRコードの取得に失敗しました: ')}${action.payload}`,
 			}
 		case 'POLL_UPDATE':
 			switch (action.payload.code) {
 				case BilibiliQrCodeLoginStatus.QRCODE_LOGIN_STATUS_WAIT:
-					return { ...state, statusText: '読み取り待ち' }
+					return { ...state, statusText: t('読み取り待ち') }
 				case BilibiliQrCodeLoginStatus.QRCODE_LOGIN_STATUS_SCANNED_BUT_NOT_CONFIRMED:
-					return { ...state, statusText: '読み取り済み。確認待ち' }
+					return { ...state, statusText: t('読み取り済み。確認待ち') }
 				case BilibiliQrCodeLoginStatus.QRCODE_LOGIN_STATUS_QRCODE_EXPIRED:
 					return {
 						...state,
 						status: 'expired',
-						statusText: 'QRコードの有効期限が切れました',
+						statusText: t('QRコードの有効期限が切れました'),
 						qrcodeKey: '',
 						qrcodeUrl: '',
 					}
@@ -81,7 +82,7 @@ function reducer(state: State, action: Action): State {
 					return state
 			}
 		case 'LOGIN_SUCCESS':
-			return { ...state, status: 'success', statusText: 'ログインしました' }
+			return { ...state, status: 'success', statusText: t('ログインしました') }
 	}
 }
 
@@ -111,7 +112,7 @@ export default function QrCodeLoginPage() {
 					type: 'GENERATE_FAILURE',
 					payload: response.error.message,
 				})
-				toast.error('QRコードの取得に失敗しました', { id: 'bilibili-qrcode-login-error' })
+				toast.error(t('QRコードの取得に失敗しました'), { id: 'bilibili-qrcode-login-error' })
 			} else {
 				dispatch({ type: 'GENERATE_SUCCESS', payload: response.value })
 			}
@@ -125,7 +126,7 @@ export default function QrCodeLoginPage() {
 		const interval = setInterval(async () => {
 			const response = await bilibiliApi.pollQrCodeLoginStatus({ qrcodeKey })
 			if (response.isErr()) {
-				toast.error('QRコードのログイン状態の取得に失敗しました', {
+				toast.error(t('QRコードのログイン状態の取得に失敗しました'), {
 					id: 'bilibili-qrcode-login-status-error',
 				})
 				return
@@ -148,13 +149,13 @@ export default function QrCodeLoginPage() {
 				)
 				const result = setCookie(finalCookieObject)
 				if (result.isErr()) {
-					toast.error('Cookieの保存に失敗しました：' + result.error.message)
+					toast.error(t('Cookieの保存に失敗しました：') + result.error.message)
 					Sentry.captureException(result.error, {
 						tags: { Page: 'QrCodeLoginPage' },
 					})
 					return
 				}
-				toast.success('ログインしました', { id: 'bilibili-qrcode-login-success' })
+				toast.success(t('ログインしました'), { id: 'bilibili-qrcode-login-success' })
 				await queryClient.cancelQueries()
 				await queryClient.invalidateQueries({
 					queryKey: favoriteListQueryKeys.all,
@@ -173,7 +174,7 @@ export default function QrCodeLoginPage() {
 		if (!qrcodeUrl) return
 		WebBrowser.openBrowserAsync(qrcodeUrl).catch((e) => {
 			void Clipboard.setStringAsync(qrcodeUrl)
-			toast.error('ブラウザを開けないため、リンクをクリップボードにコピーしました', {
+			toast.error(t('ブラウザを開けないため、リンクをクリップボードにコピーしました'), {
 				description: String(e),
 			})
 		})
@@ -184,7 +185,7 @@ export default function QrCodeLoginPage() {
 			case 'generating':
 				return colors.primary
 			case 'polling':
-				return statusText.includes('確認') ? '#4CAF50' : '#FFB300'
+				return statusText.includes(t('確認')) ? '#4CAF50' : '#FFB300'
 			case 'success':
 				return '#4CAF50'
 			case 'expired':
@@ -199,7 +200,7 @@ export default function QrCodeLoginPage() {
 		<View style={[styles.container, { backgroundColor: colors.background }]}>
 			<Appbar.Header elevated>
 				<Appbar.BackAction onPress={() => router.back()} />
-				<Appbar.Content title='QRコードでBilibiliにログイン' />
+				<Appbar.Content title={t('QRコードでBilibiliにログイン')} />
 			</Appbar.Header>
 			<ScrollView
 				style={styles.container}
@@ -219,9 +220,7 @@ export default function QrCodeLoginPage() {
 						<Text
 							variant='headlineSmall'
 							style={styles.brandTitle}
-						>
-							BilibiliのQRコードログイン
-						</Text>
+						>{t('BilibiliのQRコードログイン')}</Text>
 					</View>
 				)}
 
@@ -287,15 +286,13 @@ export default function QrCodeLoginPage() {
 									variant='titleMedium'
 									style={styles.overlayText}
 								>
-									{status === 'expired' ? 'QRコードが無効になりました' : '取得に失敗しました'}
+									{status === 'expired' ? t('QRコードが無効になりました') : t('取得に失敗しました')}
 								</Text>
 								<Button
 									mode='contained'
 									onPress={() => dispatch({ type: 'RESET' })}
 									style={styles.refreshButton}
-								>
-									QRコードを更新
-								</Button>
+								>{t('QRコードを更新')}</Button>
 							</View>
 						)}
 					</View>
@@ -310,19 +307,13 @@ export default function QrCodeLoginPage() {
 						labelStyle={styles.brandButtonLabel}
 						icon='open-in-new'
 						testID='qrcode-open-client'
-					>
-						Bilibiliアプリで開く
-					</Button>
+					>{t('Bilibiliアプリで開く')}</Button>
 				) : null}
 
 				<Text
 					variant='bodyMedium'
 					style={[styles.hintText, { color: colors.onSurfaceVariant }]}
-				>
-					Bilibiliアプリで上のQRコードを読み取ってください。
-					{'\n'}
-					同じ端末の場合は、ボタンからBilibiliに移動して確認できます。
-				</Text>
+				>{t('Bilibiliアプリで上のQRコードを読み取ってください。')}{'\n'}{t('同じ端末の場合は、ボタンからBilibiliに移動して確認できます。')}</Text>
 			</ScrollView>
 		</View>
 	)

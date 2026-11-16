@@ -19,6 +19,7 @@ import ThemeSection from '@/features/theme/ThemeSection'
 import useCurrentTrack from '@/hooks/player/useCurrentTrack'
 import useAppStore from '@/hooks/stores/useAppStore'
 import { useMenuActions } from '@/hooks/ui/useMenuActions'
+import { t } from '@/i18n'
 
 export default function AppearanceSettingsPage() {
 	const router = useRouter()
@@ -37,15 +38,18 @@ export default function AppearanceSettingsPage() {
 	const pureWhiteBackground = useAppStore(
 		(state) => state.settings.pureWhiteBackground,
 	)
+	const skinAccentColor = useAppStore(
+		(state) => state.settings.skinAccentColor ?? true,
+	)
 
 	const nowPlayingBarStyleMenu = useMenuActions([
 		{
-			title: 'フローティング（既定）',
+			title: t('フローティング'),
 			state: nowPlayingBarStyle === 'float' ? 'on' : 'off',
 			onPress: () => setSettings({ nowPlayingBarStyle: 'float' }),
 		},
 		{
-			title: '没入',
+			title: t('没入'),
 			state: nowPlayingBarStyle === 'bottom' ? 'on' : 'off',
 			onPress: () => setSettings({ nowPlayingBarStyle: 'bottom' }),
 		},
@@ -53,12 +57,12 @@ export default function AppearanceSettingsPage() {
 
 	const playerBackgroundStyleMenu = useMenuActions([
 		{
-			title: '流体エフェクト（既定）',
+			title: t('流体エフェクト'),
 			state: playerBackgroundStyle === 'fluid' ? 'on' : 'off',
 			onPress: () => setSettings({ playerBackgroundStyle: 'fluid' }),
 		},
 		{
-			title: '通常のグラデーション',
+			title: t('通常のグラデーション'),
 			state: playerBackgroundStyle === 'gradient' ? 'on' : 'off',
 			onPress: () => setSettings({ playerBackgroundStyle: 'gradient' }),
 		},
@@ -78,12 +82,12 @@ export default function AppearanceSettingsPage() {
 					Orpheus.isSpectrumVisualizerEnabled = true
 				} else {
 					alert(
-						'マイクの権限が必要です',
-						'音声スペクトラムは、音声データを分析するためにマイクへのアクセスが必要です。音を録音することはありません。',
+						t('マイクの権限が必要です'),
+						t('スペクトラム表示にはマイクの権限が必要です。録音はしません。'),
 						[
-							{ text: 'キャンセル' },
+							{ text: t('キャンセル') },
 							{
-								text: '確認',
+								text: t('確認'),
 								onPress: () => {
 									void PermissionsAndroid.request(
 										PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
@@ -108,7 +112,7 @@ export default function AppearanceSettingsPage() {
 		<View style={[styles.container, { backgroundColor: colors.background }]}>
 			<Appbar.Header>
 				<Appbar.BackAction onPress={() => router.back()} />
-				<Appbar.Content title='外観とテーマ' />
+				<Appbar.Content title={t('外観とテーマ')} />
 			</Appbar.Header>
 			<ScrollView
 				style={styles.scrollView}
@@ -118,18 +122,16 @@ export default function AppearanceSettingsPage() {
 				]}
 			>
 				<SettingsSectionTitle
-					title='表示'
+					title={t('表示')}
 					first
 				/>
 				<View style={styles.settingRow}>
 					<View style={styles.settingTextContainer}>
-						<Text>純白の背景</Text>
+						<Text>{t('純白の背景')}</Text>
 						<Text
 							variant='bodySmall'
 							style={{ color: colors.onSurfaceVariant }}
-						>
-							電子ペーパー向け
-						</Text>
+						>{t('電子ペーパー向け')}</Text>
 					</View>
 					<UniversalSwitch
 						value={pureWhiteBackground}
@@ -139,16 +141,14 @@ export default function AppearanceSettingsPage() {
 						testID='pure-white-background-switch'
 					/>
 				</View>
-				<SettingsSectionTitle title='プレーヤー' />
+				<SettingsSectionTitle title={t('プレーヤー')} />
 				<View style={styles.settingRow}>
 					<View style={styles.settingTextContainer}>
-						<Text>音声スペクトラムを表示</Text>
+						<Text>{t('音声スペクトラムを表示')}</Text>
 						<Text
 							variant='bodySmall'
 							style={{ color: colors.onSurfaceVariant }}
-						>
-							プレーヤーのカバーの周りにリアルタイムの音声スペクトラムを表示します
-						</Text>
+						>{t('プレーヤーのカバーの周りにリアルタイムの音声スペクトラムを表示します')}</Text>
 					</View>
 					<UniversalSwitch
 						value={enableSpectrumVisualizer}
@@ -157,7 +157,7 @@ export default function AppearanceSettingsPage() {
 				</View>
 				{Platform.OS === 'android' && (
 					<View style={styles.settingRow}>
-						<Text>下部の再生バーのスタイルを選択</Text>
+						<Text>{t('下部の再生バーのスタイルを選択')}</Text>
 						<MenuView {...nowPlayingBarStyleMenu}>
 							<IconButton
 								icon='palette'
@@ -167,7 +167,7 @@ export default function AppearanceSettingsPage() {
 					</View>
 				)}
 				<View style={styles.settingRow}>
-					<Text>プレーヤーの背景スタイルを選択</Text>
+					<Text>{t('プレーヤーの背景スタイルを選択')}</Text>
 					<MenuView {...playerBackgroundStyleMenu}>
 						<IconButton
 							icon='palette'
@@ -176,7 +176,21 @@ export default function AppearanceSettingsPage() {
 					</MenuView>
 				</View>
 
-				<SettingsSectionTitle title='テーマ' />
+				<SettingsSectionTitle title={t('テーマ')} />
+				<View style={styles.settingRow}>
+					<View style={styles.settingTextContainer}>
+						<Text>{t('テーマの色をアプリ全体に反映')}</Text>
+						<Text
+							variant='bodySmall'
+							style={{ color: colors.onSurfaceVariant }}
+						>{t('テーマのメインカラーで、アプリ全体の配色を変えます')}</Text>
+					</View>
+					<UniversalSwitch
+						value={skinAccentColor}
+						onValueChange={(value) => setSettings({ skinAccentColor: value })}
+						disabled={pureWhiteBackground}
+					/>
+				</View>
 				<ThemeSection disabled={pureWhiteBackground} />
 			</ScrollView>
 		</View>

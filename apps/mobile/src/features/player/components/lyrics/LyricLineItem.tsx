@@ -15,6 +15,7 @@ import Animated, {
 import { scheduleOnRN } from 'react-native-worklets'
 
 import { KaraokeWord } from './KaraokeWord'
+import { CORNER_RADIUS } from '@/theme/dimensions'
 
 const AnimatedTouchable = createAnimatedComponent(Touchable)
 
@@ -284,7 +285,7 @@ const styles = StyleSheet.create({
 		flexDirection: 'column',
 		alignItems: 'center',
 		gap: 4,
-		borderRadius: 16,
+		borderRadius: CORNER_RADIUS,
 		paddingVertical: 8,
 		paddingHorizontal: 16,
 		marginHorizontal: 30,
@@ -314,7 +315,7 @@ const styles = StyleSheet.create({
 		flexDirection: 'column',
 		alignItems: 'flex-start',
 		gap: 4,
-		borderRadius: 8,
+		borderRadius: CORNER_RADIUS,
 		paddingVertical: 4,
 		marginHorizontal: 30,
 		paddingLeft: 8,

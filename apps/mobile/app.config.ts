@@ -20,7 +20,7 @@ import { version } from './package.json'
 
 const IS_DEV = process.env.APP_VARIANT === 'development'
 const IS_PREVIEW = process.env.APP_VARIANT === 'preview'
-// 自分用フォーク「BBPlayerJP」。公式版と別パッケージで共存し、公式のOTA更新サーバーには接続しない
+// 「BBMusica」（BBPlayer 派生の別アプリ）。公式版と別パッケージで共存し、公式のOTA更新サーバーには接続しない
 const IS_JP = process.env.APP_VARIANT === 'jp'
 const UPDATE_SERVER_URL = 'https://updates.bbplayer.roitium.com'
 const UPDATE_CHANNEL = IS_DEV
@@ -69,7 +69,7 @@ const getUniqueIdentifier = () => {
 	}
 
 	if (IS_JP) {
-		return 'com.roitium.bbplayer.jp'
+		return 'com.aruteko.bbmusica'
 	}
 
 	return 'com.roitium.bbplayer'
@@ -85,7 +85,7 @@ const getAppName = () => {
 	}
 
 	if (IS_JP) {
-		return 'BBPlayerJP'
+		return 'BBMusica'
 	}
 
 	return 'BBPlayer'
@@ -114,15 +114,23 @@ export default ({ config }: ConfigContext): ExpoConfig => {
 		slug: 'bbplayer',
 		version: version,
 		orientation: 'default',
-		icon: './assets/images/icon.png',
-		scheme: 'bbplayer',
+		icon: IS_JP
+			? './assets/images/icon-bbmusica.png'
+			: './assets/images/icon.png',
+		// 公式アプリとURLスキームがぶつからないようにする
+		scheme: IS_JP ? 'bbmusica' : 'bbplayer',
 		userInterfaceStyle: 'automatic',
 		platforms: ['android', 'ios'],
 		android: {
 			adaptiveIcon: {
-				foregroundImage: './assets/images/adaptive-icon.png',
-				monochromeImage: './assets/images/adaptive-icon.png',
-				backgroundColor: '#ffffff',
+				foregroundImage: IS_JP
+					? './assets/images/adaptive-icon-bbmusica.png'
+					: './assets/images/adaptive-icon.png',
+				monochromeImage: IS_JP
+					? './assets/images/adaptive-icon-bbmusica-mono.png'
+					: './assets/images/adaptive-icon.png',
+				// BBMusica のアイコンは背景まで含めた絵なので、背景色を絵の色に合わせる
+				backgroundColor: IS_JP ? '#00aeec' : '#ffffff',
 			},
 			googleServicesFile: getGoogleServicesFile(
 				googleServicesJsonPath,
@@ -131,7 +139,10 @@ export default ({ config }: ConfigContext): ExpoConfig => {
 			package: getUniqueIdentifier(),
 			versionCode: versionCode,
 			runtimeVersion: { policy: 'appVersion' },
-			intentFilters: [
+			// BBMusica は公式サイトのドメインのリンクを開かない（所有していないドメインのため）
+			intentFilters: IS_JP
+				? []
+				: [
 				{
 					action: 'VIEW',
 					autoVerify: true,
@@ -160,12 +171,17 @@ export default ({ config }: ConfigContext): ExpoConfig => {
 		},
 		plugins: [
 			'./expo-plugins/withProductionDebugSigning',
+			'./expo-plugins/withReleaseSigning',
 			'./expo-plugins/withKotlinSerialization',
 			// './expo-plugins/withAndroidPlugin',
 			'./expo-plugins/withAndroidGradleProperties',
 			[
 				'./expo-plugins/withAndroidTv',
-				{ banner: './assets/images/tv-banner.png' },
+				{
+					banner: IS_JP
+						? './assets/images/tv-banner-bbmusica.png'
+						: './assets/images/tv-banner.png',
+				},
 			],
 			[
 				'./expo-plugins/withAbiFilters',
@@ -180,7 +196,9 @@ export default ({ config }: ConfigContext): ExpoConfig => {
 				launchMode: 'most-recent',
 			}),
 			bootsplash({
-				logo: './assets/images/splash-icon.png',
+				logo: IS_JP
+					? './assets/images/splash-icon-bbmusica.png'
+					: './assets/images/splash-icon.png',
 				logoWidth: 120,
 				background: bootSplashColors.light,
 				assetsOutput: 'assets/bootsplash',
@@ -261,7 +279,11 @@ export default ({ config }: ConfigContext): ExpoConfig => {
 				},
 			}),
 			expoAsset({
-				assets: ['./assets/images/media3_notification_small_icon.png'],
+				assets: [
+					IS_JP
+						? './assets/images/media3_notification_small_icon_bbmusica.png'
+						: './assets/images/media3_notification_small_icon.png',
+				],
 			}),
 			expoFont(),
 			[
@@ -302,13 +324,21 @@ export default ({ config }: ConfigContext): ExpoConfig => {
 		},
 		extra: {
 			eas: {
-				projectId: '1cbd8d50-e322-4ead-98b6-4ee8b6f2a707',
+				// expo-observe は、起動時にプロジェクトIDが無いと例外で止まるため、必須。
+				// BBMusica は、上流の Expo プロジェクトには紐づけず、何にも対応しない空のIDを入れる
+				// （計測は、設定でも、公式アプリ以外では送らない）
+				projectId: IS_JP
+					? '00000000-0000-0000-0000-000000000000'
+					: '1cbd8d50-e322-4ead-98b6-4ee8b6f2a707',
 			},
-			updateManifestUrl: 'https://be.bbplayer.roitium.com/update.json',
-			updateServerUrl: UPDATE_SERVER_URL,
+			// BBMusica は、上流（BBPlayer）の更新サーバーに接続しない
+			updateManifestUrl: IS_JP
+				? undefined
+				: 'https://be.bbplayer.roitium.com/update.json',
+			updateServerUrl: IS_JP ? undefined : UPDATE_SERVER_URL,
 			updateChannel: UPDATE_CHANNEL,
 		},
-		owner: 'roitium',
+		owner: IS_JP ? undefined : 'roitium',
 		ios: {
 			bundleIdentifier: 'com.roitium.bbplayer',
 			runtimeVersion: {

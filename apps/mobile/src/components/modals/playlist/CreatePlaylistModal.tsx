@@ -10,6 +10,7 @@ import IconButton from '@/components/common/IconButton'
 import { useCreateNewLocalPlaylist } from '@/hooks/mutations/db/playlist'
 import { useModalStore } from '@/hooks/stores/useModalStore'
 import toast from '@/utils/toast'
+import { t } from '@/i18n'
 
 export default function CreatePlaylistModal({
 	redirectToNewPlaylist,
@@ -27,7 +28,7 @@ export default function CreatePlaylistModal({
 
 	const handleConfirm = useCallback(() => {
 		if (title.trim().length === 0) {
-			toast.error('タイトルを入力してください')
+			toast.error(t('タイトルを入力してください'))
 			return
 		}
 		createNewPlaylist(
@@ -94,10 +95,10 @@ export default function CreatePlaylistModal({
 
 	return (
 		<>
-			<Dialog.Title>プレイリストを作成</Dialog.Title>
+			<Dialog.Title>{t('プレイリストを作成')}</Dialog.Title>
 			<Dialog.Content style={styles.content}>
 				<TextInput
-					label='タイトル'
+					label={t('タイトル')}
 					value={title}
 					onChangeText={setTitle}
 					mode='outlined'
@@ -106,7 +107,7 @@ export default function CreatePlaylistModal({
 					testID='create-playlist-title-input'
 				/>
 				<TextInput
-					label='説明'
+					label={t('説明')}
 					onChangeText={setDescription}
 					value={description ?? undefined}
 					mode='outlined'
@@ -116,7 +117,7 @@ export default function CreatePlaylistModal({
 				/>
 				<View style={styles.coverUrlContainer}>
 					<TextInput
-						label='カバー'
+						label={t('カバー')}
 						onChangeText={setCoverUrl}
 						value={coverUrl ?? undefined}
 						mode='outlined'
@@ -133,7 +134,7 @@ export default function CreatePlaylistModal({
 				</View>
 			</Dialog.Content>
 			<Dialog.Actions>
-				<Button onPress={handleDismiss}>キャンセル</Button>
+				<Button onPress={handleDismiss}>{t('キャンセル')}</Button>
 				<Button
 					onPress={handleConfirm}
 					testID='create-playlist-confirm-button'

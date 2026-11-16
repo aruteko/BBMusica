@@ -11,6 +11,7 @@ import { usePlaylistLists } from '@/hooks/queries/db/playlist'
 import { useModalStore } from '@/hooks/stores/useModalStore'
 import type { Playlist } from '@/types/core/media'
 import type { ListRenderItemInfoWithExtraData } from '@/types/legendlist'
+import { t } from '@/i18n'
 
 const SelectablePlaylistItem = memo(function SelectablePlaylistItem({
 	item,
@@ -35,8 +36,7 @@ const SelectablePlaylistItem = memo(function SelectablePlaylistItem({
 						variant='bodySmall'
 						style={{ opacity: 0.7 }}
 					>
-						{item.itemCount} 曲
-					</Text>
+						{item.itemCount}{t(' 曲')}</Text>
 				</View>
 				<UniversalCheckbox
 					status={isSelected ? 'checked' : 'unchecked'}
@@ -113,7 +113,7 @@ export default function MergePlaylistsModal() {
 
 	return (
 		<>
-			<Dialog.Title>動的マージプレイリスト</Dialog.Title>
+			<Dialog.Title>{t('動的マージプレイリスト')}</Dialog.Title>
 			<Dialog.Content style={styles.content}>
 				{isPending ? (
 					<View style={styles.center}>
@@ -121,16 +121,16 @@ export default function MergePlaylistsModal() {
 					</View>
 				) : isError ? (
 					<View style={styles.center}>
-						<Text style={{ opacity: 0.7 }}>ローカルのプレイリストの読み込みに失敗しました</Text>
+						<Text style={{ opacity: 0.7 }}>{t('ローカルのプレイリストの読み込みに失敗しました')}</Text>
 					</View>
 				) : availablePlaylists.length === 0 ? (
 					<View style={styles.center}>
-						<Text style={{ opacity: 0.7 }}>ローカルのプレイリストがありません</Text>
+						<Text style={{ opacity: 0.7 }}>{t('ローカルのプレイリストがありません')}</Text>
 					</View>
 				) : (
 					<View style={{ flex: 1 }}>
 						<TextInput
-							label='新しいプレイリスト名'
+							label={t('新しいプレイリスト名')}
 							value={newTitle}
 							onChangeText={setNewTitle}
 							mode='outlined'
@@ -139,9 +139,7 @@ export default function MergePlaylistsModal() {
 						<Text
 							variant='labelMedium'
 							style={styles.subtitle}
-						>
-							元のプレイリストを2つ以上選んでください（表示するときに自動でまとめ、重複も取り除きます）：
-						</Text>
+						>{t('元のプレイリストを2つ以上選んでください：')}</Text>
 						<View style={styles.listContainer}>
 							<LegendList
 								data={availablePlaylists}
@@ -159,17 +157,13 @@ export default function MergePlaylistsModal() {
 				<Button
 					onPress={() => close('MergePlaylists')}
 					disabled={isMerging}
-				>
-					キャンセル
-				</Button>
+				>{t('キャンセル')}</Button>
 				<Button
 					mode='contained'
 					onPress={handleConfirm}
 					disabled={isMerging || selectedIds.size < 2 || newTitle.trim() === ''}
 					loading={isMerging}
-				>
-					作成
-				</Button>
+				>{t('作成')}</Button>
 			</Dialog.Actions>
 		</>
 	)

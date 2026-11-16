@@ -6,6 +6,7 @@ import { Dialog, TextInput } from 'react-native-paper'
 import Button from '@/components/common/Button'
 import { useDuplicatePlaylist } from '@/hooks/mutations/db/playlist'
 import { useModalStore } from '@/hooks/stores/useModalStore'
+import { t } from '@/i18n'
 
 export default function DuplicateLocalPlaylistModal({
 	sourcePlaylistId,
@@ -15,7 +16,7 @@ export default function DuplicateLocalPlaylistModal({
 	rawName: string
 }) {
 	const [duplicatePlaylistName, setDuplicatePlaylistName] = useState(
-		`${rawName}-コピー`,
+		`${rawName}${t('-コピー')}`,
 	)
 	const { mutate: duplicatePlaylist } = useDuplicatePlaylist()
 	const close = useModalStore((state) => state.close)
@@ -51,10 +52,10 @@ export default function DuplicateLocalPlaylistModal({
 
 	return (
 		<>
-			<Dialog.Title>プレイリストを複製</Dialog.Title>
+			<Dialog.Title>{t('プレイリストを複製')}</Dialog.Title>
 			<Dialog.Content>
 				<TextInput
-					label='新しいプレイリスト名'
+					label={t('新しいプレイリスト名')}
 					value={duplicatePlaylistName}
 					onChangeText={setDuplicatePlaylistName}
 					mode='outlined'
@@ -64,7 +65,7 @@ export default function DuplicateLocalPlaylistModal({
 				/>
 			</Dialog.Content>
 			<Dialog.Actions>
-				<Button onPress={() => close('DuplicateLocalPlaylist')}>キャンセル</Button>
+				<Button onPress={() => close('DuplicateLocalPlaylist')}>{t('キャンセル')}</Button>
 				<Button onPress={handleDuplicatePlaylist}>OK</Button>
 			</Dialog.Actions>
 		</>

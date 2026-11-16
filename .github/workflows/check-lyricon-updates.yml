@@ -1,9 +1,9 @@
 name: Check Lyricon Updates
 
 on:
-  schedule:
-    # 每天凌晨 2 点运行一次 (UTC 时间)
-    - cron: '0 2 * * *'
+  # BBMusica では、毎日の自動実行はしない（必要なときだけ、手動で実行する）
+  # schedule:
+  #   - cron: '0 2 * * *'
   workflow_dispatch: # 允许手动触发
     inputs:
       force_update:

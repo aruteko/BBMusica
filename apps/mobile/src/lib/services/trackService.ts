@@ -30,6 +30,7 @@ import type {
 import log from '@/utils/log'
 
 import generateUniqueTrackKey from './genKey'
+import { t as tr } from '@/i18n'
 
 const logger = log.extend('Service.Track')
 type Tx = Parameters<Parameters<typeof defaultDb.transaction>[0]>[0]
@@ -107,14 +108,14 @@ export class TrackService {
 		if (payload.source === 'bilibili' && !payload.bilibiliMetadata) {
 			return errAsync(
 				createValidationError(
-					'source が bilibili の場合、bilibiliMetadata は必須です',
+					tr('bilibiliMetadata が必要です'),
 				),
 			)
 		}
 		if (payload.source === 'local' && !payload.localMetadata) {
 			return errAsync(
 				createValidationError(
-					'source が local の場合、localMetadata は必須です',
+					tr('localMetadata が必要です'),
 				),
 			)
 		}
@@ -177,7 +178,7 @@ export class TrackService {
 			(e) =>
 				e instanceof ServiceError
 					? e
-					: new DatabaseError('作成 track 事务失败', { cause: e }),
+					: new DatabaseError(tr('作成 track 事务失败'), { cause: e }),
 		)
 
 		return transactionResult.andThen((newTrackId) =>
@@ -384,7 +385,7 @@ export class TrackService {
 			if (!formattedTrack) {
 				return errAsync(
 					createValidationError(
-						`Bilibiliのメタデータから曲を検索できません：メタデータが一致しません`,
+						tr(`メタデータが一致しません`),
 					),
 				)
 			}
@@ -434,7 +435,7 @@ export class TrackService {
 					}
 					return errAsync(
 						createValidationError(
-							`既存の曲 ${dbTrack.id} の source と metadata が一致しません`,
+							`${tr('既存の曲 ')}${dbTrack.id}${tr(' の source と metadata が一致しません')}`,
 						),
 					)
 				}
@@ -537,7 +538,7 @@ export class TrackService {
 
 				if (finalUniqueKeyToIdMap.size !== uniqueKeys.length) {
 					throw new DatabaseError(
-						'曲の作成または検索の後でデータが一致しません。一部の曲を書き込めなかったか、取得できませんでした',
+						tr('一部の曲を保存できませんでした'),
 					)
 				}
 
@@ -548,7 +549,7 @@ export class TrackService {
 								const trackId = finalUniqueKeyToIdMap.get(uniqueKey)
 								if (!trackId) {
 									throw new ServiceError(
-										`想定外のエラー：${uniqueKey} の trackId が見つかりません`,
+										`${tr('想定外のエラー：')}${uniqueKey}${tr(' の trackId が見つかりません')}`,
 									)
 								}
 								return {
@@ -574,7 +575,7 @@ export class TrackService {
 						break
 					}
 					case 'local': {
-						throw createNotImplementedError('ローカルの曲の処理は未実装です')
+						throw createNotImplementedError(tr('ローカルの曲の処理は未実装です'))
 					}
 				}
 
@@ -590,7 +591,7 @@ export class TrackService {
 			(e) =>
 				e instanceof ServiceError
 					? e
-					: new DatabaseError('批量查找或作成 tracks 失败', {
+					: new DatabaseError(tr('批量查找或作成 tracks 失败'), {
 							cause: e,
 						}),
 		)

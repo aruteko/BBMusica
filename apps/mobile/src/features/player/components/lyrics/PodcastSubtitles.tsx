@@ -29,6 +29,7 @@ import {
 	SubtitleReaderToolbar,
 	SubtitleTranscript,
 } from './SubtitleReader'
+import { t } from '@/i18n'
 
 export function PodcastSubtitles({ active }: { active: boolean }) {
 	const data = usePlayerSubtitles(active)
@@ -64,7 +65,7 @@ export function PodcastSubtitles({ active }: { active: boolean }) {
 				subtitleLabel(data.selected),
 			)
 		} catch (error) {
-			toastAndLogError('字幕のエクスポートに失敗しました', error, 'Player.Subtitles')
+			toastAndLogError(t('字幕のエクスポートに失敗しました'), error, 'Player.Subtitles')
 		} finally {
 			exportingRef.current = false
 			setExporting(false)
@@ -79,7 +80,7 @@ export function PodcastSubtitles({ active }: { active: boolean }) {
 		>
 			<SubtitleReaderToolbar
 				store={store}
-				label={data.selected ? subtitleLabel(data.selected) : 'Bilibiliの字幕'}
+				label={data.selected ? subtitleLabel(data.selected) : t('Bilibiliの字幕')}
 				canSelect={!!data.tracks.length}
 				canSearch={!!data.lines.length}
 				onSelect={openPicker}
@@ -88,35 +89,31 @@ export function PodcastSubtitles({ active }: { active: boolean }) {
 				{data.isLoading || (data.lines.length > 0 && !playbackReady) ? (
 					<View style={styles.message}>
 						<ActivityIndicator />
-						<Text>字幕を読み込み中…</Text>
+						<Text>{t('字幕を読み込み中…')}</Text>
 					</View>
 				) : data.isError ? (
 					<View style={styles.message}>
-						<Text>字幕の読み込みに失敗しました（再生には影響しません）</Text>
+						<Text>{t('字幕の読み込みに失敗しました')}</Text>
 						<Button
 							onPress={() => {
 								void data.retry()
 							}}
-						>
-							再試行
-						</Button>
+						>{t('再試行')}</Button>
 					</View>
 				) : !data.lines.length ? (
 					<View style={styles.message}>
 						<Text>
 							{data.isLocal
-								? 'ローカルの音声はBilibiliの字幕に対応していません'
+								? t('ローカルの音声はBilibiliの字幕に対応していません')
 								: data.selected
-									? 'この字幕には内容がありません。ほかの字幕に切り替えてみてください'
-									: 'この動画には利用できる字幕がありません'}
+									? t('この字幕には内容がありません。ほかの字幕に切り替えてみてください')
+									: t('この動画には利用できる字幕がありません')}
 						</Text>
 						{!data.isLocal && !hasBilibiliCookie && (
 							<Text
 								variant='bodySmall'
 								style={{ color: colors.onSurfaceVariant }}
-							>
-								一部の字幕は、先に「マイページ」でBilibiliにログインする必要があります
-							</Text>
+							>{t('一部の字幕にはログインが必要です')}</Text>
 						)}
 					</View>
 				) : (
@@ -171,11 +168,9 @@ export function PodcastSubtitles({ active }: { active: boolean }) {
 					visible={pickerVisible && active}
 					onDismiss={() => setPickerVisible(false)}
 				>
-					<Dialog.Title>字幕を選択</Dialog.Title>
+					<Dialog.Title>{t('字幕を選択')}</Dialog.Title>
 					<Dialog.Content>
-						<Text variant='bodyMedium'>
-							言語の設定を記憶します。該当する字幕がないときは、人が作成した字幕を優先します。
-						</Text>
+						<Text variant='bodyMedium'>{t('言語を記憶します')}</Text>
 					</Dialog.Content>
 					<Dialog.ScrollArea style={{ maxHeight: 320 }}>
 						<ScrollView>
@@ -223,10 +218,8 @@ export function PodcastSubtitles({ active }: { active: boolean }) {
 								void handleExport()
 							}}
 							testID='subtitle-export-lrc'
-						>
-							LRCをエクスポート
-						</Button>
-						<Button onPress={() => setPickerVisible(false)}>完了</Button>
+						>{t('LRCをエクスポート')}</Button>
+						<Button onPress={() => setPickerVisible(false)}>{t('完了')}</Button>
 					</Dialog.Actions>
 				</Dialog>
 			</Portal>

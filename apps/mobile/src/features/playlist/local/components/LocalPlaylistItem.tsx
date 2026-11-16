@@ -21,6 +21,7 @@ import {
 import type { Playlist, Track } from '@/types/core/media'
 import { resolveTrackCover } from '@/utils/imageUrl'
 import { formatDurationToHHMMSS } from '@/utils/time'
+import { t } from '@/i18n'
 
 export interface TrackMenuItem {
 	title: string
@@ -217,7 +218,7 @@ export const TrackListItem = memo(function TrackListItem({
 										variant='bodySmall'
 										numberOfLines={1}
 									>
-										{data.artist.name ?? '不明'}
+										{data.artist.name ?? t('不明')}
 									</VariantPlainText>
 									<VariantPlainText
 										style={styles.dotSeparator}

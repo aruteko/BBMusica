@@ -7,6 +7,7 @@ import { trackService } from '@/lib/services/trackService'
 import type { Track } from '@/types/core/media'
 import { toastAndLogError } from '@/utils/error-handling'
 import log from '@/utils/log'
+import { t } from '@/i18n'
 
 const logger = log.extend('Store.Player')
 
@@ -93,7 +94,7 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 
 				if (result.isErr()) {
 					set({ internalTrack: null })
-					toastAndLogError('現在の曲情報の取得に失敗しました', result.error, 'Store.Player')
+					toastAndLogError(t('現在の曲情報の取得に失敗しました'), result.error, 'Store.Player')
 					return
 				}
 				set({ internalTrack: result.value })

@@ -10,6 +10,7 @@ import {
 	type SubtitleParagraph,
 } from '@/features/player/utils/subtitles'
 import { formatDurationToHHMMSS } from '@/utils/time'
+import { t } from '@/i18n'
 
 export const SubtitleParagraphItem = memo(function SubtitleParagraphItem({
 	paragraph,
@@ -42,7 +43,7 @@ export const SubtitleParagraphItem = memo(function SubtitleParagraphItem({
 			<Pressable
 				onPress={() => onSeek(paragraph.cues[0].index)}
 				accessibilityRole='button'
-				accessibilityLabel={`${formatDurationToHHMMSS(Math.floor(paragraph.startTime / 1000))} に移動`}
+				accessibilityLabel={`${formatDurationToHHMMSS(Math.floor(paragraph.startTime / 1000))}${t(' に移動')}`}
 			>
 				<VariantPlainText
 					variant='labelMedium'
@@ -71,7 +72,7 @@ export const SubtitleParagraphItem = memo(function SubtitleParagraphItem({
 							<Text
 								onPress={() => onSeek(index)}
 								accessibilityRole='button'
-								accessibilityLabel={`この行から再生：${line.content}`}
+								accessibilityLabel={`${t('この行から再生：')}${line.content}`}
 								style={{
 									backgroundColor: spoken
 										? colors.secondaryContainer

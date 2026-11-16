@@ -67,7 +67,10 @@ logger.info(
 
 export function initializeSentry() {
 	Sentry.init({
-		dsn: 'https://893ea8eb3743da1e065f56b3aa5e96f9@o4508985265618944.ingest.us.sentry.io/4508985267191808',
+		// DSN は上流の作者の Sentry プロジェクト。公式アプリ以外では、設定しない
+		dsn: isOfficialBuild
+			? 'https://893ea8eb3743da1e065f56b3aa5e96f9@o4508985265618944.ingest.us.sentry.io/4508985267191808'
+			: undefined,
 		debug: false,
 		tracesSampleRate: 0.3,
 		integrations: [navigationIntegration],

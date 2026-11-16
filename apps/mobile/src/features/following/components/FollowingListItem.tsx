@@ -5,6 +5,7 @@ import { List } from 'react-native-paper'
 
 import type { BilibiliFollowingProfile } from '@/types/apis/bilibili'
 import { resolveBilibiliImageUrl } from '@/utils/imageUrl'
+import { t } from '@/i18n'
 
 export function FollowingListItem({
 	user,
@@ -16,7 +17,7 @@ export function FollowingListItem({
 		<List.Item
 			title={user.uname}
 			titleNumberOfLines={1}
-			description={user.sign || '投稿を見る'}
+			description={user.sign || t('投稿を見る')}
 			descriptionNumberOfLines={1}
 			style={styles.row}
 			left={() => (

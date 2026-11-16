@@ -28,6 +28,8 @@ interface SkinStoreState {
 	activePlayIconIndex: number
 	activeSkinId: string | null
 	activeSkinIndex: number
+	/** テーマのメインカラー（アプリ全体の配色の元）。起動直後から使えるよう保存しておく */
+	activeSeedColor: string | null
 	activeThumbUpIndex: number
 	addInstalledSkin: (skin: InstalledSkin) => void
 	installedSkins: InstalledSkinMeta[]
@@ -35,6 +37,7 @@ interface SkinStoreState {
 	removeInstalledSkin: (id: string) => void
 	selectedSkinBootSplashAssetId: string | null
 	selectedSkinBootSplashMode: SkinBootSplashMode
+	setActiveSeedColor: (color: string | null) => void
 	setSkinSettings: (updates: SkinSettingsUpdate) => void
 	skinSliderThumbOffsetX: number
 	skinSliderThumbOffsetY: number
@@ -51,6 +54,7 @@ const useSkinStore = create<SkinStoreState>()(
 			activePlayIconIndex: 0,
 			activeSkinId: null,
 			activeSkinIndex: 0,
+			activeSeedColor: null,
 			activeThumbUpIndex: 0,
 			installedSkins: [],
 			playFullSkinBootSplashAnimation: false,
@@ -81,6 +85,10 @@ const useSkinStore = create<SkinStoreState>()(
 							? null
 							: state.selectedSkinBootSplashAssetId,
 				}))
+			},
+
+			setActiveSeedColor: (color) => {
+				set({ activeSeedColor: color })
 			},
 
 			setSkinSettings: (updates) => {
@@ -120,6 +128,7 @@ const useSkinStore = create<SkinStoreState>()(
 				activePlayIconIndex: state.activePlayIconIndex,
 				activeSkinId: state.activeSkinId,
 				activeSkinIndex: state.activeSkinIndex,
+				activeSeedColor: state.activeSeedColor,
 				activeThumbUpIndex: state.activeThumbUpIndex,
 				installedSkins: state.installedSkins,
 				playFullSkinBootSplashAnimation: state.playFullSkinBootSplashAnimation,

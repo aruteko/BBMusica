@@ -1,11 +1,14 @@
 // oxlint-disable-next-line import/no-unassigned-import
+import 'dayjs/locale/ja'
+// oxlint-disable-next-line import/no-unassigned-import
 import 'dayjs/locale/zh-cn'
 
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import { language, t } from '@/i18n'
 
 dayjs.extend(relativeTime)
-dayjs.locale('zh-cn')
+dayjs.locale(language === 'zh' ? 'zh-cn' : 'ja')
 
 /**
  * 获取传入时间到现在的相对时间
@@ -39,8 +42,8 @@ export const formatDurationToText = (seconds: number): string => {
 	const hours = Math.floor(seconds / 3600)
 	const minutes = Math.floor((seconds % 3600) / 60)
 	let text = ''
-	if (hours > 0) text += `${hours} 時間 `
-	text += `${minutes} 分`
+	if (hours > 0) text += `${hours}${t(' 時間 ')}`
+	text += `${minutes}${t(' 分')}`
 	return text.trim()
 }
 

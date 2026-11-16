@@ -23,6 +23,7 @@ import toast from '@/utils/toast'
 
 import { runFavoriteSync } from './favorite'
 import type { PlaylistSyncProgress } from './types'
+import { t } from '@/i18n'
 
 let logger = log.extend('Facade')
 
@@ -83,7 +84,7 @@ export class SyncBilibiliPlaylistFacade {
 	 * @param track Track 对象
 	 */
 	public addTrackToLocal(track: Track) {
-		if (!track.artist) return errAsync(createValidationError('artist 不存在'))
+		if (!track.artist) return errAsync(createValidationError(t('artist が存在しません')))
 		return this.artistService
 			.findOrCreateArtist({
 				name: track.artist.name,
@@ -136,7 +137,7 @@ export class SyncBilibiliPlaylistFacade {
 			return errAsync(createSyncTaskAlreadyRunningError())
 		}
 		this.syncingIds.add(syncKey)
-		onProgress?.({ stage: 'fetching_metadata', message: 'シリーズの情報を取得中...' })
+		onProgress?.({ stage: 'fetching_metadata', message: t('シリーズの情報を取得中...') })
 		try {
 			return this.bilibiliApi
 				.getSeriesAllContents({
@@ -144,13 +145,13 @@ export class SyncBilibiliPlaylistFacade {
 					onPage: (loaded, total) =>
 						onProgress?.({
 							stage: 'fetching_details',
-							message: `${loaded}/${total} 曲を取得しました`,
+							message: t('{0}/{1} 曲を取得しました', loaded, total),
 							current: loaded,
 							total,
 						}),
 				})
 				.andThen((contents) => {
-					onProgress?.({ stage: 'saving', message: 'シリーズをローカルに保存中...' })
+					onProgress?.({ stage: 'saving', message: t('シリーズをローカルに保存中...') })
 					return this.saveRemoteMediaList(contents, seriesId, 'series')
 				})
 				.andTee(() => {
@@ -179,7 +180,7 @@ export class SyncBilibiliPlaylistFacade {
 			return errAsync(
 				createFacadeError(
 					type === 'series' ? 'SyncSeriesFailed' : 'SyncCollectionFailed',
-					`${type === 'series' ? 'シリーズ' : 'コレクション'}の同期に失敗しました。リストに曲がありません`,
+					t('{0}の同期に失敗しました。リストに曲がありません', type === 'series' ? t('シリーズ') : t('コレクション')),
 				),
 			)
 		}
@@ -277,7 +278,7 @@ export class SyncBilibiliPlaylistFacade {
 			(e) =>
 				createFacadeError(
 					type === 'series' ? 'SyncSeriesFailed' : 'SyncCollectionFailed',
-					`${type === 'series' ? 'シリーズ' : 'コレクション'}の同期に失敗しました`,
+					t('{0}の同期に失敗しました', type === 'series' ? t('シリーズ') : t('コレクション')),
 					{
 						cause: e,
 					},
@@ -386,7 +387,7 @@ export class SyncBilibiliPlaylistFacade {
 							return playlistRes.value.id
 						}),
 						(e) =>
-							createFacadeError('SyncMultiPageFailed', '同步多集视频失败', {
+							createFacadeError('SyncMultiPageFailed', t('マルチP動画を同期できませんでした'), {
 								cause: e,
 							}),
 					)
@@ -416,10 +417,10 @@ export class SyncBilibiliPlaylistFacade {
 		try {
 			this.syncingIds.add(syncKey)
 			onProgress?.({
-				message: '同期を準備中...',
+				message: t('同期を準備中...'),
 				stage: 'initializing',
 			})
-			scopedLogger.info('开始お気に入りを同期', { favoriteId })
+			scopedLogger.info(t('お気に入りの同期を開始'), { favoriteId })
 			scopedLogger.debug('syncFavorite', { favoriteId })
 
 			return await runFavoriteSync(
@@ -432,7 +433,7 @@ export class SyncBilibiliPlaylistFacade {
 					logger: scopedLogger,
 					onProgress,
 					onHiddenVideos: (bvids) => {
-						const tip = `投稿者が「自分のみ表示」にした動画を、Bilibiliが非表示にしながらも索引を更新していないため、同期できた曲数がお気に入りの表示より少なくなります。非表示の動画：${bvids.join(',')}`
+						const tip = `${t('非表示の動画：')}${bvids.join(',')}`
 						scopedLogger.warning(tip)
 						toast.info(tip)
 					},

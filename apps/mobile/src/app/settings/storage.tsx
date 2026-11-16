@@ -29,12 +29,13 @@ import { type MenuEntry, useMenuActions } from '@/hooks/ui/useMenuActions'
 import { toastAndLogError } from '@/utils/error-handling'
 import { formatBytes } from '@/utils/format'
 import toast from '@/utils/toast'
+import { t } from '@/i18n'
 
 const DOWNLOAD_PARALLEL_OPTIONS = [
-	{ value: 1, label: '1 件（安定）' },
-	{ value: 2, label: '2 件' },
-	{ value: 3, label: '3 件' },
-	{ value: 6, label: '6 件（最速）' },
+	{ value: 1, label: t('1 件 · 安定') },
+	{ value: 2, label: t('2 件') },
+	{ value: 3, label: t('3 件') },
+	{ value: 6, label: t('6 件 · 最速') },
 ] as const
 
 interface UsageItem extends StorageSegment {
@@ -48,9 +49,9 @@ const clearImageCache = async () => {
 	try {
 		await Image.clearDiskCache()
 		await Image.clearMemoryCache()
-		toast.success('画像のキャッシュを消去しました')
+		toast.success(t('画像のキャッシュを消去しました'))
 	} catch (e) {
-		toastAndLogError('画像キャッシュの消去に失敗しました', e, 'UI.Settings.General')
+		toastAndLogError(t('画像キャッシュの消去に失敗しました'), e, 'UI.Settings.General')
 	}
 }
 
@@ -90,7 +91,7 @@ export default function StorageSettingsPage() {
 
 	useEffect(() => {
 		if (isError) {
-			toastAndLogError('ストレージ使用量の取得に失敗しました', usageError, 'StorageSettings')
+			toastAndLogError(t('ストレージ使用量の取得に失敗しました'), usageError, 'StorageSettings')
 		}
 	}, [isError, usageError])
 
@@ -99,24 +100,24 @@ export default function StorageSettingsPage() {
 		return [
 			{
 				key: 'runtimeCache',
-				label: '実行データのキャッシュ',
-				description: '画像、一時ファイルなど',
+				label: t('実行データのキャッシュ'),
+				description: t('画像、一時ファイルなど'),
 				icon: 'cached',
 				color: colors.primary,
 				value: usage.runtimeCacheBytes,
 			},
 			{
 				key: 'musicCache',
-				label: '音楽キャッシュ',
-				description: `オンライン再生のキャッシュ（上限 ${formatBytes(usage.musicCacheMaxBytes)}）`,
+				label: t('音楽キャッシュ'),
+				description: t('オンライン再生のキャッシュ · 上限 {0}', formatBytes(usage.musicCacheMaxBytes)),
 				icon: 'music-note',
 				color: colors.tertiary,
 				value: usage.musicCacheBytes,
 			},
 			{
 				key: 'download',
-				label: 'ダウンロード',
-				description: 'ダウンロード済みの音楽とカバー',
+				label: t('ダウンロード'),
+				description: t('ダウンロード済みの音楽とカバー'),
 				icon: 'download',
 				color: colors.secondary,
 				value: usage.downloadBytes,
@@ -124,8 +125,8 @@ export default function StorageSettingsPage() {
 			},
 			{
 				key: 'other',
-				label: 'その他のアプリデータ',
-				description: 'プレイリスト、設定、歌詞などの保存データ',
+				label: t('その他のアプリデータ'),
+				description: t('プレイリスト、設定、歌詞などの保存データ'),
 				icon: 'database',
 				color: colors.outline,
 				value: usage.otherBytes,
@@ -133,8 +134,8 @@ export default function StorageSettingsPage() {
 			},
 			{
 				key: 'package',
-				label: 'アプリ本体のサイズ',
-				description: 'インストールされたアプリ本体で、削除できません',
+				label: t('アプリ本体のサイズ'),
+				description: t('インストールされたアプリ本体で、削除できません'),
 				icon: 'package-variant-closed',
 				color: colors.error,
 				value: usage.packageBytes,
@@ -155,13 +156,13 @@ export default function StorageSettingsPage() {
 			// 图片缓存由 expo-image 自己管理；其余运行数据缓存由 native 处理；
 			// Media3 在线播放缓存由 orpheus 处理。
 			const imageCacheCleared = await Image.clearDiskCache()
-			if (!imageCacheCleared) throw new Error('图片磁盘缓存清理失败')
+			if (!imageCacheCleared) throw new Error(t('画像キャッシュを消去できませんでした'))
 			await clearCacheAsync()
 			await Orpheus.clearPlaybackCache()
 			await refetch()
-			toast.success('キャッシュを消去しました')
+			toast.success(t('キャッシュを消去しました'))
 		} catch (error) {
-			toastAndLogError('キャッシュの消去に失敗しました', error, 'StorageSettings')
+			toastAndLogError(t('キャッシュの消去に失敗しました'), error, 'StorageSettings')
 		} finally {
 			setIsClearing(false)
 		}
@@ -169,12 +170,12 @@ export default function StorageSettingsPage() {
 
 	const confirmClearCache = () => {
 		Alert.alert(
-			'キャッシュを消去',
-			'一時ファイル、画像、オンライン再生のキャッシュを削除します。ダウンロード済みの音楽は削除されません。',
+			t('キャッシュを消去'),
+			t('キャッシュを削除します。ダウンロード済みの曲は残ります。'),
 			[
-				{ text: 'キャンセル', style: 'cancel' },
+				{ text: t('キャンセル'), style: 'cancel' },
 				{
-					text: '消去',
+					text: t('消去'),
 					style: 'destructive',
 					onPress: () => void clearCache(),
 				},
@@ -186,7 +187,7 @@ export default function StorageSettingsPage() {
 		<View style={[styles.container, { backgroundColor: colors.background }]}>
 			<Appbar.Header>
 				<Appbar.BackAction onPress={() => router.back()} />
-				<Appbar.Content title='ダウンロードとストレージ' />
+				<Appbar.Content title={t('ダウンロードとストレージ')} />
 			</Appbar.Header>
 			<ScrollView
 				contentContainerStyle={[
@@ -195,18 +196,16 @@ export default function StorageSettingsPage() {
 				]}
 			>
 				<SettingsSectionTitle
-					title='ダウンロード'
+					title={t('ダウンロード')}
 					first
 				/>
 				<View style={styles.settingRow}>
 					<View style={styles.settingTextContainer}>
-						<Text>同時ダウンロード数</Text>
+						<Text>{t('同時ダウンロード数')}</Text>
 						<Text
 							variant='bodySmall'
 							style={{ color: colors.onSurfaceVariant }}
-						>
-							現在 {downloadMaxParallelTasks} 件
-						</Text>
+						>{t('現在 ')}{downloadMaxParallelTasks}{t(' 件')}</Text>
 					</View>
 					<MenuView {...menuActions}>
 						<IconButton
@@ -217,13 +216,11 @@ export default function StorageSettingsPage() {
 				</View>
 				<View style={styles.settingRow}>
 					<View style={styles.settingTextContainer}>
-						<Text>不足しているカバーをダウンロード</Text>
+						<Text>{t('不足しているカバーをダウンロード')}</Text>
 						<Text
 							variant='bodySmall'
 							style={{ color: colors.onSurfaceVariant }}
-						>
-							ローカルの音楽に不足しているカバー画像を補います
-						</Text>
+						>{t('ローカルの音楽に不足しているカバー画像を補います')}</Text>
 					</View>
 					<IconButton
 						icon='image-sync'
@@ -234,15 +231,13 @@ export default function StorageSettingsPage() {
 
 				{isAndroid ? (
 					<>
-						<SettingsSectionTitle title='ストレージ' />
+						<SettingsSectionTitle title={t('ストレージ')} />
 						{isPending ? (
 							<View style={styles.chartPlaceholder}>
 								<Text
 									variant='bodyMedium'
 									style={{ color: colors.onSurfaceVariant }}
-								>
-									計算中...
-								</Text>
+								>{t('計算中...')}</Text>
 							</View>
 						) : usage ? (
 							<StorageUsageChart
@@ -254,14 +249,11 @@ export default function StorageSettingsPage() {
 							<Text
 								variant='bodySmall'
 								style={[styles.caption, { color: colors.onSurfaceVariant }]}
-							>
-								消去できる容量 {formatBytes(clearable)}
+							>{t('消去できる容量 ')}{formatBytes(clearable)}
 							</Text>
 						)}
 						{isError && (
-							<Text style={[styles.error, { color: colors.error }]}>
-								ストレージ使用量を取得できませんでした。もう一度この画面を開いてください。
-							</Text>
+							<Text style={[styles.error, { color: colors.error }]}>{t('使用量を取得できませんでした')}</Text>
 						)}
 						<View style={styles.list}>
 							{items.map((item, index) => (
@@ -309,23 +301,17 @@ export default function StorageSettingsPage() {
 							loading={isClearing}
 							disabled={isClearing || isPending || !usage}
 							onPress={confirmClearCache}
-						>
-							キャッシュを消去
-						</Button>
+						>{t('キャッシュを消去')}</Button>
 						<Button
 							mode='text'
 							icon='image-remove'
 							onPress={() => void clearImageCache()}
-						>
-							画像キャッシュのみ消去
-						</Button>
+						>{t('画像キャッシュのみ消去')}</Button>
 					</>
 				) : (
 					<Text
 						style={[styles.unsupported, { color: colors.onSurfaceVariant }]}
-					>
-						ストレージ管理は、現在 Android のみ対応しています。
-					</Text>
+					>{t('ストレージ管理は、現在 Android のみ対応しています。')}</Text>
 				)}
 			</ScrollView>
 		</View>

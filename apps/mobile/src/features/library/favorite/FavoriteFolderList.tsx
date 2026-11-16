@@ -15,6 +15,8 @@ import useAppStore from '@/hooks/stores/useAppStore'
 import type { BilibiliPlaylist } from '@/types/apis/bilibili'
 
 import FavoriteFolderListItem from './FavoriteFolderListItem'
+import { t } from '@/i18n'
+import { GRID_COLUMNS } from '@/components/common/GridCard'
 
 const renderPlaylistItem = ({ item }: { item: BilibiliPlaylist }) => (
 	<FavoriteFolderListItem item={item} />
@@ -59,7 +61,7 @@ const FavoriteFolderListComponent = memo(() => {
 	if (playlistsIsError) {
 		return (
 			<DataFetchingError
-				text='読み込みに失敗しました'
+				text={t('読み込みに失敗しました')}
 				onRetry={() => onRefresh()}
 			/>
 		)
@@ -75,15 +77,12 @@ const FavoriteFolderListComponent = memo(() => {
 				<Text
 					variant='titleMedium'
 					style={styles.headerTitle}
-				>
-					マイお気に入り
-				</Text>
+				>{t('マイお気に入り')}</Text>
 				<Text variant='bodyMedium'>
-					{playlists.length ?? 0}&thinsp;件のお気に入り
-				</Text>
+					{playlists.length ?? 0}{t('\u2009件のお気に入り')}</Text>
 			</View>
 			<SearchBar
-				placeholder='お気に入りの内容を検索'
+				placeholder={t('お気に入りの内容を検索')}
 				value={query}
 				mode='bar'
 				inputStyle={styles.searchInput}
@@ -103,6 +102,7 @@ const FavoriteFolderListComponent = memo(() => {
 				data={filteredPlaylists}
 				renderItem={renderPlaylistItem}
 				recycleItems
+				numColumns={GRID_COLUMNS}
 				refreshControl={
 					<RefreshControl
 						refreshing={refreshing || playlistsIsRefetching}
@@ -112,7 +112,7 @@ const FavoriteFolderListComponent = memo(() => {
 					/>
 				}
 				keyExtractor={keyExtractor}
-				ListEmptyComponent={<Text style={styles.emptyList}>お気に入りがありません</Text>}
+				ListEmptyComponent={<Text style={styles.emptyList}>{t('お気に入りがありません')}</Text>}
 			/>
 		</View>
 	)

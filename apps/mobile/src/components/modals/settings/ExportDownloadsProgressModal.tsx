@@ -19,6 +19,8 @@ import Button from '@/components/common/Button'
 import LinearProgressIndicator from '@/components/common/LinearProgressIndicator'
 import UniversalSwitch from '@/components/common/UniversalSwitch'
 import { toastAndLogError } from '@/utils/error-handling'
+import { t } from '@/i18n'
+import { CORNER_RADIUS } from '@/theme/dimensions'
 
 type Stage = 'config' | 'exporting' | 'completed' | 'error'
 
@@ -79,7 +81,7 @@ const ExportDownloadsProgressModal = memo(
 			total: ids.length,
 			failed: 0,
 			stage: 'config',
-			message: 'エクスポートを準備中...',
+			message: t('エクスポートを準備中...'),
 		})
 		const hasStarted = useRef(false)
 		const subscriptionRef = useRef<{ remove(): void } | null>(null)
@@ -97,7 +99,7 @@ const ExportDownloadsProgressModal = memo(
 				total: ids.length,
 				failed: 0,
 				stage: 'config',
-				message: 'エクスポートを準備中...',
+				message: t('エクスポートを準備中...'),
 			})
 			hasStarted.current = false
 
@@ -122,9 +124,9 @@ const ExportDownloadsProgressModal = memo(
 						const total = event.total ?? prev.total
 						const isLast = current === total
 
-						let message = `エクスポート中 ${current}/${total}...`
+						let message = `${t('エクスポート中 ')}${current}/${total}...`
 						if (event.status === 'error') {
-							message = `${event.currentId} のエクスポートに失敗しました: ${event.message ?? '不明なエラー'}`
+							message = `${event.currentId}${t(' のエクスポートに失敗しました: ')}${event.message ?? t('不明なエラー')}`
 						}
 
 						if (isLast) {
@@ -139,8 +141,8 @@ const ExportDownloadsProgressModal = memo(
 							stage: isLast ? 'completed' : 'exporting',
 							message: isLast
 								? failed > 0
-									? `エクスポート完了：${total - failed} 件成功、${failed} 件失敗`
-									: `${total} 曲をすべてエクスポートしました`
+									? `${t('エクスポート完了：')}${total - failed}${t(' 件成功、')}${failed}${t(' 件失敗')}`
+									: `${total}${t(' 曲をすべてエクスポートしました')}`
 								: message,
 						}
 					})
@@ -160,11 +162,11 @@ const ExportDownloadsProgressModal = memo(
 				convertToLrc,
 				cropCoverArt,
 			).catch((e: unknown) => {
-				toastAndLogError('まとめてエクスポートを開始できませんでした', e, 'Modal.ExportDownloadsProgress')
+				toastAndLogError(t('まとめてエクスポートを開始できませんでした'), e, 'Modal.ExportDownloadsProgress')
 				setProgress((prev) => ({
 					...prev,
 					stage: 'error',
-					message: 'エクスポートを開始できませんでした',
+					message: t('エクスポートを開始できませんでした'),
 				}))
 				subscriptionRef.current?.remove()
 				subscriptionRef.current = null
@@ -183,12 +185,12 @@ const ExportDownloadsProgressModal = memo(
 
 		const stageTitle =
 			stage === 'config'
-				? 'エクスポート設定'
+				? t('エクスポート設定')
 				: stage === 'completed'
-					? 'エクスポートが完了しました'
+					? t('エクスポートが完了しました')
 					: stage === 'error'
-						? 'エクスポートに失敗しました'
-						: '曲をまとめてエクスポート中'
+						? t('エクスポートに失敗しました')
+						: t('曲をまとめてエクスポート中')
 
 		return (
 			<TrueSheet
@@ -205,7 +207,7 @@ const ExportDownloadsProgressModal = memo(
 						total: ids.length,
 						failed: 0,
 						stage: 'config',
-						message: 'エクスポートを準備中...',
+						message: t('エクスポートを準備中...'),
 					})
 					hasStarted.current = false
 					setFilenamePattern('{name}')
@@ -238,11 +240,9 @@ const ExportDownloadsProgressModal = memo(
 									<Text
 										variant='labelLarge'
 										style={styles.sectionTitle}
-									>
-										ファイル名のテンプレート
-									</Text>
+									>{t('ファイル名のテンプレート')}</Text>
 									<TextInput
-										label='ファイル名のテンプレート'
+										label={t('ファイル名のテンプレート')}
 										value={filenamePattern}
 										onChangeText={setFilenamePattern}
 										mode='outlined'
@@ -262,25 +262,23 @@ const ExportDownloadsProgressModal = memo(
 										style={styles.helperText}
 									>
 										{!filenamePattern.trim()
-											? '空の場合は既定のテンプレート {name} を使います'
+											? t('空の場合は既定のテンプレート {name} を使います')
 											: patternHasVariable(filenamePattern)
-												? `プレビュー：${buildPreviewFilename(filenamePattern)}`
-												: 'テンプレートに変数が含まれていないため、{name} に置き換えます'}
+												? `${t('プレビュー：')}${buildPreviewFilename(filenamePattern)}`
+												: t('テンプレートに変数が含まれていないため、{name} に置き換えます')}
 									</HelperText>
 									{/* 可用变量说明 */}
 									<View style={styles.variableBox}>
 										<Text
 											variant='labelSmall'
 											style={styles.variableTitle}
-										>
-											使える変数
-										</Text>
+										>{t('使える変数')}</Text>
 										{[
-											['id', '曲の一意のID'],
-											['name', '曲のタイトル'],
-											['artist', 'アーティスト'],
-											['bvid', 'BilibiliのBV番号'],
-											['cid', 'BilibiliのCID（分割P動画でなければ空）'],
+											['id', t('曲の一意のID')],
+											['name', t('曲のタイトル')],
+											['artist', t('アーティスト')],
+											['bvid', t('BilibiliのBV番号')],
+											['cid', t('BilibiliのCID')],
 										].map(([v, desc]) => (
 											<Text
 												key={v}
@@ -299,7 +297,7 @@ const ExportDownloadsProgressModal = memo(
 									{/* ── 内嵌歌词开关 ── */}
 									<View style={styles.switchRow}>
 										<View style={styles.switchLabel}>
-											<Text variant='labelLarge'>歌詞を埋め込む</Text>
+											<Text variant='labelLarge'>{t('歌詞を埋め込む')}</Text>
 										</View>
 										<UniversalSwitch
 											value={embedLyrics}
@@ -310,9 +308,7 @@ const ExportDownloadsProgressModal = memo(
 										type='info'
 										visible
 										style={styles.helperText}
-									>
-										プレーヤーの「歌詞」ページで歌詞を読み込んだ曲だけが、歌詞を埋め込めます。歌詞は再生中に読み込まれ、キャッシュされます。本地，未打开过歌词页面的曲目将不含歌詞を埋め込む。
-									</HelperText>
+									>{t('歌詞ページを開いた曲だけ、歌詞を埋め込めます')}</HelperText>
 
 									{/* ── SPL → LRC 开关（仅 embedLyrics 开启时显示）── */}
 									{embedLyrics && (
@@ -320,7 +316,7 @@ const ExportDownloadsProgressModal = memo(
 											<Divider style={styles.divider} />
 											<View style={styles.switchRow}>
 												<View style={styles.switchLabel}>
-													<Text variant='labelLarge'>標準のLRCに変換</Text>
+													<Text variant='labelLarge'>{t('標準のLRCに変換')}</Text>
 												</View>
 												<UniversalSwitch
 													value={convertToLrc}
@@ -331,12 +327,7 @@ const ExportDownloadsProgressModal = memo(
 												type='info'
 												visible
 												style={styles.helperText}
-											>
-												BBPlayerの歌詞はSPL（LRCの拡張）に従い、1文字ずつのタイムスタンプ（カラオケのハイライト）に対応しています。ただし、ほとんどのプレーヤーはこのSPLの文字単位の構文に対応していません。オンにすると、すべてのプレーヤーで読める標準のLRCに変換します（文字単位の情報は削除されます）。
-												
-												
-												
-											</HelperText>
+											>{t('標準のLRCに変換します')}</HelperText>
 										</>
 									)}
 
@@ -345,7 +336,7 @@ const ExportDownloadsProgressModal = memo(
 									{/* ── 裁剪封面开关 ── */}
 									<View style={styles.switchRow}>
 										<View style={styles.switchLabel}>
-											<Text variant='labelLarge'>カバーを正方形に切り抜く</Text>
+											<Text variant='labelLarge'>{t('カバーを正方形に切り抜く')}</Text>
 										</View>
 										<UniversalSwitch
 											value={cropCoverArt}
@@ -356,21 +347,16 @@ const ExportDownloadsProgressModal = memo(
 										type='info'
 										visible
 										style={styles.helperText}
-									>
-										Bilibiliのカバーは通常16:9です。オンにすると、中央を基準に1:1の正方形に切り抜きます。
-										一般的な音楽プレーヤーのカバーの規格に合います。
-									</HelperText>
+									>{t('カバーを中央から1:1に切り抜きます')}</HelperText>
 
 									<Divider style={styles.divider} />
 
 									<View style={styles.actionRow}>
-										<Button onPress={dismiss}>キャンセル</Button>
+										<Button onPress={dismiss}>{t('キャンセル')}</Button>
 										<Button
 											mode='contained'
 											onPress={startExport}
-										>
-											エクスポートを開始
-										</Button>
+										>{t('エクスポートを開始')}</Button>
 									</View>
 								</>
 							) : (
@@ -395,7 +381,7 @@ const ExportDownloadsProgressModal = memo(
 											onPress={dismiss}
 											disabled={!isFinished}
 										>
-											{isFinished ? '閉じる' : 'お待ちください'}
+											{isFinished ? t('閉じる') : t('お待ちください')}
 										</Button>
 									</View>
 								</>
@@ -437,7 +423,7 @@ const styles = StyleSheet.create({
 		marginBottom: 4,
 		paddingHorizontal: 12,
 		paddingVertical: 8,
-		borderRadius: 6,
+		borderRadius: CORNER_RADIUS,
 		gap: 4,
 		backgroundColor: 'rgba(128,128,128,0.08)',
 	},

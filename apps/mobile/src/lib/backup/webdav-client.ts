@@ -8,6 +8,7 @@ import type {
 	WebDAVClient as UpstreamClient,
 	WebDAVClientError,
 } from 'webdav'
+import { t } from '@/i18n'
 
 export type WebDavFetch = (
 	input: RequestInfo | URL,
@@ -121,7 +122,7 @@ function validateXmlEntityExpansionLimits(
 	) {
 		throw new WebDavError(
 			'protocol',
-			'WebDAV XML entity expansion 限制必须是正整数',
+			t('WebDAV XML entity expansion の上限は正の整数にしてください'),
 		)
 	}
 	return value
@@ -137,10 +138,10 @@ class WebDavClientAdapter implements WebDavClient {
 		await this.run(async (client) => {
 			const stat = await client.stat(normalizePath(path))
 			if ('data' in stat) {
-				throw new WebDavError('protocol', 'WebDAV 返回了无效的目录信息')
+				throw new WebDavError('protocol', t('WebDAV のフォルダー情報が無効です'))
 			}
 			if (stat.type !== 'directory') {
-				throw new WebDavError('protocol', 'WebDAV 路径不是目录')
+				throw new WebDavError('protocol', t('WebDAV のパスがフォルダーではありません'))
 			}
 		})
 	}
@@ -166,7 +167,7 @@ class WebDavClientAdapter implements WebDavClient {
 				contentLength: data.byteLength,
 				overwrite: true,
 			})
-			if (!uploaded) throw new WebDavError('protocol', 'WebDAV 文件上传失败')
+			if (!uploaded) throw new WebDavError('protocol', t('WebDAV へのアップロードに失敗しました'))
 		})
 	}
 
@@ -179,7 +180,7 @@ class WebDavClientAdapter implements WebDavClient {
 				typeof data === 'string' ||
 				(!ArrayBuffer.isView(data) && !(data instanceof ArrayBuffer))
 			) {
-				throw new WebDavError('protocol', 'WebDAV 返回了无效的二进制内容')
+				throw new WebDavError('protocol', t('WebDAV のデータが無効です'))
 			}
 			return toArrayBuffer(data)
 		})
@@ -214,7 +215,7 @@ function validateBaseUrl(value: string): string {
 		if (url.protocol !== 'http:' && url.protocol !== 'https:') throw new Error()
 		return url.href.replace(/\/$/, '')
 	} catch (error) {
-		throw new WebDavError('protocol', 'WebDAV 服务器地址无效', { cause: error })
+		throw new WebDavError('protocol', t('WebDAV のサーバーアドレスが無効です'), { cause: error })
 	}
 }
 
@@ -224,7 +225,7 @@ function normalizePath(value: string): string {
 		.split('/')
 		.filter((segment) => segment.length > 0 && segment !== '.')
 	if (segments.some((segment) => segment === '..')) {
-		throw new WebDavError('protocol', 'WebDAV 路径不能包含 ..')
+		throw new WebDavError('protocol', t('WebDAV のパスに .. は使えません'))
 	}
 	return `/${segments.join('/')}`
 }
@@ -253,22 +254,22 @@ function toArrayBuffer(data: ArrayBuffer | ArrayBufferView): ArrayBuffer {
 function normalizeError(error: unknown): WebDavError {
 	const upstream = error as WebDAVClientError | undefined
 	const status = findStatus(upstream)
-	const message = error instanceof Error ? error.message : '未知 WebDAV 错误'
+	const message = error instanceof Error ? error.message : t('WebDAV の不明なエラー')
 
 	if (status === 401) {
-		return new WebDavError('authentication', 'WebDAV 用户名或密码错误', {
+		return new WebDavError('authentication', t('WebDAV のユーザー名かパスワードが違います'), {
 			cause: error,
 			status,
 		})
 	}
 	if (status === 403) {
-		return new WebDavError('permission', '没有访问 WebDAV 路径的权限', {
+		return new WebDavError('permission', t('WebDAV のパスにアクセスできません'), {
 			cause: error,
 			status,
 		})
 	}
 	if (status === 404) {
-		return new WebDavError('not-found', 'WebDAV 路径不存在', {
+		return new WebDavError('not-found', t('WebDAV のパスが存在しません'), {
 			cause: error,
 			status,
 		})
@@ -280,7 +281,7 @@ function normalizeError(error: unknown): WebDavError {
 		})
 	}
 	if (error instanceof TypeError) {
-		return new WebDavError('network', '无法连接到 WebDAV 服务器', {
+		return new WebDavError('network', t('WebDAV サーバーに接続できません'), {
 			cause: error,
 		})
 	}

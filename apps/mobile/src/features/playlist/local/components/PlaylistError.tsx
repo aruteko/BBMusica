@@ -2,6 +2,7 @@ import { StyleSheet, View } from 'react-native'
 import { Text, useTheme } from 'react-native-paper'
 
 import Button from '@/components/common/Button'
+import { t } from '@/i18n'
 
 interface PlaylistErrorProps {
 	text?: string
@@ -9,7 +10,7 @@ interface PlaylistErrorProps {
 }
 
 export function PlaylistError({
-	text = '読み込みに失敗しました',
+	text = t('読み込みに失敗しました'),
 	onRetry,
 }: PlaylistErrorProps) {
 	const { colors } = useTheme()
@@ -25,9 +26,7 @@ export function PlaylistError({
 				<Button
 					onPress={onRetry}
 					mode='contained'
-				>
-					再試行
-				</Button>
+				>{t('再試行')}</Button>
 			)}
 		</View>
 	)

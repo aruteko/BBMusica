@@ -10,6 +10,7 @@ import { useEditTrackMetadata } from '@/hooks/mutations/db/track'
 import { useModalStore } from '@/hooks/stores/useModalStore'
 import type { Track } from '@/types/core/media'
 import toast from '@/utils/toast'
+import { t } from '@/i18n'
 
 const sanitizeFileName = (name: string) =>
 	name.replaceAll(/[^a-zA-Z0-9._-]/g, '_')
@@ -25,7 +26,7 @@ export default function EditTrackMetadataModal({ track }: { track: Track }) {
 	const handleConfirm = () => {
 		const normalizedTitle = title.trim()
 		if (!normalizedTitle) {
-			toast.error('タイトルを入力してください')
+			toast.error(t('タイトルを入力してください'))
 			return
 		}
 		const normalizedCoverUrl = coverUrl?.trim() ? coverUrl.trim() : null
@@ -76,10 +77,10 @@ export default function EditTrackMetadataModal({ track }: { track: Track }) {
 
 	return (
 		<>
-			<Dialog.Title>曲の情報を編集</Dialog.Title>
+			<Dialog.Title>{t('曲の情報を編集')}</Dialog.Title>
 			<Dialog.Content style={styles.content}>
 				<TextInput
-					label='タイトル'
+					label={t('タイトル')}
 					value={title}
 					onChangeText={setTitle}
 					mode='outlined'
@@ -88,7 +89,7 @@ export default function EditTrackMetadataModal({ track }: { track: Track }) {
 				/>
 				<View style={styles.coverUrlContainer}>
 					<TextInput
-						label='カバー'
+						label={t('カバー')}
 						value={coverUrl ?? undefined}
 						onChangeText={setCoverUrl}
 						mode='outlined'
@@ -105,7 +106,7 @@ export default function EditTrackMetadataModal({ track }: { track: Track }) {
 				</View>
 			</Dialog.Content>
 			<Dialog.Actions>
-				<Button onPress={handleDismiss}>キャンセル</Button>
+				<Button onPress={handleDismiss}>{t('キャンセル')}</Button>
 				<Button onPress={handleConfirm}>OK</Button>
 			</Dialog.Actions>
 		</>

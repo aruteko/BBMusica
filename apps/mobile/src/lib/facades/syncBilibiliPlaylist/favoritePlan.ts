@@ -18,6 +18,7 @@ import type {
 	LocalFavoriteState,
 	RemoteFavoriteSnapshot,
 } from './types'
+import { t as tr } from '@/i18n'
 
 /**
  * 判断本地收藏夹是否处于「空」状态。
@@ -234,7 +235,7 @@ export function buildExpandedTracksMap(
 			return err(
 				createFacadeError(
 					'SyncFavoriteFailed',
-					'分割Pの展開に失敗しました：動画の情報がありません',
+					tr('分割Pの展開に失敗しました：動画の情報がありません'),
 				),
 			)
 		}

@@ -11,8 +11,8 @@ export default function useCheckUpdate() {
 		if (__DEV__) {
 			return
 		}
-		// JP 版は公式リリースの更新通知（公式APKへの誘導）を出さない
-		if (Application.applicationId === 'com.roitium.bbplayer.jp') {
+		// BBMusica は公式リリースの更新通知（公式APKへの誘導）を出さない
+		if (Application.applicationId === 'com.aruteko.bbmusica') {
 			return
 		}
 		let isMounted = true

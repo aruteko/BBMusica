@@ -23,6 +23,7 @@ import type {
 
 import type { TrackService } from './trackService'
 import { trackService as trackServiceInstance } from './trackService'
+import { t as tr } from '@/i18n'
 
 type Tx = Parameters<Parameters<typeof defaultDb.transaction>[0]>[0]
 type DBLike = ExpoSQLiteDatabase<typeof schema> | Tx
@@ -457,7 +458,7 @@ export class PlaylistService {
 			(e) =>
 				e instanceof ServiceError
 					? e
-					: new DatabaseError('プレイリストの作成に失敗しました', { cause: e }),
+					: new DatabaseError(tr('プレイリストの作成に失敗しました'), { cause: e }),
 		).andThen((result) => {
 			return okAsync(result)
 		})
@@ -678,7 +679,7 @@ export class PlaylistService {
 
 				return inserted
 			})(),
-			(e) => new DatabaseError('曲をまとめてプレイリストに追加できませんでした', { cause: e }),
+			(e) => new DatabaseError(tr('曲をまとめてプレイリストに追加できませんでした'), { cause: e }),
 		)
 	}
 
@@ -898,7 +899,7 @@ export class PlaylistService {
 				if (!t)
 					return errAsync(
 						new ServiceError(
-							`曲 ${track.track.id} の整形でエラーが発生しました。元のデータがないか、source と metadata が一致しません`,
+							`${tr('曲 ')}${track.track.id}${tr(' の整形に失敗しました')}`,
 						),
 					)
 				newTracks.push(t)
@@ -1028,7 +1029,7 @@ export class PlaylistService {
 			if (!metadata) return okAsync(undefined)
 			return ResultAsync.fromPromise(
 				this.attachPreviewCovers([metadata]).then((list) => list[0]),
-				(e) => new DatabaseError('获取 playlist 封面プレビュー失败', { cause: e }),
+				(e) => new DatabaseError(tr('プレイリストのカバーを取得できませんでした'), { cause: e }),
 			)
 		})
 	}
@@ -1048,7 +1049,7 @@ export class PlaylistService {
 		if (!remoteSyncId || type === 'local' || type === 'dynamic') {
 			return errAsync(
 				createValidationError(
-					'remoteSyncId または type が無効です。findOrCreateRemotePlaylist には remoteSyncId と、local 以外の type が必要です',
+					tr('remoteSyncId または type が無効です'),
 				),
 			)
 		}
@@ -1090,7 +1091,7 @@ export class PlaylistService {
 			(e) =>
 				e instanceof ServiceError
 					? e
-					: new DatabaseError('查找或作成播放列表的事务失败', {
+					: new DatabaseError(tr('查找或作成播放列表的事务失败'), {
 							cause: e,
 						}),
 		)
@@ -1150,7 +1151,7 @@ export class PlaylistService {
 				return true as const
 			})(),
 			(e) =>
-				new DatabaseError(`設定播放列表歌曲失败 (ID: ${playlistId})`, {
+				new DatabaseError(`${tr('設定播放列表歌曲失败 (ID: ')}${playlistId})`, {
 					cause: e,
 				}),
 		)
@@ -1402,7 +1403,7 @@ export class PlaylistService {
 						const track = this.trackService.formatTrack(row.track)
 						if (!track) {
 							throw new ServiceError(
-								`曲 ${row.track.id} の整形でエラーが発生しました。元のデータがないか、source と metadata が一致しません`,
+								`${tr('曲 ')}${row.track.id}${tr(' の整形に失敗しました')}`,
 							)
 						}
 						tracks.push(track)
@@ -1445,7 +1446,7 @@ export class PlaylistService {
 					const t = this.trackService.formatTrack(row.track)
 					if (!t)
 						throw new ServiceError(
-							`曲 ${row.track.id} の整形でエラーが発生しました。元のデータがないか、source と metadata が一致しません`,
+							`${tr('曲 ')}${row.track.id}${tr(' の整形に失敗しました')}`,
 						)
 					newTracks.push(t)
 				}
@@ -1585,7 +1586,7 @@ export class PlaylistService {
 				if (!t) {
 					return errAsync(
 						new ServiceError(
-							`曲 ${pt.track.id} の整形でエラーが発生しました。元のデータがないか、source と metadata が一致しません`,
+							`${tr('曲 ')}${pt.track.id}${tr(' の整形に失敗しました')}`,
 						),
 					)
 				}

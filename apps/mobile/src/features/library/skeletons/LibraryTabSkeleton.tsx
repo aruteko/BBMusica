@@ -11,7 +11,7 @@ import Animated, {
 	withTiming,
 } from 'react-native-reanimated'
 
-import { LIST_ITEM_COVER_SIZE, SQUIRCLE_RADIUS_RATIO } from '@/theme/dimensions'
+import { CORNER_RADIUS, LIST_ITEM_COVER_SIZE } from '@/theme/dimensions'
 
 interface LibrarySkeletonProps {
 	/** 转场期间保持静态；仅在转场结束后仍在加载时呼吸。 */
@@ -310,7 +310,7 @@ const styles = StyleSheet.create({
 	coverSkeleton: {
 		width: LIST_ITEM_COVER_SIZE,
 		height: LIST_ITEM_COVER_SIZE,
-		borderRadius: LIST_ITEM_COVER_SIZE * SQUIRCLE_RADIUS_RATIO,
+		borderRadius: CORNER_RADIUS,
 		overflow: 'hidden',
 	},
 	itemTextContainer: {

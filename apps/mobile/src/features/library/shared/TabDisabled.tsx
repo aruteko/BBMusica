@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native'
 import { Text, useTheme } from 'react-native-paper'
 
 import Button from '@/components/common/Button'
+import { t } from '@/i18n'
 
 export default function TabDisable() {
 	const { colors } = useTheme()
@@ -13,17 +14,13 @@ export default function TabDisable() {
 			<Text
 				variant='titleMedium'
 				style={styles.text}
-			>
-				bilibiliアカウントにログインするとコレクションを確認できます
-			</Text>
+			>{t('bilibiliアカウントにログインするとコレクションを確認できます')}</Text>
 			<Button
 				mode='contained'
 				onPress={() =>
 					router.navigate('/settings/bilibili-account/qrcode-login')
 				}
-			>
-				ログイン
-			</Button>
+			>{t('ログイン')}</Button>
 		</View>
 	)
 }

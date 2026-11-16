@@ -32,6 +32,7 @@ import type {
 import { toastAndLogError } from '@/utils/error-handling'
 import log from '@/utils/log'
 import { isActuallyOffline } from '@/utils/network'
+import { t } from '@/i18n'
 
 const logger = log.extend('Service.Lyric')
 type oldLyricFileType =
@@ -266,7 +267,7 @@ class LyricService {
 				(networkState) => {
 					if (isActuallyOffline(networkState)) {
 						return errAsync(
-							new LyricNotFoundError('オフラインのため、オンラインの歌詞を取得できません'),
+							new LyricNotFoundError(t('オフラインのため、オンラインの歌詞を取得できません')),
 						)
 					}
 					return fetchFromNetwork()
@@ -336,7 +337,7 @@ class LyricService {
 		return ResultAsync.fromPromise(
 			write,
 			(cause) =>
-				new FileSystemError('歌詞ファイルの保存に失敗しました', { cause, data: { uniqueKey } }),
+				new FileSystemError(t('歌詞ファイルの保存に失敗しました'), { cause, data: { uniqueKey } }),
 		)
 	}
 
@@ -388,7 +389,7 @@ class LyricService {
 						return this.saveLyricsToFile(lyrics, uniqueKey)
 					})
 			default:
-				return errAsync(new Error('未知歌曲源'))
+				return errAsync(new Error(t('不明な曲のソース')))
 		}
 	}
 
@@ -488,7 +489,7 @@ class LyricService {
 			migrationMarker.create()
 			logger.info('歌词格式迁移完成')
 		} catch (e) {
-			toastAndLogError('歌詞の形式の移行に失敗しました', e, 'Service.Lyric')
+			toastAndLogError(t('歌詞の形式の移行に失敗しました'), e, 'Service.Lyric')
 		}
 	}
 
@@ -500,7 +501,7 @@ class LyricService {
 			.getWebPlayerInfo({ bvid: metadata.bvid, cid: metadata.cid })
 			.andThen((res) => {
 				if (!res.bgm_info) {
-					return errAsync(new Error('没有获取到歌曲信息'))
+					return errAsync(new Error(t('曲情報を取得できませんでした')))
 				}
 				const filteredResult = /《(.+?)》/.exec(res.bgm_info.music_title)
 				logger.debug('从 bilibili 获取到的该视频中识别到的歌曲名', {

@@ -26,6 +26,7 @@ import { queryClient } from '@/lib/config/queryClient'
 import type { BilibiliSeriesArchives } from '@/types/apis/bilibili'
 import type { BilibiliTrack, Track } from '@/types/core/media'
 import { resolveBilibiliImageUrl } from '@/utils/imageUrl'
+import { t as tr } from '@/i18n'
 
 const mapApiItemToTrack = (
 	apiItem: NonNullable<BilibiliSeriesArchives['archives']>[number],
@@ -97,8 +98,8 @@ export default function SeriesPage() {
 		fetchNextPage,
 		refetch: refetchArchives,
 	} = useInfiniteSeriesArchives(seriesId, seriesMetadata?.mid)
-	const { data: uploader } = useOtherUserInfo(seriesMetadata?.mid ?? 0, false)
-	const artistName = uploader?.name ?? `投稿者 ${seriesMetadata?.mid ?? ''}`
+	const { data: uploader } = useOtherUserInfo(seriesMetadata?.mid ?? 0)
+	const artistName = uploader?.name ?? `${tr('投稿者 ')}${seriesMetadata?.mid ?? ''}`
 	const tracks = useMemo(
 		() =>
 			archivesData?.pages.flatMap((page) =>
@@ -182,7 +183,7 @@ export default function SeriesPage() {
 	if (isMetadataError || (isArchivesError && !archivesData)) {
 		return (
 			<PlaylistError
-				text='シリーズの内容を読み込めませんでした'
+				text={tr('シリーズの内容を読み込めませんでした')}
 				onRetry={() => {
 					void refetchMetadata()
 					void refetchArchives()
@@ -200,7 +201,7 @@ export default function SeriesPage() {
 				<Appbar.Content
 					title={
 						selectMode
-							? `${selected.size}\u2009曲を選択中`
+							? `${selected.size}${tr('\u2009曲を選択中')}`
 							: seriesMetadata.name
 					}
 					onPress={handleDoubleTap}
@@ -257,9 +258,7 @@ export default function SeriesPage() {
 					{...(isFetchNextPageError
 						? {
 								ListFooterComponent: (
-									<Button onPress={() => void fetchNextPage()}>
-										もう一度読み込む
-									</Button>
+									<Button onPress={() => void fetchNextPage()}>{tr('もう一度読み込む')}</Button>
 								),
 							}
 						: {})}
@@ -276,7 +275,7 @@ export default function SeriesPage() {
 						<PlaylistHeader
 							cover={coverRef ?? undefined}
 							title={seriesMetadata.name}
-							subtitles={`${artistName}\u2009•\u2009${seriesMetadata.total}\u2009曲`}
+							subtitles={`${artistName}\u2009•\u2009${seriesMetadata.total}${tr('\u2009曲')}`}
 							description={seriesMetadata.description}
 							onClickMainButton={handleSync}
 							mainButtonIcon={'sync'}

@@ -46,19 +46,7 @@ export function redirectSystemPath({
 			if (url.hostname === 'notification.click') {
 				return '/player'
 			}
-			if (url.hostname === 'bbplayer.roitium.com') {
-				const result = url.href.split('/link-to/')[1]
-				if (result) {
-					return result
-				}
-			}
-			if (url.hostname === 'app.bbplayer.roitium.com') {
-				const result = url.href.split('/link-to/')[1]
-				if (result) {
-					return result
-				}
-			}
-			if (url.protocol === 'bbplayer:') {
+			if (url.protocol === 'bbplayer:' || url.protocol === 'bbmusica:') {
 				const pathname = `/${url.hostname}${url.pathname}`.replace(/^\/+/, '/')
 				return resolveStartupPath(
 					`${pathname}${url.search}${url.hash}`,

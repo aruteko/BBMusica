@@ -11,6 +11,7 @@ import { NeteaseApiError } from '@/lib/errors/thirdparty/netease'
 
 import * as Encrypt from './crypto'
 import { cookieObjToString, cookieToJson, toBoolean } from './utils'
+import { t } from '@/i18n'
 
 interface AppConfig {
 	domain: string
@@ -138,7 +139,7 @@ const executeFetch = <TReturnBody>(
 			if (!res.ok) {
 				return err(
 					new NeteaseApiError({
-						message: 'リクエストに失敗しました。HTTPステータスコードが想定と異なります',
+						message: t('リクエストに失敗しました。HTTPステータスコードが想定と異なります'),
 						type: 'ResponseFailed',
 						msgCode: res.status,
 						rawData: res.statusText,
@@ -167,7 +168,7 @@ const executeFetch = <TReturnBody>(
 		(e: unknown) =>
 			// 按理来说不应该发生
 			new NeteaseApiError({
-				message: 'リクエストに失敗しました',
+				message: t('リクエストに失敗しました'),
 				type: 'RequestFailed',
 				msgCode: 500,
 				cause: e,

@@ -1,4 +1,5 @@
 import { FacadeError as BaseFacadeError } from '.'
+import { t } from '@/i18n'
 
 export type FacadeErrorType =
 	| 'SyncTaskAlreadyRunning'
@@ -13,12 +14,6 @@ export type FacadeErrorType =
 	| 'PlaylistCreateFailed'
 	| 'PlaylistMergeFailed'
 	| 'SavePlaylistFailed'
-	| 'SharedPlaylistEnableFailed'
-	| 'SharedPlaylistSubscribeFailed'
-	| 'SharedPlaylistRestoreFailed'
-	| 'SharedPlaylistPullFailed'
-	| 'SharedPlaylistDeleted'
-	| 'SharedPlaylistUnsubscribeFailed'
 	| 'RemoveTracksFromPlaylistFailed'
 	| 'ReorderPlaylistTrackFailed'
 	| 'UpdatePlaylistMetadataFailed'
@@ -26,8 +21,6 @@ export type FacadeErrorType =
 	| 'PlaylistDeleteFailed'
 	| 'InviteCodeRotateFailed'
 	| 'InviteCodeFetchFailed'
-	| 'SharedPlaylistNotFound'
-	| 'SharedPlaylistPreviewFailed'
 
 export class FacadeError extends BaseFacadeError {
 	constructor(
@@ -39,7 +32,7 @@ export class FacadeError extends BaseFacadeError {
 }
 
 export function createSyncTaskAlreadyRunningError(cause?: unknown) {
-	return new FacadeError('同步任务正在进行中，请稍后再试', {
+	return new FacadeError(t('同期中です。しばらくしてからお試しください'), {
 		type: 'SyncTaskAlreadyRunning',
 		cause,
 	})

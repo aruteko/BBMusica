@@ -1,14 +1,15 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { View } from 'react-native'
 import { Text, useTheme } from 'react-native-paper'
+import { t } from '@/i18n'
 
 export default function ExpandableText({
 	text,
 	children,
 	lines,
 	variant = 'bodyMedium',
-	expandLabel = 'もっと見る',
-	collapseLabel = '閉じる',
+	expandLabel = t('もっと見る'),
+	collapseLabel = t('閉じる'),
 }: {
 	text: string
 	children?: ReactNode

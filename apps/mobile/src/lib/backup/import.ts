@@ -12,6 +12,7 @@ import { getStartupScreen, setStartupScreen } from '@/utils/startup-screen'
 
 import { BACKUP_VERSION } from './types'
 import type { BackupManifest } from './types'
+import { t } from '@/i18n'
 
 const logger = log.extend('backup.import')
 let restoreInProgress = false
@@ -22,7 +23,7 @@ let restoreInProgress = false
  * 恢复完成后需要重启应用以刷新内存中的设置。
  */
 export async function restoreBackup(filePath: string): Promise<void> {
-	if (restoreInProgress) throw new Error('已有备份正在恢复，请等待完了')
+	if (restoreInProgress) throw new Error(t('已有备份正在恢复，请等待完了'))
 	restoreInProgress = true
 	try {
 		await performRestoreBackup(filePath)
@@ -39,20 +40,20 @@ async function performRestoreBackup(filePath: string): Promise<void> {
 
 	const manifestEntry = zip.file('manifest.json')
 	if (!manifestEntry) {
-		throw new Error('备份文件无效：缺少 manifest.json')
+		throw new Error(t('バックアップが無効です：manifest.json がありません'))
 	}
 	const manifestJson = await manifestEntry.async('string')
 	const manifest: BackupManifest = JSON.parse(manifestJson)
 
 	if (manifest.version !== BACKUP_VERSION) {
 		throw new Error(
-			`対応していないバックアップのバージョンです：${String(manifest.version)}。古いバックアップは安全に読み込めません。現在のバージョンで書き出し直してください。`,
+			`${t('対応していないバックアップのバージョンです：')}${String(manifest.version)}${t('。書き出し直してください。')}`,
 		)
 	}
 
 	const dbEntry = zip.file('database.db')
 	if (!dbEntry) {
-		throw new Error('备份文件无效：缺少 database.db')
+		throw new Error(t('バックアップが無効です：database.db がありません'))
 	}
 
 	await restoreDatabaseBytes(await dbEntry.async('uint8array'), expoDb)
@@ -73,12 +74,6 @@ async function performRestoreBackup(filePath: string): Promise<void> {
 		// 旧备份的偏好仍在 app-storage 中，不能沿用本机已有的独立 key。
 		storage.remove('startup_screen')
 		getStartupScreen()
-	}
-	if (manifest.mmkv['shared-playlist-members']) {
-		storage.set(
-			'shared-playlist-members',
-			manifest.mmkv['shared-playlist-members'],
-		)
 	}
 	restorePlaybackContextState(manifest.mmkv['playback-context-store'])
 	logger.info('MMKV 数据已恢复')
@@ -105,7 +100,7 @@ export async function restoreDatabaseBytes(
 			const check = tempDb.getFirstSync<{ quick_check: string }>(
 				'PRAGMA quick_check',
 			)
-			if (check?.quick_check !== 'ok') throw new Error('备份数据库损坏')
+			if (check?.quick_check !== 'ok') throw new Error(t('バックアップのデータベースが壊れています'))
 			tempDb.execSync('DELETE FROM playlist_sync_queue')
 			await SQLite.backupDatabaseAsync({
 				sourceDatabase: tempDb,

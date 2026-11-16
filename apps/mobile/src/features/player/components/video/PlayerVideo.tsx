@@ -1,5 +1,6 @@
 import { Orpheus } from '@bbplayer/orpheus'
 import { useEffect, useMemo, useRef, useState } from 'react'
+import type { StyleProp, ViewStyle } from 'react-native'
 import { StyleSheet, View } from 'react-native'
 import { Text } from 'react-native-paper'
 import { WebView, type WebViewMessageEvent } from 'react-native-webview'
@@ -7,6 +8,8 @@ import { WebView, type WebViewMessageEvent } from 'react-native-webview'
 import ActivityIndicator from '@/components/common/ActivityIndicator'
 import useCurrentTrack from '@/hooks/player/useCurrentTrack'
 import { useVideoStreamUrl } from '@/hooks/queries/bilibili/videoStream'
+import { t } from '@/i18n'
+import { CORNER_RADIUS } from '@/theme/dimensions'
 
 /** 音声（Orpheus）の再生位置と動画の位置のずれがこれ（秒）を超えたら動画側を合わせる */
 const MAX_DRIFT_SECONDS = 0.35
@@ -57,7 +60,14 @@ function buildHtml(streamUrl: string) {
  * 動画の位置は Orpheus の再生位置に合わせ続ける（一時停止・シーク・倍速にも追従）。
  * ページが表示されている間だけ動画を読み込む（データ通信を節約するため）。
  */
-export default function PlayerVideo({ active }: { active: boolean }) {
+export default function PlayerVideo({
+	active,
+	style,
+}: {
+	active: boolean
+	/** 大きさなどを上書きする（既定は親いっぱい） */
+	style?: StyleProp<ViewStyle>
+}) {
 	const track = useCurrentTrack()
 	const { data: streamUrl, isPending, isError } = useVideoStreamUrl(track, active)
 	const webViewRef = useRef<WebView<object>>(null)
@@ -114,15 +124,15 @@ export default function PlayerVideo({ active }: { active: boolean }) {
 
 	let overlay: React.ReactNode = null
 	if (!track || track.source !== 'bilibili') {
-		overlay = <Text style={styles.message}>この曲には動画がありません</Text>
+		overlay = <Text style={styles.message}>{t('この曲には動画がありません')}</Text>
 	} else if (isError || failed) {
-		overlay = <Text style={styles.message}>動画を読み込めませんでした</Text>
+		overlay = <Text style={styles.message}>{t('動画を読み込めませんでした')}</Text>
 	} else if (isPending || !ready) {
 		overlay = <ActivityIndicator color='#fff' />
 	}
 
 	return (
-		<View style={styles.container}>
+		<View style={[styles.container, style]}>
 			{active && html && !isError && (
 				<WebView
 					key={streamUrl}
@@ -159,7 +169,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: 'center',
 		backgroundColor: '#000',
-		borderRadius: 16,
+		borderRadius: CORNER_RADIUS,
 		overflow: 'hidden',
 		marginHorizontal: 8,
 		marginBottom: 24,

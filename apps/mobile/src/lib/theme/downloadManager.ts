@@ -20,6 +20,7 @@ import log from '@/utils/log'
 
 import type { SkinAssetDeclaration } from './schema'
 import type { SkinDownloadProgress } from './types'
+import { t } from '@/i18n'
 
 // ============================================================
 // Constants
@@ -29,6 +30,14 @@ const DOWNLOAD_HEADERS = {
 	Referer: 'https://www.bilibili.com/',
 	'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
 }
+
+/** 同時にダウンロードする数。動画など大きいファイルを一度に多数取りに行くと、相手に切断されやすい */
+const DOWNLOAD_CONCURRENCY = 4
+/** 1つのファイルあたりの試行回数（途中で切れたときのやり直しを含む） */
+const MAX_ATTEMPTS = 4
+
+const sleep = (ms: number) =>
+	new Promise<void>((resolve) => setTimeout(resolve, ms))
 
 // ============================================================
 // Helpers
@@ -173,47 +182,80 @@ export const downloadManifestAssets = ({
 
 	const total = plan.length
 	let completed = 0
+	let failed = false
 
-	return ResultAsync.combine(
-		plan.map((item) =>
-			ResultAsync.fromPromise(
-				(async () => {
-					const label = item.url.split('/').pop() ?? 'asset'
-					const file = new FileSystem.File(outputDirectory, item.localPath)
+	const downloadOne = async (item: { localPath: string; url: string }) => {
+		const label = item.url.split('/').pop() ?? 'asset'
+		const file = new FileSystem.File(outputDirectory, item.localPath)
 
-					onProgress?.({
-						completed,
-						label: `${label} をダウンロード中`,
-						progress: total > 0 ? completed / total : 0,
-						total,
-					})
+		onProgress?.({
+			completed,
+			label: `${label}${t(' をダウンロード中')}`,
+			progress: total > 0 ? completed / total : 0,
+			total,
+		})
 
-					if (file.exists) {
-						file.delete()
-					}
+		let lastError: unknown
+		for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+			try {
+				// 途中で切れたファイルが残っていると困るので、毎回消してから取り直す
+				if (file.exists) {
+					file.delete()
+				}
+				await FileSystem.File.downloadFileAsync(item.url, file, {
+					headers: DOWNLOAD_HEADERS,
+					idempotent: true,
+					signal,
+				})
+				lastError = undefined
+				break
+			} catch (e) {
+				lastError = e
+				if (signal?.aborted || failed) throw e
+				log.warning('[download] retrying', {
+					url: item.url,
+					attempt,
+					error: e instanceof Error ? e.message : String(e),
+				})
+				if (attempt < MAX_ATTEMPTS) await sleep(600 * attempt)
+			}
+		}
+		if (lastError !== undefined) throw lastError
 
-					await FileSystem.File.downloadFileAsync(item.url, file, {
-						headers: DOWNLOAD_HEADERS,
-						idempotent: true,
-						signal,
-					})
+		completed += 1
 
-					completed += 1
+		onProgress?.({
+			completed,
+			label: `${label}${t(' をダウンロードしました')}`,
+			progress: total > 0 ? completed / total : 0,
+			total: Math.max(1, total),
+		})
+	}
 
-					onProgress?.({
-						completed,
-						label: `${label} をダウンロードしました`,
-						progress: total > 0 ? completed / total : 0,
-						total: Math.max(1, total),
-					})
-				})(),
-				(e) =>
-					createSkinDownloadFailed(
-						e instanceof Error ? e.message : String(e),
-						e,
-					),
+	let nextIndex = 0
+	const worker = async () => {
+		while (!failed) {
+			const index = nextIndex++
+			if (index >= plan.length) return
+			try {
+				await downloadOne(plan[index])
+			} catch (e) {
+				// 1つでも取れなかったら、残りの作業は止める
+				failed = true
+				throw e
+			}
+		}
+	}
+
+	return ResultAsync.fromPromise(
+		Promise.all(
+			Array.from(
+				{ length: Math.min(DOWNLOAD_CONCURRENCY, plan.length) },
+				() => worker(),
 			),
 		),
+		(e) =>
+			createSkinDownloadFailed(e instanceof Error ? e.message : String(e), e),
 	).map(() => {
 		log.debug('[download] all assets downloaded', { count: completed, total })
 		return { mapping }

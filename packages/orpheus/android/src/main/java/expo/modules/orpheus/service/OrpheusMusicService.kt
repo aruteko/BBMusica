@@ -48,9 +48,7 @@ import expo.modules.orpheus.util.LoudnessStorage
 import expo.modules.orpheus.util.SleepTimeController
 import expo.modules.orpheus.util.TrackResumeStorage
 import expo.modules.orpheus.util.calculateLoudnessGain
-import expo.modules.orpheus.util.fadeInTo
 import expo.modules.orpheus.util.toMediaItem
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import kotlinx.serialization.decodeFromString
@@ -63,7 +61,6 @@ class OrpheusMusicService : MediaLibraryService() {
     var player: ExoPlayer? = null
     private var mediaSession: MediaLibrarySession? = null
     private var sleepTimerManager: SleepTimeController? = null
-    private var volumeFadeJob: Job? = null
     private var scope = MainScope()
     private val leadingSilenceProcessor = LeadingSilenceSkipProcessor()
 
@@ -866,21 +863,18 @@ class OrpheusMusicService : MediaLibraryService() {
     private fun applyVolumeForCurrentItem(measuredI: Double) {
         Log.d("LoudnessNormalization", "measuredI: $measuredI")
         val player = player ?: return
-        volumeFadeJob?.cancel()
-        val isLoudnessNormalizationEnabled = GeneralStorage.isLoudnessNormalizationEnabled()
-        if (!isLoudnessNormalizationEnabled) return
-        val gain = run {
+        val targetVol = if (GeneralStorage.isLoudnessNormalizationEnabled()) {
             val target = -14.0 // bilibili 的这个值似乎是固定的
             if (measuredI == 0.0) 1.0f else calculateLoudnessGain(measuredI, target)
+        } else {
+            1.0f
         }
 
-        val targetVol = 1.0f * gain
-        val currentVolume = player.volume
-
-        if (abs(currentVolume - targetVol) < 0.001f) {
-            return
+        // 直接设为目标音量，不再从 0 淡入：
+        // 之前切歌时先把音量归零再用 600ms 拉起，自动连播时新曲目已经以旧音量响起，
+        // 随后音量骤降再渐强，听起来就是开头「咯噔」一下掉音量。
+        if (abs(player.volume - targetVol) >= 0.001f) {
+            player.volume = targetVol
         }
-
-        volumeFadeJob = player.fadeInTo(targetVol, 600L, scope)
     }
 }

@@ -36,6 +36,7 @@ import {
 	LYRICS_CONTROLS_OVERLAY_HEIGHT,
 } from './LyricsControlOverlay'
 import { LyricsOffsetControl } from './LyricsOffsetControl'
+import { t } from '@/i18n'
 
 // Keep enough room for lyrics above the playback panel (all sizes are in dp).
 const MIN_HEIGHT_WITH_CONTROLS = 520
@@ -201,7 +202,7 @@ const Lyrics = memo(function Lyrics({
 				track.uniqueKey,
 			)
 			if (saveResult.isErr()) {
-				toastAndLogError('歌詞のずれの保存に失敗しました', saveResult.error, 'Lyrics')
+				toastAndLogError(t('歌詞のずれの保存に失敗しました'), saveResult.error, 'Lyrics')
 			}
 		})
 	}
@@ -237,8 +238,7 @@ const Lyrics = memo(function Lyrics({
 				<Text
 					variant='bodyMedium'
 					style={styles.errorText}
-				>
-					歌詞の読み込みに失敗しました：{error.message}
+				>{t('歌詞の読み込みに失敗しました：')}{error.message}
 				</Text>
 			</ScrollView>
 		)
@@ -278,9 +278,9 @@ const Lyrics = memo(function Lyrics({
 						variant='bodyMedium'
 						style={styles.rawLyricsText}
 					>
-						{lyrics ? '元の歌詞：' : ''}
+						{lyrics ? t('元の歌詞：') : ''}
 						{lyrics.lrc}
-						{lyrics.tlyric ? `\n\n翻訳の歌詞：${lyrics.tlyric}` : ''}
+						{lyrics.tlyric ? `${t('\n\n翻訳の歌詞：')}${lyrics.tlyric}` : ''}
 					</Text>
 				</Animated.ScrollView>
 			)

@@ -12,7 +12,7 @@ import Animated, {
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
-import { LIST_ITEM_COVER_SIZE, SQUIRCLE_RADIUS_RATIO } from '@/theme/dimensions'
+import { CORNER_RADIUS, LIST_ITEM_COVER_SIZE } from '@/theme/dimensions'
 
 interface PlaylistSkeletonProps {
 	/** 转场期间保持静态；仅在转场结束后仍在加载时呼吸。 */
@@ -284,7 +284,7 @@ const styles = StyleSheet.create({
 	coverSkeleton: {
 		width: 120,
 		height: 120,
-		borderRadius: 120 * SQUIRCLE_RADIUS_RATIO,
+		borderRadius: CORNER_RADIUS,
 		overflow: 'hidden',
 	},
 	headerTextSection: {
@@ -349,7 +349,7 @@ const styles = StyleSheet.create({
 	trackCoverSkeleton: {
 		width: LIST_ITEM_COVER_SIZE,
 		height: LIST_ITEM_COVER_SIZE,
-		borderRadius: LIST_ITEM_COVER_SIZE * SQUIRCLE_RADIUS_RATIO,
+		borderRadius: CORNER_RADIUS,
 		overflow: 'hidden',
 	},
 	trackInfoContainer: {

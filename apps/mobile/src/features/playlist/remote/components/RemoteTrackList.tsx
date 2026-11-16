@@ -19,6 +19,7 @@ import type {
 import * as Haptics from '@/utils/haptics'
 
 import { TrackListItem, type TrackMenuItem } from './PlaylistItem'
+import { t } from '@/i18n'
 
 interface TrackListProps extends Omit<
 	LegendListProps<BilibiliTrack>,
@@ -77,7 +78,7 @@ const renderItemDefault = ({
 	index,
 	extraData,
 }: ListRenderItemInfoWithExtraData<BilibiliTrack, ExtraData>) => {
-	if (!extraData) throw new Error('Extradata 不存在')
+	if (!extraData) throw new Error(t('Extradata がありません'))
 	const {
 		playTrack,
 		trackMenuItems,
@@ -189,9 +190,7 @@ export function TrackList({
 					legendListProps.ListEmptyComponent ?? (
 						<Text
 							style={[styles.emptyList, { color: colors.onSurfaceVariant }]}
-						>
-							何も見つかりませんでした
-						</Text>
+						>{t('何も見つかりませんでした')}</Text>
 					)
 				}
 				{...legendListProps}

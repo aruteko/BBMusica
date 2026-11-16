@@ -15,6 +15,8 @@ import {
 	type ProgressEvent,
 } from '@/hooks/stores/useDownloadManagerStore'
 import { toastAndLogError } from '@/utils/error-handling'
+import { t as tr } from '@/i18n'
+import { CORNER_RADIUS } from '@/theme/dimensions'
 
 const canRetryDownloadTask = (task: DownloadTask) =>
 	!!task.track &&
@@ -74,21 +76,21 @@ const DownloadTaskItem = memo(function DownloadTaskItem({
 	const getStatusText = () => {
 		switch (task.state) {
 			case DownloadState.QUEUED:
-				return 'ダウンロード待ち...'
+				return tr('ダウンロード待ち...')
 			case DownloadState.DOWNLOADING:
-				return 'ダウンロード中...'
+				return tr('ダウンロード中...')
 			case DownloadState.FAILED:
-				return 'ダウンロードに失敗しました'
+				return tr('ダウンロードに失敗しました')
 			case DownloadState.STOPPED:
-				return '停止しました'
+				return tr('停止しました')
 			case DownloadState.REMOVING:
-				return '削除中...'
+				return tr('削除中...')
 			case DownloadState.RESTARTING:
-				return '再試行中...'
+				return tr('再試行中...')
 			case DownloadState.COMPLETED:
-				return 'ダウンロード完了'
+				return tr('ダウンロード完了')
 			default:
-				return '不明な状態'
+				return tr('不明な状態')
 		}
 	}
 
@@ -154,7 +156,7 @@ const DownloadTaskItem = memo(function DownloadTaskItem({
 									}
 								} catch (e) {
 									toastAndLogError(
-										'再ダウンロードに失敗しました',
+										tr('再ダウンロードに失敗しました'),
 										e,
 										'Features.Downloads.DownloadTaskItem',
 									)
@@ -170,7 +172,7 @@ const DownloadTaskItem = memo(function DownloadTaskItem({
 								await Orpheus.removeDownload(task.id)
 							} catch (e) {
 								toastAndLogError(
-									'タスクの削除に失敗しました',
+									tr('タスクの削除に失敗しました'),
 									e,
 									'Features.Downloads.DownloadTaskItem',
 								)
@@ -195,7 +197,7 @@ const DownloadTaskItem = memo(function DownloadTaskItem({
 							variant='bodyMedium'
 							numberOfLines={1}
 						>
-							{task.track?.title ?? '不明なタスク'}
+							{task.track?.title ?? tr('不明なタスク')}
 						</Text>
 						<View style={styles.statusContainer}>
 							<Text
@@ -223,7 +225,7 @@ const DownloadTaskItem = memo(function DownloadTaskItem({
 
 const styles = StyleSheet.create({
 	surface: {
-		borderRadius: 8,
+		borderRadius: CORNER_RADIUS,
 		backgroundColor: 'transparent',
 		marginVertical: 4,
 		marginHorizontal: 8,

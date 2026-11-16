@@ -12,6 +12,7 @@ import DownloadTaskItem from '@/features/downloads/DownloadTaskItem'
 import useCurrentTrack from '@/hooks/player/useCurrentTrack'
 import { orpheusQueryKeys, useDownloadTasks } from '@/hooks/queries/orpheus'
 import { queryClient } from '@/lib/config/queryClient'
+import { t } from '@/i18n'
 
 const canRetryDownloadTask = (task: DownloadTask) =>
 	!!task.track &&
@@ -33,7 +34,7 @@ export default function DownloadPage() {
 	const header = (
 		<Appbar.Header elevated>
 			<Appbar.BackAction onPress={() => router.back()} />
-			<Appbar.Content title='ダウンロードタスク' />
+			<Appbar.Content title={t('ダウンロードタスク')} />
 		</Appbar.Header>
 	)
 
@@ -59,8 +60,7 @@ export default function DownloadPage() {
 				<Text
 					variant='bodyMedium'
 					style={{ color: colors.error, padding: 16 }}
-				>
-					ダウンロードタスクの読み込みに失敗しました: {error.message}
+				>{t('ダウンロードタスクの読み込みに失敗しました: ')}{error.message}
 				</Text>
 			</View>
 		)

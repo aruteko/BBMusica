@@ -7,6 +7,7 @@ import { qqMusicApi } from '@/lib/api/qqmusic/api'
 import lyricService from '@/lib/services/lyricService'
 import type { Track } from '@/types/core/media'
 import type { LyricFileData, LyricSearchResult } from '@/types/player/lyrics'
+import { t } from '@/i18n'
 
 export const lyricsQueryKeys = {
 	all: ['lyrics'] as const,
@@ -48,7 +49,7 @@ export const useSmartFetchLyrics = (enable: boolean, track?: Track) => {
 					tlyric: undefined,
 					romalrc: undefined,
 					manualSkip: true,
-					errorMessage: '歌詞の取得をスキップしましたが、再検索や編集はできます',
+					errorMessage: t('歌詞の取得をスキップしましたが、再検索や編集はできます'),
 					misc: undefined,
 				} satisfies LyricFileData
 			}

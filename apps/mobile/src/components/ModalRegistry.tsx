@@ -4,7 +4,6 @@ import { lazy } from 'react'
 import type { ModalKey, ModalPropsMap } from '@/types/navigation'
 
 const AlertModal = lazy(() => import('./modals/AlertModal'))
-const DonationQRModal = lazy(() => import('./modals/app/DonationQRModal'))
 const UpdateAppModal = lazy(() => import('./modals/app/UpdateAppModal'))
 const StarPromptModal = lazy(() => import('./modals/app/StarPromptModal'))
 const AddToFavoriteListsModal = lazy(
@@ -66,12 +65,6 @@ const CoverDownloadProgressModal = lazy(
 const SkinDownloadProgressModal = lazy(
 	() => import('./modals/settings/SkinDownloadProgressModal'),
 )
-const EnableSharingModal = lazy(
-	() => import('./modals/playlist/EnableSharingModal'),
-)
-const SubscribeToSharedPlaylistModal = lazy(
-	() => import('./modals/playlist/SubscribeToSharedPlaylistModal'),
-)
 const MergePlaylistsModal = lazy(
 	() => import('./modals/playlist/MergePlaylistsModal'),
 )
@@ -94,7 +87,6 @@ export const modalRegistry: { [K in ModalKey]: ModalComponent<K> } = {
 	Alert: AlertModal,
 	EditLyrics: EditLyricsModal,
 	SleepTimer: SleepTimerModal,
-	DonationQR: DonationQRModal,
 	SaveQueueToPlaylist: SaveQueueToPlaylistModal,
 	LyricsSelection: LyricsSelectionModal,
 	SongShare: SongShareModal,
@@ -104,8 +96,6 @@ export const modalRegistry: { [K in ModalKey]: ModalComponent<K> } = {
 	ManualMatchExternalSync: ManualMatchExternalSyncModal,
 	CoverDownloadProgress: CoverDownloadProgressModal,
 	SkinDownloadProgress: SkinDownloadProgressModal,
-	EnableSharing: EnableSharingModal,
-	SubscribeToSharedPlaylist: SubscribeToSharedPlaylistModal,
 	MergePlaylists: MergePlaylistsModal,
 	StarPrompt: StarPromptModal,
 }

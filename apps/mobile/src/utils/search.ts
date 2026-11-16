@@ -6,6 +6,7 @@ import { av2bv } from '@/lib/api/bilibili/utils'
 import { toastAndLogError } from './error-handling'
 import log from './log'
 import toast from './toast'
+import { t } from '@/i18n'
 
 const logger = log.extend('Utils.Search')
 type Router = ReturnType<typeof useRouter>
@@ -285,10 +286,10 @@ export function navigateWithSearchStrategy(
 			})
 			return 1
 		case 'INVALID_URL_NO_CTYPE':
-			toast.error('リンクに ctype パラメーターがありません。すべてコピーできていますか？')
+			toast.error(t('リンクが不完全です'))
 			return 0
 		case 'B23_RESOLVE_ERROR':
-			toastAndLogError('b23.tv の短縮リンクの解析に失敗しました', strategy.error, 'Utils.Search')
+			toastAndLogError(t('b23.tv の短縮リンクの解析に失敗しました'), strategy.error, 'Utils.Search')
 			router.navigate({
 				pathname: '/playlist/remote/search-result/global/[query]',
 				params: { query: strategy.query },
@@ -296,7 +297,7 @@ export function navigateWithSearchStrategy(
 			return 1
 		case 'B23_NO_BVID_ERROR':
 			toastAndLogError(
-				'短縮リンクから、認識できる内容（BV・投稿者・お気に入りなど）を解析できませんでした',
+				t('短縮リンクを解析できませんでした'),
 				new Error(strategy.resolvedUrl),
 				'Utils.Search',
 			)
@@ -307,7 +308,7 @@ export function navigateWithSearchStrategy(
 			return 1
 		case 'AV_PARSE_ERROR':
 			toastAndLogError(
-				'avidの解析に失敗しました',
+				t('avidの解析に失敗しました'),
 				new Error(strategy.query),
 				'Utils.Search',
 			)

@@ -23,6 +23,7 @@ import type { BilibiliMediaItemInCollection } from '@/types/apis/bilibili'
 import type { BilibiliTrack, Track } from '@/types/core/media'
 import { resolveBilibiliImageUrl } from '@/utils/imageUrl'
 import toast from '@/utils/toast'
+import { t as tr } from '@/i18n'
 
 const mapApiItemToTrack = (
 	apiItem: BilibiliMediaItemInCollection,
@@ -110,7 +111,7 @@ export default function CollectionPage() {
 
 	const handleSync = useCallback(() => {
 		const toastId = 'sync-playlist'
-		toast.show('同期中...', { id: toastId, duration: Infinity })
+		toast.show(tr('同期中...'), { id: toastId, duration: Infinity })
 		setRefreshing(true)
 		syncCollection(
 			{
@@ -148,7 +149,7 @@ export default function CollectionPage() {
 	if (isCollectionDataError) {
 		return (
 			<PlaylistError
-				text='お気に入りの内容を読み込めませんでした'
+				text={tr('お気に入りの内容を読み込めませんでした')}
 				onRetry={refetch}
 			/>
 		)
@@ -163,7 +164,7 @@ export default function CollectionPage() {
 				<Appbar.Content
 					title={
 						selectMode
-							? `${selected.size}\u2009曲を選択中`
+							? `${selected.size}${tr('\u2009曲を選択中')}`
 							: collectionData.info.title
 					}
 					onPress={handleDoubleTap}
@@ -219,7 +220,7 @@ export default function CollectionPage() {
 						<PlaylistHeader
 							cover={coverRef ?? undefined}
 							title={collectionData.info.title}
-							subtitles={`${collectionData.info.upper.name}\u2009•\u2009${collectionData.info.media_count}\u2009曲`}
+							subtitles={`${collectionData.info.upper.name}\u2009•\u2009${collectionData.info.media_count}${tr('\u2009曲')}`}
 							description={collectionData.info.intro}
 							onClickMainButton={handleSync}
 							mainButtonIcon={'sync'}

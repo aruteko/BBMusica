@@ -14,6 +14,7 @@ import type {
 } from '@/types/apis/bilibili'
 import { toastAndLogError } from '@/utils/error-handling'
 import { formatRelativeTime } from '@/utils/time'
+import { t } from '@/i18n'
 
 interface CommentItemProps {
 	item: BilibiliCommentItem
@@ -156,7 +157,7 @@ export function CommentItem({ item, onReplyPress, bvid }: CommentItemProps) {
 				newAction: newAction,
 			})
 		} catch (e) {
-			toastAndLogError('いいねに失敗しました', e, 'Comments.CommentItem')
+			toastAndLogError(t('いいねに失敗しました'), e, 'Comments.CommentItem')
 			setLiked(liked)
 			setLikeCount(likeCount)
 			return
@@ -241,7 +242,7 @@ export function CommentItem({ item, onReplyPress, bvid }: CommentItemProps) {
 								style={styles.actionIcon}
 							/>
 							<Text style={{ color: theme.colors.outline, fontSize: 12 }}>
-								{likeCount > 0 ? likeCount : 'いいね'}
+								{likeCount > 0 ? likeCount : t('いいね')}
 							</Text>
 						</TouchableOpacity>
 
@@ -301,9 +302,7 @@ export function CommentItem({ item, onReplyPress, bvid }: CommentItemProps) {
 											styles.viewMoreText,
 											{ color: theme.colors.primary },
 										]}
-									>
-										すべての返信 {item.rcount} 件を見る
-									</Text>
+									>{t('すべての返信 ')}{item.rcount}{t(' 件を見る')}</Text>
 								)}
 							</SquircleView>
 						</TouchableOpacity>

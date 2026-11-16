@@ -12,7 +12,8 @@ export interface BackupManifest {
 		'app-storage': string
 		startup_screen?: 'home' | 'library'
 		'playback-context-store'?: string
-		'shared-playlist-members': string
+		/** 旧いバックアップにだけ入っている。読み込み時には使わない */
+		'shared-playlist-members'?: string
 	}
 	orpheus: OrpheusBackupData
 }

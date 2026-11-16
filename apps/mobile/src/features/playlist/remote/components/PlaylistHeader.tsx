@@ -10,6 +10,7 @@ import Button from '@/components/common/Button'
 import CoverWithPlaceHolder from '@/components/common/CoverWithPlaceHolder'
 import ExpandableText from '@/components/common/ExpandableText'
 import toast from '@/utils/toast'
+import { t } from '@/i18n'
 
 interface PlaylistHeaderProps {
 	cover?: string | undefined | ImageRef
@@ -73,9 +74,9 @@ export const PlaylistHeader = memo(function PlaylistHeader({
 						onLongPress={async () => {
 							const result = await Clipboard.setStringAsync(title)
 							if (!result) {
-								toast.error('コピーに失敗しました')
+								toast.error(t('コピーに失敗しました'))
 							} else {
-								toast.success('タイトルをクリップボードにコピーしました')
+								toast.success(t('タイトルをクリップボードにコピーしました'))
 							}
 						}}
 					>
@@ -111,9 +112,7 @@ export const PlaylistHeader = memo(function PlaylistHeader({
 						testID='playlist-header-main-button'
 						buttonColor={primaryButtonColor}
 						textColor={primaryButtonTextColor}
-					>
-						プレイリストを開く
-					</Button>
+					>{t('プレイリストを開く')}</Button>
 				) : (
 					onClickMainButton && (
 						<Button
@@ -126,7 +125,7 @@ export const PlaylistHeader = memo(function PlaylistHeader({
 							buttonColor={primaryButtonColor}
 							textColor={primaryButtonTextColor}
 						>
-							{mainButtonText ?? 'ローカルに同期'}
+							{mainButtonText ?? t('ローカルに同期')}
 						</Button>
 					)
 				)}
@@ -148,8 +147,8 @@ export const PlaylistHeader = memo(function PlaylistHeader({
 					<ExpandableText
 						text={description}
 						lines={3}
-						expandLabel='概要を表示'
-						collapseLabel='概要を閉じる'
+						expandLabel={t('概要を表示')}
+						collapseLabel={t('概要を閉じる')}
 					/>
 				</View>
 			)}

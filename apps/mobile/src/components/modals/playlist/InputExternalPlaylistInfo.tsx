@@ -7,6 +7,7 @@ import { Dialog, Text, TextInput } from 'react-native-paper'
 import Button from '@/components/common/Button'
 import { useModalStore } from '@/hooks/stores/useModalStore'
 import { parseExternalPlaylistInfo } from '@/lib/utils/playlistUrlParser'
+import { t } from '@/i18n'
 
 const InputExternalPlaylistInfoModal = () => {
 	const [input, setInput] = useState('')
@@ -31,10 +32,10 @@ const InputExternalPlaylistInfoModal = () => {
 
 	return (
 		<>
-			<Dialog.Title>外部プレイリストの情報を入力</Dialog.Title>
+			<Dialog.Title>{t('外部プレイリストの情報を入力')}</Dialog.Title>
 			<Dialog.Content>
 				<TextInput
-					label='プレイリストID / リンク'
+					label={t('プレイリストID / リンク')}
 					value={input}
 					onChangeText={(text) => {
 						setInput(text)
@@ -47,20 +48,20 @@ const InputExternalPlaylistInfoModal = () => {
 					style={styles.input}
 				/>
 				<View style={styles.segmentedContainer}>
-					<Text style={styles.label}>ソース：</Text>
+					<Text style={styles.label}>{t('ソース：')}</Text>
 					<SegmentedControl
 						selectedIndex={source === 'netease' ? 0 : 1}
 						onChange={(event) => {
 							const selectedIndex = event.nativeEvent.selectedSegmentIndex
 							setSource(selectedIndex === 0 ? 'netease' : 'qq')
 						}}
-						values={['NetEase Cloud Music', 'QQ音楽']}
+						values={['NetEase Cloud Music', t('QQ音楽')]}
 						style={styles.segmentedButtons}
 					/>
 				</View>
 			</Dialog.Content>
 			<Dialog.Actions>
-				<Button onPress={() => close('InputExternalPlaylistInfo')}>キャンセル</Button>
+				<Button onPress={() => close('InputExternalPlaylistInfo')}>{t('キャンセル')}</Button>
 				<Button
 					onPress={handleConfirm}
 					disabled={!input.trim()}

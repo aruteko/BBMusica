@@ -4,6 +4,7 @@ import { Skia } from '@shopify/react-native-skia'
 import useAppStore from '@/hooks/stores/useAppStore'
 import { toastAndLogError } from '@/utils/error-handling'
 import { reportErrorToSentry } from '@/utils/log'
+import { t } from '@/i18n'
 
 const GLSL_SHADER_SOURCE = `
   uniform float time;       // 时间
@@ -35,13 +36,13 @@ try {
 	backgroundStreamerShader = Skia.RuntimeEffect.Make(GLSL_SHADER_SOURCE)
 } catch (e) {
 	toastAndLogError(
-		'流光エフェクトのシェーダーを読み込めないため、グラデーションに切り替えました',
+		t('グラデーションに切り替えました'),
 		e,
 		'Features.Player.BGStreamerShader',
 	)
 	reportErrorToSentry(
 		e,
-		'流光エフェクトのシェーダーを読み込めません',
+		t('流光エフェクトのシェーダーを読み込めません'),
 		'Features.Player.BGStreamerShader',
 	)
 	useAppStore.getState().setSettings({

@@ -3,7 +3,6 @@ import { fetch } from 'react-native-nitro-fetch'
 
 import { useAppStore } from '@/hooks/stores/useAppStore'
 import { BilibiliApiError } from '@/lib/errors/thirdparty/bilibili'
-import { parseDurationString } from '@/utils/time'
 import type {
 	BilibiliCaptchaTokenData,
 	BilibiliCommentsResponse,
@@ -52,6 +51,7 @@ import { returnOrThrowAsync } from '@/utils/neverthrow-utils'
 import { bilibiliApiClient, BILIBILI_WEB_USER_AGENT } from './client'
 import { bv2av } from './utils'
 import getWbiEncodedParams from './wbi'
+import { t } from '@/i18n'
 
 const logger = log.extend('3Party.Bilibili.Api')
 
@@ -64,6 +64,62 @@ const PASSPORT_UA =
 /**
  * B站 API 客户端类
  */
+export interface ThumbUpVariant {
+	name: string
+	payload: Record<string, string>
+	headers: Record<string, string>
+}
+
+/**
+ * いいねのリクエストの送り方。動画によっては、送り方しだいで「账号异常」（リスク制御）で
+ * 拒否されることがあるため、公式の Web 版と同じ送り方から順に並べる。
+ */
+export const buildThumbUpVariants = (
+	bvid: string,
+	like: boolean,
+	/** いま再生中の曲の、再生位置（秒）。Web 版は、再生中の位置を ramval に入れて送る */
+	playedSeconds = 0,
+	/** 再生中なら true。Web 版は、再生中 1、一時停止 2 を eab_x に入れて送る */
+	isPlaying = false,
+): ThumbUpVariant[] => {
+	const aid = String(bv2av(bvid))
+	// 動画ページの Web 版が、いいねを押したときに送る内容（保存したページの解析結果）
+	//   POST /x/web-interface/archive/like  (application/x-www-form-urlencoded)
+	//   aid, like, from_spmid, spmid, statistics, eab_x, ramval, source, ga, csrf, csrf_token
+	const extras = {
+		like: like ? '1' : '2',
+		from_spmid: '',
+		spmid: '333.788.0.0',
+		statistics: JSON.stringify({ appId: 100, platform: 5 }),
+		eab_x: isPlaying ? '1' : '2',
+		ramval: String(Math.max(0, Math.floor(playedSeconds))),
+		source: 'web_normal',
+		ga: '1',
+	}
+	const referer = `https://www.bilibili.com/video/${bvid}`
+	return [
+		{
+			name: 'web',
+			payload: { ...extras, aid },
+			headers: {
+				'User-Agent': BILIBILI_WEB_USER_AGENT,
+				Referer: referer,
+				Origin: 'https://www.bilibili.com',
+			},
+		},
+		{
+			name: 'app-aid',
+			payload: { ...extras, aid },
+			headers: { Referer: referer },
+		},
+		{
+			name: 'app-bvid',
+			payload: { ...extras, bvid },
+			headers: { Referer: referer },
+		},
+	]
+}
+
 export class BilibiliApi {
 	/**
 	 * 获取用户观看历史记录
@@ -96,52 +152,6 @@ export class BilibiliApi {
 				signal,
 			})
 			.map((response) => response?.list ?? [])
-	}
-
-	/**
-	 * 获取子分区的热门视频（旧版分区排行接口，支持 28/30/31 等子分区）。
-	 * 返回的结构和 ranking/v2 不同，这里转换成 BilibiliFeedVideo。
-	 */
-	getRegionRanking({
-		tid,
-		days = 7,
-		signal,
-	}: {
-		tid: number
-		days?: number
-		signal?: AbortSignal
-	}): ResultAsync<BilibiliFeedVideo[], BilibiliApiError> {
-		interface RegionRankingItem {
-			aid: number
-			bvid: string
-			title: string
-			pic: string
-			duration: string | number
-			create?: string
-			mid: number
-			author: string
-		}
-		return bilibiliApiClient
-			.get<RegionRankingItem[] | null>({
-				endpoint: '/x/web-interface/ranking/region',
-				params: { rid: String(tid), day: String(days), original: '0' },
-				signal,
-			})
-			.map((items) =>
-				(items ?? []).map((item) => ({
-					aid: item.aid,
-					bvid: item.bvid,
-					title: item.title,
-					pic: item.pic,
-					pubdate: item.create ? Math.floor(Date.parse(item.create) / 1000) || 0 : 0,
-					duration:
-						typeof item.duration === 'number'
-							? item.duration
-							: parseDurationString(item.duration),
-					owner: { name: item.author, mid: item.mid, face: '' },
-					tid,
-				})),
-			)
 	}
 
 	/**
@@ -222,14 +232,11 @@ export class BilibiliApi {
 	searchVideos({
 		keyword,
 		page,
-		tids,
 		skipCookie,
 		signal,
 	}: {
 		keyword: string
 		page: number
-		/** 限定分区（例如 3 = 音乐区，包含所有子分区） */
-		tids?: number
 		skipCookie?: boolean
 		signal?: AbortSignal
 	}): ResultAsync<
@@ -240,7 +247,6 @@ export class BilibiliApi {
 			keyword,
 			search_type: 'video',
 			page: page.toString(),
-			...(tids !== undefined ? { tids: tids.toString() } : {}),
 		})
 
 		return params
@@ -358,7 +364,7 @@ export class BilibiliApi {
 			(e) => {
 				if (e instanceof Error && e.name === 'AbortError') {
 					return new BilibiliApiError({
-						message: 'リクエストがキャンセルされました',
+						message: t('リクエストがキャンセルされました'),
 						type: 'RequestAborted',
 					})
 				}
@@ -372,7 +378,7 @@ export class BilibiliApi {
 				if (!response.ok) {
 					return errAsync(
 						new BilibiliApiError({
-							message: `Bilibili APIへのリクエストに失敗しました: ${response.status} ${response.statusText}`,
+							message: `${t('Bilibili APIへのリクエストに失敗しました: ')}${response.status} ${response.statusText}`,
 							msgCode: response.status,
 							type: 'RequestFailed',
 						}),
@@ -394,7 +400,7 @@ export class BilibiliApi {
 				if (data.code !== 0) {
 					return errAsync(
 						new BilibiliApiError({
-							message: `検索候補の取得に失敗しました: ${data.code}`,
+							message: `${t('検索候補の取得に失敗しました: ')}${data.code}`,
 							msgCode: data.code,
 							type: 'RequestFailed',
 						}),
@@ -453,7 +459,7 @@ export class BilibiliApi {
 				if (!durl?.[0]) {
 					return errAsync(
 						new BilibiliApiError({
-							message: '取得したストリームのデータに dash も durl もありません',
+							message: t('取得したストリームのデータに dash も durl もありません'),
 							type: 'AudioStreamError',
 						}),
 					)
@@ -494,7 +500,7 @@ export class BilibiliApi {
 				logger.error('未找到有效的音频流数据', { response })
 				return errAsync(
 					new BilibiliApiError({
-						message: '有効な音声ストリームのデータが見つかりません',
+						message: t('有効な音声ストリームのデータが見つかりません'),
 						type: 'AudioStreamError',
 					}),
 				)
@@ -539,7 +545,7 @@ export class BilibiliApi {
 				logger.error('未能确定任何可用的音频流', { response })
 				return errAsync(
 					new BilibiliApiError({
-						message: '利用できる音声ストリームを特定できませんでした',
+						message: t('利用できる音声ストリームを特定できませんでした'),
 						type: 'AudioStreamError',
 					}),
 				)
@@ -583,7 +589,7 @@ export class BilibiliApi {
 				if (!url) {
 					return errAsync(
 						new BilibiliApiError({
-							message: '動画の再生アドレスが見つかりません',
+							message: t('動画の再生アドレスが見つかりません'),
 							type: 'AudioStreamError',
 						}),
 					)
@@ -1042,7 +1048,7 @@ export class BilibiliApi {
 				error instanceof BilibiliApiError
 					? error
 					: new BilibiliApiError({
-							message: `シリーズの取得に失敗しました: ${String(error)}`,
+							message: `${t('シリーズの取得に失敗しました: ')}${String(error)}`,
 							type: 'RequestFailed',
 							cause: error,
 						}),
@@ -1287,7 +1293,7 @@ export class BilibiliApi {
 			)
 			if (!response.ok) {
 				throw new BilibiliApiError({
-					message: `Bilibili APIへのリクエストに失敗しました: ${response.status} ${response.statusText}`,
+					message: `${t('Bilibili APIへのリクエストに失敗しました: ')}${response.status} ${response.statusText}`,
 					msgCode: response.status,
 					type: 'RequestFailed',
 				})
@@ -1298,7 +1304,7 @@ export class BilibiliApi {
 			}
 			if (data.code !== 0) {
 				throw new BilibiliApiError({
-					message: `QRコードのログイン状態の取得に失敗しました: ${data.code}`,
+					message: `${t('QRコードのログイン状態の取得に失敗しました: ')}${data.code}`,
 					msgCode: data.code,
 					rawData: data,
 					type: 'ResponseFailed',
@@ -1314,7 +1320,7 @@ export class BilibiliApi {
 			const combinedCookieHeader = response.headers.get('Set-Cookie')
 			if (!combinedCookieHeader) {
 				throw new BilibiliApiError({
-					message: 'Set-Cookieヘッダーを取得できませんでした',
+					message: t('Set-Cookieヘッダーを取得できませんでした'),
 					msgCode: 0,
 					rawData: null,
 					type: 'ResponseFailed',
@@ -1363,7 +1369,7 @@ export class BilibiliApi {
 			if (!response.ok) {
 				return errAsync(
 					new BilibiliApiError({
-						message: `b23.tv 短縮リンクへのリクエストに失敗しました: ${response.status} ${response.statusText}`,
+						message: `${t('b23.tv 短縮リンクへのリクエストに失敗しました: ')}${response.status} ${response.statusText}`,
 						msgCode: response.status,
 						type: 'RequestFailed',
 					}),
@@ -1375,7 +1381,7 @@ export class BilibiliApi {
 				response.text(),
 				() =>
 					new BilibiliApiError({
-						message: 'レスポンスの解析に失敗しました',
+						message: t('レスポンスの解析に失敗しました'),
 						type: 'ResponseFailed',
 					}),
 			).andThen((html) => {
@@ -1392,7 +1398,7 @@ export class BilibiliApi {
 				if (!responseUrl || responseUrl.includes('b23.tv')) {
 					return errAsync(
 						new BilibiliApiError({
-							message: 'b23.tv 短縮リンクの解析結果を取得できませんでした',
+							message: t('b23.tv 短縮リンクの解析結果を取得できませんでした'),
 							msgCode: 0,
 							rawData: null,
 							type: 'ResponseFailed',
@@ -1431,32 +1437,54 @@ export class BilibiliApi {
 	thumbUpVideo({
 		bvid,
 		like,
+		playedSeconds,
+		isPlaying,
 	}: {
 		bvid: string
 		like: boolean
+		playedSeconds?: number
+		isPlaying?: boolean
 	}): ResultAsync<0, BilibiliApiError> {
-		const data = {
-			bvid,
-			like: like ? '1' : '2',
-		}
+		// 公式の Web 版と同じ送り方から順に試し、受け付けられた時点で終了する。
+		const variants = buildThumbUpVariants(bvid, like, playedSeconds, isPlaying)
 
-		return bilibiliApiClient
-			.postWithCsrf<undefined>({
-				endpoint: '/x/web-interface/archive/like',
-				payload: data,
-			})
-			.andThen(() => {
-				return okAsync(0 as const)
-			})
-			.orElse((err) => {
-				switch (err.data.msgCode) {
-					case 65006:
+		const attempt = (
+			index: number,
+			firstError?: BilibiliApiError,
+		): ResultAsync<0, BilibiliApiError> => {
+			const variant = variants[index]
+			return bilibiliApiClient
+				.postWithCsrf<undefined>({
+					endpoint: '/x/web-interface/archive/like',
+					payload: variant.payload,
+					headers: variant.headers,
+				})
+				.andThen(() => {
+					log.debug('thumbUpVideo succeeded', { bvid, variant: variant.name })
+					return okAsync(0 as const)
+				})
+				.orElse((err) => {
+					if (err.data.msgCode === 65006) {
 						// 重复点赞
 						return okAsync(0 as const)
-					default:
-						return errAsync(err)
-				}
-			})
+					}
+					log.debug('thumbUpVideo rejected', {
+						bvid,
+						variant: variant.name,
+						code: err.data.msgCode,
+						message: err.message,
+					})
+					// ログイン切れ・CSRF の問題は、送り方を変えても直らないので、すぐ終える
+					const retryable =
+						err.data.msgCode !== -101 && err.data.msgCode !== -111
+					if (retryable && index + 1 < variants.length) {
+						return attempt(index + 1, firstError ?? err)
+					}
+					return errAsync(firstError ?? err)
+				})
+		}
+
+		return attempt(0)
 	}
 
 	/**
@@ -1502,7 +1530,7 @@ export class BilibiliApi {
 							target.hostname === host || target.hostname.endsWith(`.${host}`),
 					)
 				) {
-					throw new Error('无效的 B 站字幕地址')
+					throw new Error(t('字幕のアドレスが無効です'))
 				}
 				const response = await fetch(target.href, {
 					signal,
@@ -1512,14 +1540,14 @@ export class BilibiliApi {
 						'User-Agent': BILIBILI_WEB_USER_AGENT,
 					},
 				})
-				if (!response.ok) throw new Error(`字幕请求失败：${response.status}`)
+				if (!response.ok) throw new Error(`${t('字幕の取得に失敗しました：')}${response.status}`)
 				const data = (await response.json()) as BilibiliSubtitleBody
-				if (!Array.isArray(data.body)) throw new Error('字幕格式无效')
+				if (!Array.isArray(data.body)) throw new Error(t('字幕の形式が無効です'))
 				return data
 			})(),
 			(cause) =>
 				new BilibiliApiError({
-					message: cause instanceof Error ? cause.message : '字幕の読み込みに失敗しました',
+					message: cause instanceof Error ? cause.message : t('字幕の読み込みに失敗しました'),
 					type: 'RequestFailed',
 					cause,
 				}),
@@ -1555,7 +1583,7 @@ export class BilibiliApi {
 		if (deleteAllViewed && avid) {
 			return errAsync(
 				new BilibiliApiError({
-					message: '指定できる値は1つだけです',
+					message: t('指定できる値は1つだけです'),
 					type: 'InvalidArgument',
 				}),
 			)
@@ -1563,7 +1591,7 @@ export class BilibiliApi {
 		if (!deleteAllViewed && !avid) {
 			return errAsync(
 				new BilibiliApiError({
-					message: 'パラメーターが指定されていません',
+					message: t('パラメーターが指定されていません'),
 					type: 'InvalidArgument',
 				}),
 			)
@@ -1611,7 +1639,7 @@ export class BilibiliApi {
 			)
 			if (!response.ok) {
 				throw new BilibiliApiError({
-					message: `認証コードを取得 token 失败: ${response.status} ${response.statusText}`,
+					message: `${t('認証コードの取得に失敗しました: ')}${response.status} ${response.statusText}`,
 					msgCode: response.status,
 					type: 'RequestFailed',
 				})
@@ -1623,7 +1651,7 @@ export class BilibiliApi {
 			}
 			if (data.code !== 0) {
 				throw new BilibiliApiError({
-					message: `認証コードを取得 token 失败: ${data.message ?? data.code}`,
+					message: `${t('認証コードの取得に失敗しました: ')}${data.message ?? data.code}`,
 					msgCode: data.code,
 					rawData: data,
 					type: 'ResponseFailed',
@@ -1695,7 +1723,7 @@ export class BilibiliApi {
 			)
 			if (!response.ok) {
 				throw new BilibiliApiError({
-					message: `SMS認証コードの送信に失敗しました: ${response.status} ${response.statusText}`,
+					message: `${t('SMS認証コードの送信に失敗しました: ')}${response.status} ${response.statusText}`,
 					msgCode: response.status,
 					type: 'RequestFailed',
 				})
@@ -1707,7 +1735,7 @@ export class BilibiliApi {
 			}
 			if (data.code !== 0) {
 				throw new BilibiliApiError({
-					message: `SMS認証コードの送信に失敗しました: ${data.message ?? data.code}`,
+					message: `${t('SMS認証コードの送信に失敗しました: ')}${data.message ?? data.code}`,
 					msgCode: data.code,
 					rawData: data,
 					type: 'ResponseFailed',
@@ -1773,7 +1801,7 @@ export class BilibiliApi {
 			)
 			if (!response.ok) {
 				throw new BilibiliApiError({
-					message: `SMS認証コードでのログインに失敗しました: ${response.status} ${response.statusText}`,
+					message: `${t('SMS認証コードでのログインに失敗しました: ')}${response.status} ${response.statusText}`,
 					msgCode: response.status,
 					type: 'RequestFailed',
 					cause: undefined,
@@ -1786,7 +1814,7 @@ export class BilibiliApi {
 			}
 			if (data.code !== 0) {
 				throw new BilibiliApiError({
-					message: `SMS認証コードでのログインに失敗しました: ${data.message ?? data.code}`,
+					message: `${t('SMS認証コードでのログインに失敗しました: ')}${data.message ?? data.code}`,
 					msgCode: data.code,
 					rawData: data,
 					type: 'ResponseFailed',
@@ -1795,7 +1823,7 @@ export class BilibiliApi {
 			const combinedCookieHeader = response.headers.get('Set-Cookie')
 			if (!combinedCookieHeader) {
 				throw new BilibiliApiError({
-					message: 'ログインしましたが、Set-Cookieヘッダーを取得できませんでした',
+					message: t('Cookieを取得できませんでした'),
 					msgCode: 0,
 					rawData: null,
 					type: 'ResponseFailed',

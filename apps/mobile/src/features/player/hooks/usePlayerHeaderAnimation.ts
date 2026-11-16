@@ -8,12 +8,14 @@ import type { SharedValue } from 'react-native-reanimated'
 export function usePlayerHeaderAnimation(
 	index: number,
 	scrollX?: SharedValue<number>,
+	/** メインページの位置。メインから離れるほどタイトルが濃くなる */
+	mainIndex = 0,
 ) {
 	const titleStyle = useAnimatedStyle(() => {
-		if (!scrollX) return { opacity: index === 1 ? 1 : 0 }
+		if (!scrollX) return { opacity: index !== mainIndex ? 1 : 0 }
 		return {
 			opacity: interpolate(
-				scrollX.value,
+				Math.abs(scrollX.value - mainIndex),
 				[0.4, 1],
 				[0, 1],
 				Extrapolation.CLAMP,
@@ -22,10 +24,10 @@ export function usePlayerHeaderAnimation(
 	})
 
 	const statusStyle = useAnimatedStyle(() => {
-		if (!scrollX) return { opacity: index === 0 ? 1 : 0 }
+		if (!scrollX) return { opacity: index === mainIndex ? 1 : 0 }
 		return {
 			opacity: interpolate(
-				scrollX.value,
+				Math.abs(scrollX.value - mainIndex),
 				[0, 0.4],
 				[1, 0],
 				Extrapolation.CLAMP,

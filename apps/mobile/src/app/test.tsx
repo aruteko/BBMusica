@@ -1,12 +1,11 @@
 import { Orpheus } from '@bbplayer/orpheus'
-import { TrueSheet } from '@lodev09/react-native-true-sheet'
 import dayjs from 'dayjs'
-import { asc, sql } from 'drizzle-orm'
+import { sql } from 'drizzle-orm'
 import * as DocumentPicker from 'expo-document-picker'
 import { Directory, File, Paths } from 'expo-file-system'
 import { router } from 'expo-router'
 import * as Updates from 'expo-updates'
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { ScrollView, StyleSheet, View } from 'react-native'
 import { Dialog, Portal, Text, TextInput, useTheme } from 'react-native-paper'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -14,12 +13,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import AnimatedModalOverlay from '@/components/common/AnimatedModalOverlay'
 import Button from '@/components/common/Button'
 import { alert } from '@/components/modals/AlertModal'
-import { SyncFailuresSheet } from '@/features/playlist/local/components/SyncFailuresSheet'
 import useCurrentTrack from '@/hooks/player/useCurrentTrack'
 import { useModalStore } from '@/hooks/stores/useModalStore'
 import db, { expoDb } from '@/lib/db/db'
 import * as schema from '@/lib/db/schema'
-import { sharedPlaylistFacade } from '@/lib/facades/sharedPlaylist'
 import lyricService from '@/lib/services/lyricService'
 import { setUpdateChannelOverride } from '@/lib/services/updateTelemetry'
 import { toastAndLogError } from '@/utils/error-handling'
@@ -67,7 +64,6 @@ async function importMMKVFiles() {
 
 export default function TestPage() {
 	const [loading, setLoading] = useState(false)
-	const syncFailuresSheetRef = useRef<TrueSheet>(null)
 	const { isUpdatePending } = Updates.useUpdates()
 	const insets = useSafeAreaInsets()
 	const { colors } = useTheme()
@@ -198,47 +194,6 @@ export default function TestPage() {
 				},
 			],
 		)
-	}
-
-	const testPullSharedPlaylist = async () => {
-		setLoading(true)
-		try {
-			const result = await sharedPlaylistFacade.pullChanges(44)
-			if (result.isErr()) {
-				toastAndLogError('拉取共享歌单失败', result.error, 'TestPage')
-				setLoading(false)
-				return
-			}
-			toast.success('拉取共享歌单成功', {
-				description: `applied=${result.value.applied}`,
-			})
-		} catch (error) {
-			toastAndLogError('拉取共享歌单失败', error, 'TestPage')
-		}
-		setLoading(false)
-	}
-
-	const dumpSyncQueue = async () => {
-		setLoading(true)
-		try {
-			const rows = await db
-				.select()
-				.from(schema.playlistSyncQueue)
-				.orderBy(asc(schema.playlistSyncQueue.id))
-			logger.info('playlist_sync_queue', rows)
-			toast.success('队列表输出', {
-				description: `rows=${rows.length}（详见日志）`,
-			})
-		} catch (error) {
-			toastAndLogError('读取 playlist_sync_queue 失败', error, 'TestPage')
-		}
-		setLoading(false)
-	}
-
-	const openSyncFailuresSheet = () => {
-		if (syncFailuresSheetRef.current) {
-			void syncFailuresSheetRef.current.present()
-		}
 	}
 
 	const handleImportDatabase = async () => {
@@ -378,13 +333,6 @@ export default function TestPage() {
 						同步外部歌单
 					</Button>
 					<Button
-						onPress={testPullSharedPlaylist}
-						loading={loading}
-						style={styles.button}
-					>
-						测试共享歌单增量拉取
-					</Button>
-					<Button
 						onPress={() => setUpdateChannelModalVisible(true)}
 						loading={loading}
 						style={styles.button}
@@ -425,19 +373,6 @@ export default function TestPage() {
 						style={styles.button}
 					>
 						清空播放器队列
-					</Button>
-					<Button
-						onPress={dumpSyncQueue}
-						loading={loading}
-						style={styles.button}
-					>
-						输出 playlist_sync_queue
-					</Button>
-					<Button
-						onPress={openSyncFailuresSheet}
-						style={styles.button}
-					>
-						预览同步失败记录 Sheet
 					</Button>
 					<Button
 						mode='contained'
@@ -518,10 +453,6 @@ export default function TestPage() {
 				</AnimatedModalOverlay>
 			</Portal>
 
-			<SyncFailuresSheet
-				ref={syncFailuresSheetRef}
-				useMockData
-			/>
 		</View>
 	)
 }

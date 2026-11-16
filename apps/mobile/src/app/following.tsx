@@ -20,6 +20,7 @@ import { useScreenTransitionReady } from '@/hooks/router/useScreenTransitionRead
 import useAppStore from '@/hooks/stores/useAppStore'
 import { useNowPlayingBar } from '@/hooks/ui/useNowPlayingBar'
 import { useDebouncedValue } from '@/hooks/utils/useDebouncedValue'
+import { t } from '@/i18n'
 
 export default function FollowingPage() {
 	const isListReady = useScreenTransitionReady()
@@ -93,13 +94,13 @@ export default function FollowingPage() {
 		<View style={[styles.container, { backgroundColor: colors.background }]}>
 			<Appbar.Header elevated>
 				<Appbar.BackAction onPress={() => router.back()} />
-				<Appbar.Content title='フォロー中' />
+				<Appbar.Content title={t('フォロー中')} />
 			</Appbar.Header>
 			{hasCookie && (
 				<View style={styles.filters}>
 					<Searchbar
 						mode='bar'
-						placeholder='フォロー中の投稿者を検索'
+						placeholder={t('フォロー中の投稿者を検索')}
 						value={searchQuery}
 						onChangeText={setSearchQuery}
 						onClearIconPress={() => setSearchQuery('')}
@@ -117,9 +118,7 @@ export default function FollowingPage() {
 									<Chip
 										selected={tagId === -20}
 										onPress={() => setSelectedTagId(-20)}
-									>
-										すべてのフォロー
-										{totalFollowings !== undefined
+									>{t('すべてのフォロー')}{totalFollowings !== undefined
 											? ` · ${totalFollowings}`
 											: ''}
 									</Chip>
@@ -137,9 +136,7 @@ export default function FollowingPage() {
 								</ScrollView>
 							)}
 							{groups.isError && (
-								<Button onPress={() => void refetchGroups()}>
-									グループの読み込みに失敗しました。再試行
-								</Button>
+								<Button onPress={() => void refetchGroups()}>{t('グループの読み込みに失敗しました。再試行')}</Button>
 							)}
 						</>
 					)}
@@ -147,21 +144,19 @@ export default function FollowingPage() {
 			)}
 			{!hasCookie ? (
 				<View style={styles.state}>
-					<Text>Bilibiliアカウントにログインするとフォロー中を確認できます</Text>
+					<Text>{t('Bilibiliアカウントにログインするとフォロー中を確認できます')}</Text>
 					<Button
 						mode='contained'
 						onPress={() => router.navigate('/settings/bilibili-account')}
-					>
-						ログイン
-					</Button>
+					>{t('ログイン')}</Button>
 				</View>
 			) : !isListReady || isPending || isSearchPending ? (
 				<FollowingListSkeleton />
 			) : isError && !data ? (
 				<View style={styles.state}>
-					<Text>フォロー一覧の読み込みに失敗しました</Text>
+					<Text>{t('フォロー一覧の読み込みに失敗しました')}</Text>
 					<Text style={styles.error}>{error.message}</Text>
-					<Button onPress={() => void refetch()}>再試行</Button>
+					<Button onPress={() => void refetch()}>{t('再試行')}</Button>
 				</View>
 			) : (
 				<LegendList
@@ -180,25 +175,23 @@ export default function FollowingPage() {
 					renderItem={({ item }) => <FollowingListItem user={item} />}
 					ListHeaderComponent={
 						isError && !isFetchNextPageError ? (
-							<Button onPress={() => void refetch()}>更新に失敗しました。タップして再試行</Button>
+							<Button onPress={() => void refetch()}>{t('更新に失敗しました。タップして再試行')}</Button>
 						) : null
 					}
 					ListEmptyComponent={
 						<Text style={styles.count}>
 							{keyword
-								? '一致する投稿者が見つかりません'
+								? t('一致する投稿者が見つかりません')
 								: tagId === -20
-									? 'まだ投稿者をフォローしていません'
-									: 'このグループには投稿者がいません'}
+									? t('まだ投稿者をフォローしていません')
+									: t('このグループには投稿者がいません')}
 						</Text>
 					}
 					ListFooterComponent={
 						isFetchingNextPage ? (
 							<ActivityIndicator style={styles.count} />
 						) : isFetchNextPageError ? (
-							<Button onPress={() => void fetchNextPage()}>
-								さらに読み込めませんでした。再試行
-							</Button>
+							<Button onPress={() => void fetchNextPage()}>{t('さらに読み込めませんでした。再試行')}</Button>
 						) : null
 					}
 					onEndReachedThreshold={0.3}

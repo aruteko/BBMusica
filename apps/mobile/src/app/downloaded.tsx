@@ -41,6 +41,7 @@ import { toastAndLogError } from '@/utils/error-handling'
 import * as Haptics from '@/utils/haptics'
 import { formatDurationToHHMMSS } from '@/utils/time'
 import toast from '@/utils/toast'
+import { t as tr } from '@/i18n'
 
 const EXPORT_ICON = Icon.select({
 	ios: 'square.and.arrow.up',
@@ -123,17 +124,17 @@ function DownloadedItem({
 
 	const menuActions = useMenuActions([
 		{
-			title: 'エクスポート',
+			title: tr('エクスポート'),
 			image: EXPORT_ICON,
 			onPress: () => onSingleExport(item.id),
 		},
 		{
-			title: '削除',
+			title: tr('削除'),
 			image: DELETE_ICON,
 			onPress: () => onDelete(item.id),
 		},
 		{
-			title: '次に再生',
+			title: tr('次に再生'),
 			image: PLAY_NEXT_ICON,
 			onPress: () => onPlayNext(item),
 			attributes: { disabled: !item.track },
@@ -192,7 +193,7 @@ function DownloadedItem({
 					<CoverWithPlaceHolder
 						id={item.id}
 						cover={track?.artwork}
-						title={track?.title ?? '不明な曲'}
+						title={track?.title ?? tr('不明な曲')}
 						size={LIST_ITEM_COVER_SIZE}
 					/>
 
@@ -201,7 +202,7 @@ function DownloadedItem({
 							variant='bodySmall'
 							numberOfLines={1}
 						>
-							{track?.title ?? '不明な曲'}
+							{track?.title ?? tr('不明な曲')}
 						</Text>
 						<View style={styles.detailsContainer}>
 							{track?.artist && (
@@ -286,7 +287,7 @@ export default function DownloadedPage() {
 
 	const handlePlayItem = useCallback((item: DownloadTask) => {
 		if (!item.track) {
-			toast.error('このダウンロードには曲の情報がないため、再生できません')
+			toast.error(tr('このダウンロードには曲の情報がないため、再生できません'))
 			return
 		}
 
@@ -294,7 +295,7 @@ export default function DownloadedPage() {
 			tracks: [item.track],
 			startFromKey: item.track.id,
 		}).catch((error: unknown) =>
-			toastAndLogError('再生に失敗しました', error, 'Downloaded.Page'),
+			toastAndLogError(tr('再生に失敗しました'), error, 'Downloaded.Page'),
 		)
 	}, [])
 
@@ -306,23 +307,23 @@ export default function DownloadedPage() {
 				const permissionResult = await PermissionsAndroid.request(
 					PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
 					{
-						title: 'ストレージの権限',
-						message: '曲を公開の音楽フォルダーにエクスポートするには、ストレージの権限が必要です',
+						title: tr('ストレージの権限'),
+						message: tr('エクスポートにはストレージの権限が必要です'),
 						buttonPositive: 'OK',
-						buttonNegative: 'キャンセル',
+						buttonNegative: tr('キャンセル'),
 					},
 				)
 				if (permissionResult !== PermissionsAndroid.RESULTS.GRANTED) {
-					toast.error('公開の音楽フォルダーにエクスポートするには、ストレージの権限が必要です')
+					toast.error(tr('エクスポートにはストレージの権限が必要です'))
 					return null
 				}
 			}
-			toast.info('フォルダーの選択に対応していないため、Music/BBPlayer に保存します')
+			toast.info(tr('Music/BBMusica に保存します'))
 			return PUBLIC_MUSIC_EXPORT_URI
 		}
 
 		ToastAndroid.showWithGravity(
-			'エクスポート先のフォルダーを選んでください',
+			tr('エクスポート先のフォルダーを選んでください'),
 			ToastAndroid.SHORT,
 			ToastAndroid.BOTTOM,
 		)
@@ -332,7 +333,7 @@ export default function DownloadedPage() {
 	const handleSingleExport = useCallback(
 		async (id: string) => {
 			if (Platform.OS !== 'android') {
-				Alert.alert('お知らせ', '音声のエクスポートは、現在 Android のみ対応しています')
+				Alert.alert(tr('お知らせ'), tr('音声のエクスポートは、現在 Android のみ対応しています'))
 				return
 			}
 
@@ -350,12 +351,12 @@ export default function DownloadedPage() {
 			const task = completedTasks.find((t) => t.id === id)
 			const title = task?.track?.title ?? id
 			alert(
-				'ダウンロードを削除',
-				`「${title}」のダウンロード記録とキャッシュファイルを削除しますか？`,
+				tr('ダウンロードを削除'),
+				tr('「{0}」のダウンロード記録とキャッシュファイルを削除しますか？', title),
 				[
-					{ text: 'キャンセル' },
+					{ text: tr('キャンセル') },
 					{
-						text: '削除',
+						text: tr('削除'),
 						onPress: async () => {
 							try {
 								await Orpheus.removeDownload(id)
@@ -363,7 +364,7 @@ export default function DownloadedPage() {
 									queryKey: orpheusQueryKeys.completedDownloads(),
 								})
 							} catch (e) {
-								toastAndLogError('ダウンロードの削除に失敗しました', e, 'Downloaded.Page')
+								toastAndLogError(tr('ダウンロードの削除に失敗しました'), e, 'Downloaded.Page')
 							}
 						},
 					},
@@ -378,9 +379,9 @@ export default function DownloadedPage() {
 		if (!task.track) return
 		try {
 			await enqueueTracks({ tracks: [task.track], playNext: true })
-			toast.success('次に再生に追加しました')
+			toast.success(tr('次に再生に追加しました'))
 		} catch (error) {
-			toastAndLogError('次に再生への追加に失敗しました', error, 'Download')
+			toastAndLogError(tr('次に再生への追加に失敗しました'), error, 'Download')
 		}
 	}, [])
 
@@ -391,18 +392,18 @@ export default function DownloadedPage() {
 		if (idsToExport.length === 0) {
 			if (Platform.OS === 'android') {
 				ToastAndroid.showWithGravity(
-					'エクスポートできる曲がありません',
+					tr('エクスポートできる曲がありません'),
 					ToastAndroid.SHORT,
 					ToastAndroid.BOTTOM,
 				)
 			} else {
-				Alert.alert('お知らせ', 'エクスポートできる曲がありません')
+				Alert.alert(tr('お知らせ'), tr('エクスポートできる曲がありません'))
 			}
 			return
 		}
 
 		if (Platform.OS !== 'android') {
-			Alert.alert('お知らせ', '音声のエクスポートは、現在 Android のみ対応しています')
+			Alert.alert(tr('お知らせ'), tr('音声のエクスポートは、現在 Android のみ対応しています'))
 			return
 		}
 
@@ -420,17 +421,17 @@ export default function DownloadedPage() {
 		const idsToDelete = Array.from(selected)
 		if (idsToDelete.length === 0) return
 		alert(
-			'まとめて削除',
-			`選んだ ${idsToDelete.length} 曲のダウンロード記録とキャッシュファイルを削除しますか？`,
+			tr('まとめて削除'),
+			tr('選んだ {0} 曲のダウンロード記録とキャッシュファイルを削除しますか？', idsToDelete.length),
 			[
-				{ text: 'キャンセル' },
+				{ text: tr('キャンセル') },
 				{
-					text: '削除',
+					text: tr('削除'),
 					onPress: () => {
 						removeDownloadsMutation.mutate(idsToDelete, {
 							onSuccess: () => exitSelectMode(),
 							onError: (e) =>
-								toastAndLogError('まとめて削除に失敗しました', e, 'Downloaded.Page'),
+								toastAndLogError(tr('まとめて削除に失敗しました'), e, 'Downloaded.Page'),
 						})
 					},
 				},
@@ -494,7 +495,7 @@ export default function DownloadedPage() {
 					onPress={() => (selectMode ? exitSelectMode() : router.back())}
 				/>
 				<Appbar.Content
-					title={selectMode ? `${selected.size} 件を選択中` : 'ダウンロード管理'}
+					title={selectMode ? `${selected.size}${tr(' 件を選択中')}` : tr('ダウンロード管理')}
 				/>
 				{selectMode ? (
 					<>
@@ -540,7 +541,7 @@ export default function DownloadedPage() {
 
 			{isSearching && !selectMode && (
 				<SearchBar
-					placeholder='ダウンロード済みの曲を検索'
+					placeholder={tr('ダウンロード済みの曲を検索')}
 					onChangeText={setSearchQuery}
 					value={searchQuery}
 					style={styles.searchbar}
@@ -561,7 +562,7 @@ export default function DownloadedPage() {
 					}}
 					ListEmptyComponent={
 						<View style={styles.emptyContainer}>
-							<Text variant='bodyLarge'>ダウンロード済みの曲がありません</Text>
+							<Text variant='bodyLarge'>{tr('ダウンロード済みの曲がありません')}</Text>
 						</View>
 					}
 				/>

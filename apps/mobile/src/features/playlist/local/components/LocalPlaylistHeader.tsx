@@ -5,11 +5,9 @@ import { useRouter } from 'expo-router'
 import { memo, useCallback, useMemo, useState } from 'react'
 import { StyleSheet, useWindowDimensions, View } from 'react-native'
 import {
-	Avatar,
 	Divider,
 	Text,
 	TouchableRipple,
-	useTheme,
 } from 'react-native-paper'
 
 import Button from '@/components/common/Button'
@@ -17,7 +15,6 @@ import PlaylistCover from '@/components/common/PlaylistCover'
 import ExpandableText from '@/components/common/ExpandableText'
 import IconButton from '@/components/common/IconButton'
 import { alert } from '@/components/modals/AlertModal'
-import type { SharedPlaylistMember } from '@/hooks/queries/sharedPlaylistMembers'
 import { useModalStore } from '@/hooks/stores/useModalStore'
 import { playlistService } from '@/lib/services/playlistService'
 import type { Playlist } from '@/types/core/media'
@@ -26,6 +23,7 @@ import { resolveTrackCover } from '@/utils/imageUrl'
 import { getInternalPlayUri } from '@/utils/player'
 import { formatDurationToText, formatRelativeTime } from '@/utils/time'
 import toast from '@/utils/toast'
+import { t as tr } from '@/i18n'
 
 interface PlaylistHeaderProps {
 	playlist: Playlist & { validTrackCount: number }
@@ -36,8 +34,6 @@ interface PlaylistHeaderProps {
 	/** 当作者为 bilibili 时触发。可选，未提供时仅视觉提示不响应 */
 	onPressAuthor?: (author: NonNullable<Playlist['author']>) => void
 	coverRef?: ImageRef | null
-	shareMembers?: SharedPlaylistMember[]
-	onPressShareMember?: () => void
 	primaryButtonColor?: string
 	primaryButtonTextColor?: string
 	secondaryButtonContainerColor?: string
@@ -61,25 +57,25 @@ function buildSubtitlePieces(
 
 	const countRaw =
 		playlist.validTrackCount !== playlist.itemCount
-			? `${playlist.itemCount}\u2009曲\u2009(\u2009${playlist.itemCount - playlist.validTrackCount}\u2009曲が無効) `
-			: `${playlist.itemCount}\u2009曲`
+			? `${playlist.itemCount}${tr('\u2009曲\u2009•\u2009')}${playlist.itemCount - playlist.validTrackCount}${tr('\u2009曲が無効')}`
+			: `${playlist.itemCount}${tr('\u2009曲')}`
 
 	let countText = countRaw
 	if (totalDuration !== undefined) {
-		countText += `\u2009•\u2009合計\u2009${formatDurationToText(totalDuration)}`
+		countText += `${tr('\u2009•\u2009合計\u2009')}${formatDurationToText(totalDuration)}`
 	}
 
 	const authorName = !isLocal
-		? (playlist.author?.name ?? '不明なアーティスト')
+		? (playlist.author?.name ?? tr('不明なアーティスト'))
 		: undefined
 	const authorClickable =
 		!!authorName && !isLocal && playlist.author?.source === 'bilibili'
 
 	const syncLine = !isLocal
-		? `最終同期：${
+		? `${tr('最終同期：')}${
 				playlist.lastSyncedAt
 					? formatRelativeTime(playlist.lastSyncedAt)
-					: '不明'
+					: tr('不明')
 			}`
 		: undefined
 
@@ -97,8 +93,6 @@ export const PlaylistHeader = memo(function PlaylistHeader({
 	onClickCopyToLocalPlaylist,
 	onPressAuthor,
 	coverRef,
-	shareMembers,
-	onPressShareMember,
 	primaryButtonColor,
 	primaryButtonTextColor,
 	secondaryButtonContainerColor,
@@ -108,25 +102,16 @@ export const PlaylistHeader = memo(function PlaylistHeader({
 	const router = useRouter()
 	const { width, height } = useWindowDimensions()
 	const coverSize = width < 360 || height < 700 ? 88 : 120
-	const { colors } = useTheme()
 
 	const { isLocal, authorName, authorClickable, countText, syncLine } = useMemo(
 		() => buildSubtitlePieces(playlist, totalDuration),
 		[playlist, totalDuration],
 	)
-	let subscriberOwner: SharedPlaylistMember | undefined
-	if (shareMembers) {
-		subscriberOwner = shareMembers.find((m) => m.role === 'owner')
-		if (!subscriberOwner) {
-			subscriberOwner = shareMembers[0]
-		}
-	}
-
 	const onClickDownloadAll = useCallback(async () => {
 		const tracksResult = await playlistService.getPlaylistTracks(playlist.id)
 		if (tracksResult.isErr()) {
 			toastAndLogError(
-				'プレイリストの内容を取得できませんでした',
+				tr('プレイリストの内容を取得できませんでした'),
 				tracksResult.error,
 				'UI.Playlist.Local.Header',
 			)
@@ -178,9 +163,9 @@ export const PlaylistHeader = memo(function PlaylistHeader({
 						onLongPress={async () => {
 							const result = await Clipboard.setStringAsync(playlist.title)
 							if (!result) {
-								toast.error('コピーに失敗しました')
+								toast.error(tr('コピーに失敗しました'))
 							} else {
-								toast.success('タイトルをクリップボードにコピーしました')
+								toast.success(tr('タイトルをクリップボードにコピーしました'))
 							}
 						}}
 					>
@@ -200,24 +185,12 @@ export const PlaylistHeader = memo(function PlaylistHeader({
 					>
 						{isLocal ? (
 							<>
-								{playlist.shareId && playlist.shareRole && (
-									<>
-										<Text style={{ color: colors.primary, fontWeight: 'bold' }}>
-											{playlist.shareRole === 'owner'
-												? 'オーナー'
-												: playlist.shareRole === 'editor'
-													? '編集者'
-													: '購読者'}
-										</Text>
-										{'\n'}
-									</>
-								)}
 								{countText}
 							</>
 						) : (
 							<>
 								{/* 作者名 */}
-								{'作成者：'}
+								{tr('作成者：')}
 								<Text
 									variant='bodySmall'
 									onPress={
@@ -239,112 +212,6 @@ export const PlaylistHeader = memo(function PlaylistHeader({
 						)}
 					</Text>
 
-					{playlist.shareId && shareMembers && shareMembers.length > 0 && (
-						<TouchableRipple
-							onPress={
-								onPressShareMember && playlist.shareRole !== 'subscriber'
-									? onPressShareMember
-									: undefined
-							}
-							style={{
-								marginTop: 8,
-								alignSelf: 'flex-start',
-								borderRadius: 16,
-							}}
-						>
-							<View style={styles.shareInfoRow}>
-								{playlist.shareRole === 'subscriber' && subscriberOwner ? (
-									<>
-										<View
-											style={[
-												styles.avatarWrapper,
-												{ borderColor: colors.background },
-											]}
-										>
-											{subscriberOwner.avatarUrl ? (
-												<Avatar.Image
-													size={24}
-													source={{ uri: subscriberOwner.avatarUrl }}
-												/>
-											) : (
-												<Avatar.Text
-													size={24}
-													label={subscriberOwner.name.slice(0, 1)}
-												/>
-											)}
-										</View>
-										<Text
-											variant='bodySmall'
-											style={{
-												marginLeft: 6,
-												color: colors.onSurfaceVariant,
-											}}
-										>
-											{subscriberOwner.name}
-										</Text>
-									</>
-								) : (
-									<>
-										{shareMembers.slice(0, 3).map((member, index) => (
-											<View
-												key={member.accountId}
-												style={[
-													styles.avatarWrapper,
-													{
-														marginLeft: index === 0 ? 0 : -8,
-														zIndex: 5 - index,
-														borderColor: colors.background,
-													},
-												]}
-											>
-												{member.avatarUrl ? (
-													<Avatar.Image
-														size={24}
-														source={{ uri: member.avatarUrl }}
-													/>
-												) : (
-													<Avatar.Text
-														size={24}
-														label={member.name.slice(0, 1)}
-													/>
-												)}
-											</View>
-										))}
-										{shareMembers.length > 5 && (
-											<View
-												style={[
-													styles.avatarWrapper,
-													{
-														marginLeft: -8,
-														zIndex: 0,
-														borderColor: colors.background,
-														backgroundColor: colors.surfaceVariant,
-														width: 28,
-														height: 28,
-														justifyContent: 'center',
-														alignItems: 'center',
-													},
-												]}
-											>
-												<Text
-													variant='labelSmall'
-													style={{ fontSize: 10 }}
-												>
-													+{shareMembers.length - 3}
-												</Text>
-											</View>
-										)}
-										<Text
-											variant='bodySmall'
-											style={{ marginLeft: 6, color: colors.onSurfaceVariant }}
-										>
-											{shareMembers.length} 人の共同編集者
-										</Text>
-									</>
-								)}
-							</View>
-						</TouchableRipple>
-					)}
 				</View>
 			</View>
 
@@ -363,9 +230,7 @@ export const PlaylistHeader = memo(function PlaylistHeader({
 						testID='playlist-play-all'
 						buttonColor={primaryButtonColor}
 						textColor={primaryButtonTextColor}
-					>
-						すべて再生
-					</Button>
+					>{tr('すべて再生')}</Button>
 
 					{playlist.type !== 'local' && playlist.type !== 'dynamic' && (
 						<IconButton
@@ -394,14 +259,14 @@ export const PlaylistHeader = memo(function PlaylistHeader({
 						size={20}
 						onPress={() =>
 							alert(
-								'すべてダウンロードしますか？',
-								'このプレイリスト内のすべての曲をダウンロードしますか？（ダウンロード済みの曲は再ダウンロードされません）',
+								tr('すべてダウンロードしますか？'),
+								tr('このプレイリストの曲をすべてダウンロードしますか？'),
 								[
 									{
-										text: 'キャンセル',
+										text: tr('キャンセル'),
 									},
 									{
-										text: 'OK',
+										text: tr('OK'),
 										onPress: onClickDownloadAll,
 									},
 								],
@@ -421,8 +286,8 @@ export const PlaylistHeader = memo(function PlaylistHeader({
 					<ExpandableText
 						text={playlist.description}
 						lines={3}
-						expandLabel='概要を表示'
-						collapseLabel='概要を閉じる'
+						expandLabel={tr('概要を表示')}
+						collapseLabel={tr('概要を閉じる')}
 					/>
 				</View>
 			)}
@@ -455,14 +320,6 @@ const styles = StyleSheet.create({
 	subtitle: {
 		fontWeight: '100',
 		lineHeight: 18,
-	},
-	shareInfoRow: {
-		flexDirection: 'row',
-		alignItems: 'center',
-	},
-	avatarWrapper: {
-		borderWidth: 2,
-		borderRadius: 16,
 	},
 	actionsContainer: {
 		flexDirection: 'row',

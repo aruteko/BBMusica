@@ -19,6 +19,7 @@ import type {
 
 import type { TrackService } from './trackService'
 import { trackService as trackServiceInstance } from './trackService'
+import { t } from '@/i18n'
 
 type Tx = Parameters<Parameters<typeof defaultDb.transaction>[0]>[0]
 type DBLike = ExpoSQLiteDatabase<typeof schema> | Tx
@@ -59,7 +60,7 @@ export class ArtistService {
 					} satisfies CreateArtistPayload)
 					.returning(),
 			),
-			(e) => new DatabaseError('作成artist失败', { cause: e }),
+			(e) => new DatabaseError(t('作成artist失败'), { cause: e }),
 		).andThen((result) => {
 			return okAsync(result[0])
 		})
@@ -123,7 +124,7 @@ export class ArtistService {
 			(e) =>
 				e instanceof ServiceError
 					? e
-					: new DatabaseError('查找或作成artist的事务失败', { cause: e }),
+					: new DatabaseError(t('查找或作成artist的事务失败'), { cause: e }),
 		)
 	}
 
@@ -253,7 +254,7 @@ export class ArtistService {
 				if (!formatted) {
 					return errAsync(
 						new ServiceError(
-							`曲 ${dbTrack.id} の整形でエラーが発生しました。元のデータがないか、source と metadata が一致しません`,
+							`${t('曲 ')}${dbTrack.id}${t(' の整形に失敗しました')}`,
 						),
 					)
 				}
@@ -323,7 +324,7 @@ export class ArtistService {
 			if (!p.source || !p.remoteId) {
 				return errAsync(
 					createValidationError(
-						'payloads に source または remoteId が空のものがあります。この処理はリモートのアーティスト専用です',
+						t('remoteId のない項目があります'),
 					),
 				)
 			}
@@ -377,12 +378,12 @@ export class ArtistService {
 						return existing
 					}
 					throw new DatabaseError(
-						`アーティストをまとめて検索または作成した後でデータが一致しません。見つからないアーティスト: ${p.source}::${p.remoteId}`,
+						`${t('アーティストが見つかりません: ')}${p.source}::${p.remoteId}`,
 					)
 				})
 				if (fullArtists.length !== payloads.length) {
 					throw new DatabaseError(
-						'アーティストの作成または検索の後でデータが一致しません。一部のアーティストを書き込めなかったか、取得できませんでした',
+						t('一部のアーティストを保存できませんでした'),
 					)
 				}
 
@@ -395,7 +396,7 @@ export class ArtistService {
 			(e) =>
 				e instanceof ServiceError
 					? e
-					: new DatabaseError('批量查找或作成 artist 失败', { cause: e }),
+					: new DatabaseError(t('批量查找或作成 artist 失败'), { cause: e }),
 		)
 	}
 }

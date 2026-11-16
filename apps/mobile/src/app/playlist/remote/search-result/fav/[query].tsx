@@ -19,6 +19,7 @@ import { useDoubleTapScrollToTop } from '@/hooks/ui/useDoubleTapScrollToTop'
 import { bv2av } from '@/lib/api/bilibili/utils'
 import type { BilibiliFavoriteListContent } from '@/types/apis/bilibili'
 import type { BilibiliTrack, Track } from '@/types/core/media'
+import { t as tr } from '@/i18n'
 
 const mapApiItemToTrack = (
 	apiItem: BilibiliFavoriteListContent,
@@ -101,7 +102,7 @@ export default function SearchResultsPage() {
 	}
 
 	if (isErrorSearchData) {
-		return <PlaylistError text='読み込みに失敗しました' />
+		return <PlaylistError text={tr('読み込みに失敗しました')} />
 	}
 
 	return (
@@ -110,8 +111,8 @@ export default function SearchResultsPage() {
 				<Appbar.Content
 					title={
 						selectMode
-							? `${selected.size}\u2009曲を選択中`
-							: `検索結果\u2009-\u2009${query}`
+							? `${selected.size}${tr('\u2009曲を選択中')}`
+							: `${tr('検索結果\u2009-\u2009')}${query}`
 					}
 					onPress={handleDoubleTap}
 				/>
@@ -167,9 +168,7 @@ export default function SearchResultsPage() {
 					ListEmptyComponent={
 						<Text
 							style={[styles.emptyListText, { color: colors.onSurfaceVariant }]}
-						>
-							お気に入りの中に&thinsp;&ldquo;{query}&rdquo;&thinsp;に関する結果が見つかりません
-						</Text>
+						>{tr('お気に入りの中に\u2009&ldquo;')}{query}{tr('&rdquo;\u2009に関する結果が見つかりません')}</Text>
 					}
 				/>
 			</View>

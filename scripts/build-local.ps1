@@ -5,7 +5,7 @@
 # long paths must be enabled (LongPathsEnabled=1) with a ninja >= 1.12.
 #
 # Usage (from any PowerShell):
-#   .\scripts\build-local.ps1                      # jp variant: BBPlayerJP (com.roitium.bbplayer.jp), installs next to the official app
+#   .\scripts\build-local.ps1                      # jp variant: BBMusica (com.aruteko.bbmusica), installs next to the official app
 #   .\scripts\build-local.ps1 -Variant preview     # BBPlayer (Preview)
 #   .\scripts\build-local.ps1 -Variant production  # same package name as the official app
 #   .\scripts\build-local.ps1 -Prebuild            # force regenerating the android/ project
@@ -47,6 +47,21 @@ foreach ($rel in @('apps\mobile\src', 'packages\orpheus\src', 'packages\orpheus\
 }
 $global:LASTEXITCODE = 0
 
+# app config, version, Firebase defaults and static assets (the JS sources above are not enough for a release)
+foreach ($file in @('apps\mobile\app.config.ts', 'apps\mobile\package.json', 'apps\mobile\firebase.json')) {
+	Copy-Item (Join-Path $repo $file) (Join-Path $Work $file) -Force
+}
+foreach ($rel in @('apps\mobile\assets', 'apps\mobile\expo-plugins')) {
+	robocopy (Join-Path $repo $rel) (Join-Path $Work $rel) /E /NFL /NDL /NJH /NJS /NP | Out-Null
+	if ($LASTEXITCODE -ge 8) { throw "robocopy failed for $rel ($LASTEXITCODE)" }
+}
+$global:LASTEXITCODE = 0
+
+# versionCode: number of commits in the real repository (the work dir has no git history)
+$commitCount = (git -C $repo rev-list --count HEAD 2>$null)
+if ($LASTEXITCODE -eq 0 -and $commitCount) { $env:VERSION_CODE = $commitCount.Trim() }
+$global:LASTEXITCODE = 0
+
 # ---- environment ------------------------------------------------------------
 $env:JAVA_HOME = $jbr.Replace('\', '/')
 $env:ANDROID_HOME = $sdk.Replace('\', '/')
@@ -84,6 +99,7 @@ try {
 $apk = Get-ChildItem (Join-Path $android 'app\build\outputs\apk\release') -Filter *.apk | Select-Object -First 1
 $outDir = Join-Path $Work 'out'
 New-Item -ItemType Directory -Force $outDir | Out-Null
-$dest = Join-Path $outDir "bbplayer-$Variant-arm64-v8a.apk"
+$apkName = if ($Variant -eq 'jp') { 'bbmusica' } else { "bbplayer-$Variant" }
+$dest = Join-Path $outDir "$apkName-arm64-v8a.apk"
 Copy-Item $apk.FullName $dest -Force
 Write-Host "APK: $dest"

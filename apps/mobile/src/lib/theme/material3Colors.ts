@@ -22,6 +22,60 @@ export function buildPureWhitePaperColors(): MD3Colors {
 }
 
 /**
+ * 背景と文字を、はっきりした白・黒にする。
+ * 壁紙やテーマの色がうっすら混ざった灰色の面をなくし、主色や強調色はそのまま残す。
+ */
+export function applyCrispSurfaces(
+	colors: MD3Colors,
+	scheme: 'light' | 'dark',
+): MD3Colors {
+	if (scheme === 'dark') {
+		return {
+			...colors,
+			background: '#000000',
+			surface: '#000000',
+			surfaceVariant: '#1A1A1A',
+			onBackground: '#FFFFFF',
+			onSurface: '#FFFFFF',
+			onSurfaceVariant: '#C8C8C8',
+			outline: '#8A8A8A',
+			outlineVariant: '#2E2E2E',
+			inverseSurface: '#FFFFFF',
+			inverseOnSurface: '#000000',
+			elevation: {
+				level0: 'transparent',
+				level1: '#0B0B0B',
+				level2: '#141414',
+				level3: '#1A1A1A',
+				level4: '#1E1E1E',
+				level5: '#232323',
+			},
+		}
+	}
+	return {
+		...colors,
+		background: '#FFFFFF',
+		surface: '#FFFFFF',
+		surfaceVariant: '#F1F1F1',
+		onBackground: '#000000',
+		onSurface: '#000000',
+		onSurfaceVariant: '#3D3D3D',
+		outline: '#6F6F6F',
+		outlineVariant: '#DCDCDC',
+		inverseSurface: '#1A1A1A',
+		inverseOnSurface: '#FFFFFF',
+		elevation: {
+			level0: 'transparent',
+			level1: '#FFFFFF',
+			level2: '#FAFAFA',
+			level3: '#F6F6F6',
+			level4: '#F3F3F3',
+			level5: '#F0F0F0',
+		},
+	}
+}
+
+/**
  * Build a React Native Paper MD3Colors object from Expo Router's dynamic Material 3 colors.
  */
 export function buildMaterial3PaperColors(

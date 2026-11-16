@@ -2,7 +2,12 @@ import * as Sentry from '@sentry/react-native'
 import * as Application from 'expo-application'
 import Constants from 'expo-constants'
 import { err, ok, type Result } from 'neverthrow'
-import { fetch, prefetchOnAppStart } from 'react-native-nitro-fetch'
+import {
+	fetch,
+	prefetchOnAppStart,
+	removeAllFromAutoprefetch,
+} from 'react-native-nitro-fetch'
+import { t } from '@/i18n'
 
 const UPDATE_PREFETCH_KEY = 'update-manifest'
 
@@ -30,7 +35,13 @@ export interface UpdateManifest {
 
 export function registerUpdatePrefetch(): void {
 	const manifestUrl = getManifestUrl()
-	if (!manifestUrl) return
+	if (!manifestUrl) {
+		// 更新サーバーを持たないアプリ（BBMusica）では、以前の起動で登録された先読みも消す
+		void Promise.resolve()
+			.then(() => removeAllFromAutoprefetch())
+			.catch(() => undefined)
+		return
+	}
 	void prefetchOnAppStart(manifestUrl, { prefetchKey: UPDATE_PREFETCH_KEY })
 }
 
@@ -86,13 +97,13 @@ export async function fetchLatestRelease(): Promise<
 		}
 		const json: unknown = await res.json()
 		if (typeof json !== 'object' || json === null) {
-			return err(new Error('更新信息格式错误'))
+			return err(new Error(t('更新情報の形式が正しくありません')))
 		}
 		const obj = json as Record<string, unknown>
 		const version = obj.version
 		const url = obj.url
 		if (typeof version !== 'string' || typeof url !== 'string') {
-			return err(new Error('更新信息格式错误'))
+			return err(new Error(t('更新情報の形式が正しくありません')))
 		}
 		const notes = typeof obj.notes === 'string' ? obj.notes : ''
 		const listed_notes =

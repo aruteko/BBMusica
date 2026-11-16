@@ -13,13 +13,14 @@ import { usePlayerQueueStore } from '@/hooks/stores/usePlayerQueueStore'
 import usePlayerStore from '@/hooks/stores/usePlayerStore'
 import { playlistService } from '@/lib/services/playlistService'
 import type { PlayerMode } from '@/types/core/playback'
+import { t } from '@/i18n'
 
 async function resolveInitialMode(playlistId?: number): Promise<PlayerMode> {
 	const fallback = useAppStore.getState().settings.defaultPlayerMode
 	if (playlistId === undefined) return fallback
 	const result = await playlistService.getPlaylistMetadata(playlistId)
 	if (result.isErr()) throw result.error
-	if (!result.value) throw new Error('プレイリストが存在しません')
+	if (!result.value) throw new Error(t('プレイリストが存在しません'))
 	const preference = result.value.playerPreference
 	return preference === 'music' || preference === 'podcast'
 		? preference
@@ -35,14 +36,14 @@ interface QueueOptions {
 }
 
 async function submitTracks(options: QueueOptions, replace: boolean) {
-	if (!options.tracks.length) throw new Error('再生できるコンテンツがありません')
+	if (!options.tracks.length) throw new Error(t('再生できるコンテンツがありません'))
 	if (options.playNext && options.tracks.length !== 1)
-		throw new Error('「次に再生」は単一の音声のみ対応しています')
+		throw new Error(t('「次に再生」は単一の音声のみ対応しています'))
 	if (
 		options.startFromKey &&
 		!options.tracks.some((track) => track.id === options.startFromKey)
 	) {
-		throw new Error('選択した音声は現在再生できません')
+		throw new Error(t('選択した音声は現在再生できません'))
 	}
 	assertPlaybackContextAvailable()
 	const queue = await Orpheus.getQueue()

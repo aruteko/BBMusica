@@ -3,6 +3,7 @@ import { Computed } from '@legendapp/state/react'
 import type { ImageRef } from 'expo-image'
 import { Image } from 'expo-image'
 import { LinearGradient } from 'expo-linear-gradient'
+import { useIsFocused } from 'expo-router'
 import { useEffect, useState } from 'react'
 import {
 	Pressable,
@@ -15,11 +16,11 @@ import SquircleView from 'react-native-fast-squircle'
 import { Text, TouchableRipple, useTheme } from 'react-native-paper'
 
 import IconButton from '@/components/common/IconButton'
+import PlayerVideo from '@/features/player/components/video/PlayerVideo'
 import SkinThumbUpBurst from '@/features/player/components/visuals/SkinThumbUpBurst'
 import { SpectrumVisualizer } from '@/features/player/components/visuals/SpectrumVisualizer'
-import { useThumbUpVideo } from '@/hooks/mutations/bilibili/video'
+import { useThumbUp } from '@/hooks/mutations/bilibili/thumbUp'
 import useCurrentTrack from '@/hooks/player/useCurrentTrack'
-import { useGetVideoIsThumbUp } from '@/hooks/queries/bilibili/video'
 import { playbackContextStore$ } from '@/hooks/stores/playbackContextStore'
 import useAppStore from '@/hooks/stores/useAppStore'
 import useActiveSkin from '@/hooks/theme/useActiveSkin'
@@ -28,15 +29,22 @@ import {
 	SQUIRCLE_CORNER_SMOOTHING,
 } from '@/theme/dimensions'
 import { getGradientColors } from '@/utils/color'
+import { t } from '@/i18n'
 
 export function TrackInfo({
 	onArtistPress,
 	onPressCover,
 	coverRef,
+	active = true,
+	showVideo = false,
 }: {
 	onArtistPress: () => void
 	onPressCover: () => void
 	coverRef: ImageRef | null
+	/** このページが表示中か */
+	active?: boolean
+	/** 丸いカバーの部分を MV（動画）に切り替えて表示する */
+	showVideo?: boolean
 }) {
 	const { colors } = useTheme()
 	const [coverArea, setCoverArea] = useState({ width: 0, height: 0 })
@@ -53,12 +61,11 @@ export function TrackInfo({
 
 	const enableSpectrumVisualizer = useSpectrumVisualizerEnabled()
 
-	const { data: isThumbUp, isPending: isThumbUpPending } = useGetVideoIsThumbUp(
+	const { isLiked, toggle: toggleLike } = useThumbUp(
 		currentTrack?.source === 'bilibili'
 			? currentTrack?.bilibiliMetadata.bvid
 			: undefined,
 	)
-	const { mutate: doThumbUpAction } = useThumbUpVideo()
 
 	const isBilibiliVideo = currentTrack?.source === 'bilibili'
 
@@ -73,16 +80,13 @@ export function TrackInfo({
 			? currentTrack?.title.charAt(0).toUpperCase()
 			: undefined)
 
-	const onThumbUpPress = () => {
-		if (isThumbUpPending || !isBilibiliVideo || !currentTrack) return
-		if (!isThumbUp) {
-			setThumbUpBurstSignal((signal) => signal + 1)
-		}
-		doThumbUpAction({
-			bvid: currentTrack.bilibiliMetadata.bvid,
-			like: !isThumbUp,
-		})
+	const onLikePress = () => {
+		if (!isBilibiliVideo || !currentTrack) return
+		// 演出は、いいねできたときだけ出す
+		toggleLike(() => setThumbUpBurstSignal((signal) => signal + 1))
 	}
+
+	const isFocused = useIsFocused()
 
 	useEffect(() => {
 		setIsTitleExpanded(false)
@@ -119,7 +123,8 @@ export function TrackInfo({
 							onLayout={({ nativeEvent }) => setCoverArea(nativeEvent.layout)}
 							onPress={onPressCover}
 						>
-							{!pureWhiteBackground &&
+							{!showVideo &&
+								!pureWhiteBackground &&
 								!podcast &&
 								enableSpectrumVisualizer &&
 								coverSize > 0 && (
@@ -136,12 +141,36 @@ export function TrackInfo({
 										/>
 									</View>
 								)}
-							{showCover && (
+							{showVideo && !podcast && (
+								<View
+									style={{
+										width: Math.max(0, coverArea.width - 32),
+										height: Math.min(
+											Math.max(0, ((coverArea.width - 32) * 9) / 16),
+											Math.max(0, coverArea.height - 24),
+										),
+									}}
+								>
+									{isBilibiliVideo ? (
+										<PlayerVideo
+											active={active && isFocused}
+											style={styles.videoFill}
+										/>
+									) : (
+										<View style={styles.noVideo}>
+											<Text style={{ color: colors.onSurfaceVariant }}>{t('この曲にはMVがありません')}</Text>
+										</View>
+									)}
+									{/* WebView はタッチを自分で受けてしまうので、透明な板で受けて、ページの横スワイプを通す */}
+									<View style={StyleSheet.absoluteFill} />
+								</View>
+							)}
+							{!showVideo && showCover && (
 								<TouchableOpacity
 									activeOpacity={0.8}
 									onPress={onPressCover}
 									accessibilityRole='button'
-									accessibilityLabel={podcast ? '字幕を表示' : '歌詞を表示'}
+									accessibilityLabel={podcast ? t('字幕を表示') : t('歌詞を表示')}
 									style={{ width: coverSize, height: coverSize }}
 									testID='player-cover'
 								>
@@ -162,7 +191,7 @@ export function TrackInfo({
 												]}
 												testID='player-cover-placeholder'
 											>
-												<Text>{podcast ? '字幕を表示' : '歌詞を表示'}</Text>
+												<Text>{podcast ? t('字幕を表示') : t('歌詞を表示')}</Text>
 											</View>
 										) : !coverRef ? (
 											<LinearGradient
@@ -238,10 +267,10 @@ export function TrackInfo({
 								playSignal={thumbUpBurstSignal}
 							/>
 							<IconButton
-								icon={isThumbUp ? 'heart' : 'heart-outline'}
+								icon={isLiked ? 'heart' : 'heart-outline'}
 								size={24}
-								iconColor={isThumbUp ? colors.error : colors.onSurfaceVariant}
-								onPress={onThumbUpPress}
+								iconColor={isLiked ? colors.error : colors.onSurfaceVariant}
+								onPress={onLikePress}
 							/>
 						</View>
 					)}
@@ -261,6 +290,16 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		flex: 1,
 		minHeight: 0,
+	},
+	noVideo: {
+		flex: 1,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	videoFill: {
+		flex: 1,
+		marginHorizontal: 0,
+		marginBottom: 0,
 	},
 	coverGradient: {
 		flex: 1,

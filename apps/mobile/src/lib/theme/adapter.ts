@@ -30,6 +30,7 @@ import type {
 import log from '@/utils/log'
 
 import { parseSkinAssetDeclaration, type SkinAssetDeclaration } from './schema'
+import { t } from '@/i18n'
 
 // ============================================================
 // 卡牌解析：API raw → SkinCardAsset
@@ -41,7 +42,7 @@ const parseCardItem = (
 	index: number,
 ): SkinAssetDeclaration['cards'][number] => ({
 	img: card.card_img ?? '',
-	name: card.card_name ?? `カード ${index + 1}`,
+	name: card.card_name ?? `${t('カード ')}${index + 1}`,
 	type_id: card.card_type_id ?? `card_${index + 1}`,
 	video_list: card.video_list?.length ? card.video_list : null,
 })
@@ -54,7 +55,7 @@ const parseCollectCardItem = (
 	index: number,
 ): SkinAssetDeclaration['cards'][number] => ({
 	img: card?.card_img ?? '',
-	name: card?.card_name ?? `カード ${index + 1}`,
+	name: card?.card_name ?? `${t('カード ')}${index + 1}`,
 	type_id: card?.card_type_id ?? `card_${index + 1}`,
 	video_list: card?.video_list?.length ? card.video_list : null,
 })
@@ -354,7 +355,7 @@ const buildSuitAssetDeclaration = (
 	signal?: AbortSignal,
 ): ResultAsync<SkinAssetDeclaration, ServiceError> => {
 	if (!item.itemId) {
-		return errAsync(createSkinFetchFailed('テーマ装扮の検索結果に item_id がありません'))
+		return errAsync(createSkinFetchFailed(t('テーマ装扮の検索結果に item_id がありません')))
 	}
 
 	return bilibiliApi
@@ -546,6 +547,6 @@ export const fetchGarbSkinAssetDeclaration = (
 			return buildSuitAssetDeclaration(item, signal)
 		}
 		default:
-			return errAsync(createSkinFetchFailed('現在は、コレクションとテーマ装扮のみダウンロードできます'))
+			return errAsync(createSkinFetchFailed(t('現在は、コレクションとテーマ装扮のみダウンロードできます')))
 	}
 }

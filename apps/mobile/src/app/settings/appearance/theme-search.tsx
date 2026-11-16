@@ -15,6 +15,8 @@ import { useModalStore } from '@/hooks/stores/useModalStore'
 import type { GarbSkinSearchResult } from '@/lib/api/bilibili/garb'
 import { BilibiliGarbSearchItem } from '@/types/apis/bilibili'
 import { ListRenderItemInfoWithExtraData } from '@/types/legendlist'
+import { t } from '@/i18n'
+import { CORNER_RADIUS } from '@/theme/dimensions'
 
 const resultKey = (item: GarbSkinSearchResult) =>
 	`${item.kind ?? 'unknown'}-${item.actId ?? item.itemId}-${item.name}`
@@ -31,22 +33,22 @@ const mapSearchItem = (item: BilibiliGarbSearchItem): GarbSkinSearchResult => {
 		itemId: item.item_id || null,
 		kind: partId === 0 ? 'collection' : partId === 6 ? 'suit' : null,
 		lotteryId: Number(props.dlc_lottery_id) || null,
-		name: item.name || '名称未設定の装扮',
+		name: item.name || t('名称未設定の装扮'),
 		partId: partId ?? null,
 	}
 }
 
 const confirmDownload = (item: GarbSkinSearchResult) => {
-	const label = item.kind === 'collection' ? 'コレクション' : 'テーマ装扮'
+	const label = item.kind === 'collection' ? t('コレクション') : t('テーマ装扮')
 	const openModal = useModalStore.getState().open
-	alert('テーマ素材をダウンロード', `「${item.name}」の${label}素材をダウンロードしますか？`, [
-		{ text: 'キャンセル' },
+	alert(t('テーマ素材をダウンロード'), t('「{0}」の{1}素材をダウンロードしますか？', item.name, label), [
+		{ text: t('キャンセル') },
 		{
-			text: 'ダウンロード',
+			text: t('ダウンロード'),
 			onPress: () => {
 				if (!item.kind) {
-					alert('ダウンロードできません', '現在は、コレクションとテーマ装扮のみダウンロードできます。', [
-						{ text: 'OK' },
+					alert(t('ダウンロードできません'), t('現在は、コレクションとテーマ装扮のみダウンロードできます。'), [
+						{ text: t('OK') },
 					])
 					return
 				}
@@ -89,10 +91,10 @@ const renderItem = ({
 					style={{ color: colors.onSurfaceVariant }}
 				>
 					{item.kind === 'collection'
-						? `コレクション · act_id=${item.actId ?? '-'}`
+						? `${t('コレクション · act_id=')}${item.actId ?? '-'}`
 						: item.kind === 'suit'
-							? `テーマ装扮 · item_id=${item.itemId}`
-							: '未対応の装扮の種類'}
+							? `${t('テーマ装扮 · item_id=')}${item.itemId}`
+							: t('未対応の装扮の種類')}
 				</Text>
 			</View>
 		</Pressable>
@@ -127,13 +129,13 @@ export default function ThemeSkinSearchPage() {
 		<View style={[styles.container, { backgroundColor: colors.background }]}>
 			<Appbar.Header>
 				<Appbar.BackAction onPress={() => router.back()} />
-				<Appbar.Content title='テーマを追加' />
+				<Appbar.Content title={t('テーマを追加')} />
 			</Appbar.Header>
 			<View style={[styles.content, { paddingBottom: insets.bottom + 16 }]}>
 				<View style={styles.searchRow}>
 					<TextInput
 						mode='outlined'
-						label='テーマ名'
+						label={t('テーマ名')}
 						value={bufferedInput}
 						onChangeText={setBufferedInput}
 						style={styles.searchInput}
@@ -144,9 +146,7 @@ export default function ThemeSkinSearchPage() {
 						onPress={() => setQuery(bufferedInput)}
 						loading={isFetching}
 						disabled={isFetching}
-					>
-						検索
-					</Button>
+					>{t('検索')}</Button>
 				</View>
 
 				<LegendList
@@ -181,16 +181,12 @@ export default function ThemeSkinSearchPage() {
 							<Text
 								variant='bodyMedium'
 								style={[styles.empty, { color: colors.onSurfaceVariant }]}
-							>
-								該当する装扮が見つかりません
-							</Text>
+							>{t('該当する装扮が見つかりません')}</Text>
 						) : (
 							<Text
 								variant='bodySmall'
 								style={[styles.empty, { color: colors.onSurfaceVariant }]}
-							>
-								テーマ名を入力してBilibiliの装扮を検索
-							</Text>
+							>{t('テーマ名を入力してBilibiliの装扮を検索')}</Text>
 						)
 					}
 					ListFooterComponent={
@@ -242,7 +238,7 @@ const styles = StyleSheet.create({
 	cover: {
 		width: 56,
 		height: 56,
-		borderRadius: 8,
+		borderRadius: CORNER_RADIUS,
 	},
 	resultText: {
 		flex: 1,

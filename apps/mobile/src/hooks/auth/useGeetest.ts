@@ -4,6 +4,7 @@ import type { WebViewMessageEvent } from 'react-native-webview'
 import { bilibiliApi } from '@/lib/api/bilibili/api'
 import { toastAndLogError } from '@/utils/error-handling'
 import toast from '@/utils/toast'
+import { t } from '@/i18n'
 
 interface CaptchaParams {
 	token: string
@@ -54,7 +55,7 @@ export function useGeetest({
 					const errCode = smsResult.error.data.msgCode
 					let errorMsg = smsResult.error.message
 					if (!errorMsg) {
-						errorMsg = '認証コードの送信に失敗しました。しばらくしてからお試しください'
+						errorMsg = t('認証コードの送信に失敗しました。しばらくしてからお試しください')
 					}
 					let isExpiredCaptcha = false
 					if (errCode === 86211) {
@@ -64,21 +65,21 @@ export function useGeetest({
 						isExpiredCaptcha = true
 					}
 					if (isExpiredCaptcha) {
-						errorMsg = '画像認証の有効期限が切れました。認証コードをもう一度取得してください'
+						errorMsg = t('画像認証の有効期限が切れました。認証コードをもう一度取得してください')
 					}
 					onFail(errorMsg)
 					return
 				}
 
 				onSuccess(smsResult.value.captcha_key)
-				toast.success('認証コードを送信しました', { id: 'phone-login-sms-sent' })
+				toast.success(t('認証コードを送信しました'), { id: 'phone-login-sms-sent' })
 			} catch (error) {
 				toastAndLogError(
-					'認証コードの送信に失敗しました',
+					t('認証コードの送信に失敗しました'),
 					error,
 					'useGeetest.handleGeetestMessage',
 				)
-				onFail('認証コードの送信に失敗しました')
+				onFail(t('認証コードの送信に失敗しました'))
 			}
 		},
 		[captchaParams, onFail, onStartRequest, onSuccess],

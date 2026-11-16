@@ -1,3 +1,4 @@
+export { migrateAccountRemoved } from './accountRemoved'
 export { migrateIndependentAccountReset } from './independentAccount'
 export { migratePlayHistory } from './playHistory'
 export { migratePlayHistoryToMs } from './playHistoryMilliseconds'

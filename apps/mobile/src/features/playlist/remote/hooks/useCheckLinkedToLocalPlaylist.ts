@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { playlistService } from '@/lib/services/playlistService'
 import type { Playlist } from '@/types/core/media'
 import { toastAndLogError } from '@/utils/error-handling'
+import { t } from '@/i18n'
 
 /**
  * 检查某个 remoteId 是否已经被关联到本地播放列表
@@ -26,7 +27,7 @@ export default function useCheckLinkedToPlaylist(
 			)
 			if (playlist.isErr()) {
 				toastAndLogError(
-					`${type}-${remoteId} がローカルにあるかの確認に失敗しました`,
+					`${type}-${remoteId}${t(' がローカルにあるかの確認に失敗しました')}`,
 					playlist.error,
 					'UI.Playlist.Remote',
 				)

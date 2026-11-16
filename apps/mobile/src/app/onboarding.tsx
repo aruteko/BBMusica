@@ -12,6 +12,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Button from '@/components/common/Button'
 import usePreventRemove from '@/hooks/router/usePreventRemove'
 import { storage } from '@/utils/mmkv'
+import { t } from '@/i18n'
 
 const ICON_SIZE = 72
 
@@ -20,28 +21,24 @@ function WelcomeSlide() {
 	return (
 		<View style={slideStyles.content}>
 			<Animated.Image
-				source={require('../../assets/images/icon.png')}
+				source={require('../../assets/images/icon-bbmusica.png')}
 				style={slideStyles.logo}
 				resizeMode='contain'
 			/>
 			<Text
 				variant='displaySmall'
 				style={[slideStyles.title, { color: colors.onSurface }]}
-			>
-				ようこそ
-			</Text>
+			>{t('ようこそ')}</Text>
 			<Text
 				variant='headlineLarge'
 				style={[slideStyles.brand, { color: colors.primary }]}
 			>
-				BBPlayer
+				BBMusica
 			</Text>
 			<Text
 				variant='bodyLarge'
 				style={[slideStyles.desc, { color: colors.onSurfaceVariant }]}
-			>
-				あなたのBilibili音楽パートナー{'\n'}オープンソース · シンプル · ピュア
-			</Text>
+			>{t('あなたのBilibili音楽パートナー')}{'\n'}{t('オープンソース · シンプル · ピュア')}</Text>
 		</View>
 	)
 }
@@ -58,22 +55,13 @@ function DisclaimerSlide() {
 			<Text
 				variant='displaySmall'
 				style={[slideStyles.title, { color: colors.onSurface }]}
-			>
-				セキュリティに関するお知らせ
-			</Text>
+			>{t('セキュリティに関するお知らせ')}</Text>
 			<Text
 				variant='bodyLarge'
 				style={[slideStyles.desc, { color: colors.onSurfaceVariant }]}
-			>
-				開発者はBilibili APIを責任をもって利用するよう努めていますが、
-				<Text style={{ fontWeight: '800', color: colors.error }}>
-					{' アカウントの安全性は '}
-				</Text>
-				保証できません。{'\n\n'}
-				アカウントがリスク制御の対象になる、一時的な停止や永久停止になるなどの可能性があります。よく検討したうえでログインしてください。
-				{'\n\n'}
-				「ゲストモード」を選んでも、ローカルのプレイリスト、検索、コレクションの閲覧など、ほとんどの機能を使えます。
-			</Text>
+			>{t('ログインすると、')}<Text style={{ fontWeight: '800', color: colors.error }}>
+					{t(' アカウントの安全性は ')}
+				</Text>{t('保証できません。')}{'\n\n'}{t('アカウントが制限される可能性があります。')}{'\n\n'}{t('ゲストモードでも、ほとんどの機能を使えます。')}</Text>
 		</View>
 	)
 }
@@ -98,9 +86,7 @@ function StartSlide({
 			<Text
 				variant='displaySmall'
 				style={[slideStyles.title, { color: colors.onSurface }]}
-			>
-				始める準備
-			</Text>
+			>{t('始める準備')}</Text>
 			<View style={slideStyles.startOptions}>
 				<Button
 					mode='contained'
@@ -108,27 +94,21 @@ function StartSlide({
 					icon='qrcode-scan'
 					style={slideStyles.startButton}
 					contentStyle={slideStyles.startButtonContent}
-				>
-					QRコードでログイン
-				</Button>
+				>{t('QRコードでログイン')}</Button>
 				<Button
 					mode='outlined'
 					onPress={onPhone}
 					icon='cellphone'
 					style={slideStyles.startButton}
 					contentStyle={slideStyles.startButtonContent}
-				>
-					電話番号でログイン
-				</Button>
+				>{t('電話番号でログイン')}</Button>
 				<Button
 					mode='outlined'
 					testID='onboarding-guest'
 					onPress={onGuest}
 					style={slideStyles.guestButton}
 					contentStyle={slideStyles.startButtonContent}
-				>
-					ゲストモード
-				</Button>
+				>{t('ゲストモード')}</Button>
 			</View>
 		</View>
 	)
@@ -240,9 +220,7 @@ export default function OnboardingPage() {
 						onPress={goNext}
 						style={styles.actionButton}
 						contentStyle={styles.actionButtonContent}
-					>
-						続ける
-					</Button>
+					>{t('続ける')}</Button>
 				)}
 			</View>
 		</View>

@@ -31,6 +31,7 @@ import { seekWithinTrack } from '@/lib/player/seek'
 import { toastAndLogError } from '@/utils/error-handling'
 import * as Haptics from '@/utils/haptics'
 import { formatDurationToHHMMSS } from '@/utils/time'
+import { t } from '@/i18n'
 
 function TextWithAnimation({
 	sharedPosition,
@@ -163,7 +164,7 @@ export function PlayerSlider({
 				}
 				isSeeking.set(false)
 			} catch (error) {
-				toastAndLogError('シークに失敗しました', error, 'Player.Slider')
+				toastAndLogError(t('シークに失敗しました'), error, 'Player.Slider')
 				isSeeking.set(false)
 			}
 		},

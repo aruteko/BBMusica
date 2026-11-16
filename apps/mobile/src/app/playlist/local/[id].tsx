@@ -1,8 +1,5 @@
 import { DownloadState, Orpheus } from '@bbplayer/orpheus'
 import { Icon } from '@expo/ui'
-import type { TrueSheet } from '@lodev09/react-native-true-sheet'
-import { and, eq } from 'drizzle-orm'
-import { useLiveQuery } from 'drizzle-orm/expo-sqlite'
 import { useImage } from 'expo-image'
 import { useObserve } from 'expo-observe'
 import { useLocalSearchParams, useRouter } from 'expo-router'
@@ -16,7 +13,7 @@ import {
 } from 'react'
 import type { ViewInstance } from 'react-native'
 import { StyleSheet, View } from 'react-native'
-import { Appbar, MD3Theme, Text, useTheme } from 'react-native-paper'
+import { Appbar, useTheme } from 'react-native-paper'
 import { Searchbar as SearchBar } from 'react-native-paper'
 import Animated, {
 	useAnimatedStyle,
@@ -24,7 +21,6 @@ import Animated, {
 	withTiming,
 } from 'react-native-reanimated'
 
-import ActivityIndicator from '@/components/common/ActivityIndicator'
 import { MenuView } from '@/components/common/FunctionalMenu'
 import IconButton from '@/components/common/IconButton'
 import { alert } from '@/components/modals/AlertModal'
@@ -33,8 +29,6 @@ import { TrackListItem } from '@/features/playlist/local/components/LocalPlaylis
 import { LocalTrackList } from '@/features/playlist/local/components/LocalTrackList'
 import { PlaylistError } from '@/features/playlist/local/components/PlaylistError'
 import { PlaylistPlayerPreferenceDialog } from '@/features/playlist/local/components/PlaylistPlayerPreferenceDialog'
-import { SharedPlaylistMembersSheet } from '@/features/playlist/local/components/SharedPlaylistMembersSheet'
-import { SyncFailuresSheet } from '@/features/playlist/local/components/SyncFailuresSheet'
 import { useLocalPlaylistMenu } from '@/features/playlist/local/hooks/useLocalPlaylistMenu'
 import { useLocalPlaylistPlayer } from '@/features/playlist/local/hooks/useLocalPlaylistPlayer'
 import { useTrackSelection } from '@/features/playlist/local/hooks/useTrackSelection'
@@ -43,7 +37,6 @@ import {
 	useBatchDeleteTracksFromLocalPlaylist,
 	useDeletePlaylist,
 	useEditPlaylistMetadata,
-	usePullSharedPlaylist,
 	usePlaylistSync,
 	useReorderLocalPlaylistTrack,
 } from '@/hooks/mutations/db/playlist'
@@ -55,7 +48,6 @@ import {
 	useSearchTracksInPlaylist,
 } from '@/hooks/queries/db/playlist'
 import { useBatchDownloadStatus } from '@/hooks/queries/orpheus'
-import { useSharedPlaylistMembers } from '@/hooks/queries/sharedPlaylistMembers'
 import usePreventRemove from '@/hooks/router/usePreventRemove'
 import { useScreenTransitionReady } from '@/hooks/router/useScreenTransitionReady'
 import useAppStore from '@/hooks/stores/useAppStore'
@@ -64,9 +56,6 @@ import { useDoubleTapScrollToTop } from '@/hooks/ui/useDoubleTapScrollToTop'
 import { type MenuBuilder, useMenuActions } from '@/hooks/ui/useMenuActions'
 import { usePlaylistBackgroundColor } from '@/hooks/ui/usePlaylistBackgroundColor'
 import { useIsActuallyOffline } from '@/hooks/utils/useIsActuallyOffline'
-import db from '@/lib/db/db'
-import * as schema from '@/lib/db/schema'
-import { CustomError } from '@/lib/errors'
 import { playlistService } from '@/lib/services/playlistService'
 import type { Track } from '@/types/core/media'
 import { toastAndLogError } from '@/utils/error-handling'
@@ -74,6 +63,7 @@ import * as Haptics from '@/utils/haptics'
 import { resolveBilibiliImageUrl } from '@/utils/imageUrl'
 import { getInternalPlayUri } from '@/utils/player'
 import toast from '@/utils/toast'
+import { t as tr } from '@/i18n'
 
 const SORT_ICON = Icon.select({
 	ios: 'arrow.up.and.down.text.horizontal',
@@ -88,16 +78,6 @@ const EDIT_ICON = Icon.select({
 const SYNC_ICON = Icon.select({
 	ios: 'arrow.triangle.2.circlepath',
 	android: import('@expo/material-symbols/sync.xml'),
-})
-
-const SHARE_ICON = Icon.select({
-	ios: 'square.and.arrow.up',
-	android: import('@expo/material-symbols/share.xml'),
-})
-
-const LINK_ICON = Icon.select({
-	ios: 'link',
-	android: import('@expo/material-symbols/link.xml'),
 })
 
 const DELETE_ICON = Icon.select({
@@ -137,44 +117,6 @@ type PlaylistMetadata = NonNullable<
 	ReturnType<typeof usePlaylistMetadata>['data']
 >
 
-const deletePlaylistDialogPrompt = (
-	playlistMetadata: ReturnType<typeof usePlaylistMetadata>['data'],
-	colors: MD3Theme['colors'],
-) => {
-	if (!playlistMetadata || playlistMetadata.shareId === null)
-		return 'このプレイリストを削除しますか？'
-	switch (playlistMetadata?.shareRole) {
-		case 'owner':
-			return (
-				<>
-					<Text>このプレイリストを削除しますか？</Text>
-					<Text style={{ color: colors.error }}>
-						購読しているすべてのユーザーもアクセスできなくなります。
-					</Text>
-				</>
-			)
-		case 'editor':
-			return (
-				<>
-					<Text>このプレイリストを削除しますか？</Text>
-					<Text style={{ color: colors.error }}>
-						あなたもアクセス権を失い、再度参加するには共有者からの招待が必要になります。
-					</Text>
-				</>
-			)
-		case 'subscriber':
-			return (
-				<>
-					<Text>このプレイリストを削除しますか？</Text>
-					<Text style={{ color: colors.error }}>
-						あなたもアクセス権を失い、再度参加するには共有者からの招待が必要になります。
-					</Text>
-				</>
-			)
-	}
-	return <Text>このプレイリストを削除しますか？</Text>
-}
-
 export default function LocalPlaylistPage() {
 	const isListReady = useScreenTransitionReady()
 	const { id } = useLocalSearchParams<{ id: string }>()
@@ -207,7 +149,7 @@ export default function LocalPlaylistPage() {
 
 	useEffect(() => {
 		if (!isPlaylistNotFound) return
-		toast.error('プレイリストが存在しないか、削除されました')
+		toast.error(tr('プレイリストが存在しないか、削除されました'))
 		if (router.canGoBack()) router.back()
 		else router.replace('/(tabs)')
 	}, [isPlaylistNotFound, router])
@@ -216,9 +158,9 @@ export default function LocalPlaylistPage() {
 	if (isPlaylistDataPending || isPlaylistMetadataPending || !isListReady)
 		return <PlaylistPageSkeleton animate={isListReady} />
 	if (isPlaylistDataError || isPlaylistMetadataError)
-		return <PlaylistError text='プレイリストの内容を読み込めませんでした' />
+		return <PlaylistError text={tr('プレイリストの内容を読み込めませんでした')} />
 	if (!playlistData || !playlistMetadata)
-		return <PlaylistError text='プレイリストが存在しないか、削除されました' />
+		return <PlaylistError text={tr('プレイリストが存在しないか、削除されました')} />
 
 	return (
 		<LocalPlaylistContent
@@ -254,7 +196,6 @@ function LocalPlaylistContent({
 	const [playerPreferenceVisible, setPlayerPreferenceVisible] = useState(false)
 	const [isResolvingSelection, setIsResolvingSelection] = useState(false)
 	const router = useRouter()
-	const bbplayerToken = useAppStore((state) => state.bbplayerToken)
 	const [searchQuery, setSearchQuery] = useState('')
 	const [startSearch, setStartSearch] = useState(false)
 	const searchbarHeight = useSharedValue(0)
@@ -270,20 +211,6 @@ function LocalPlaylistContent({
 
 	const { listRef, handleDoubleTap } = useDoubleTapScrollToTop()
 	const currentTrack = useCurrentTrack()
-	const membersSheetRef = useRef<TrueSheet>(null)
-	const syncFailuresSheetRef = useRef<TrueSheet>(null)
-	const [membersSheetMounted, setMembersSheetMounted] = useState(false)
-	const [syncFailuresSheetMounted, setSyncFailuresSheetMounted] =
-		useState(false)
-	const setMembersSheetRef = useCallback((sheet: TrueSheet | null) => {
-		membersSheetRef.current = sheet
-		if (sheet) void sheet.present()
-	}, [])
-	const setSyncFailuresSheetRef = useCallback((sheet: TrueSheet | null) => {
-		syncFailuresSheetRef.current = sheet
-		if (sheet) void sheet.present()
-	}, [])
-
 	const selection = {
 		active: selectMode,
 		selected,
@@ -360,7 +287,7 @@ function LocalPlaylistContent({
 		}
 
 		if (isSearchError) {
-			toastAndLogError('検索に失敗しました', searchError, SCOPE)
+			toastAndLogError(tr('検索に失敗しました'), searchError, SCOPE)
 			return []
 		}
 
@@ -441,9 +368,6 @@ function LocalPlaylistContent({
 		playlistData?.pages.length,
 	])
 
-	const shareMembers = useSharedPlaylistMembers(playlistMetadata?.shareId)
-	const isSharedSubscriber = playlistMetadata?.shareRole === 'subscriber'
-	const isSharedLoggedOut = !!playlistMetadata?.shareId && !bbplayerToken
 	const coverRef = useImage(
 		resolveBilibiliImageUrl(playlistMetadata?.coverUrl) ?? '',
 		{
@@ -465,35 +389,6 @@ function LocalPlaylistContent({
 	const { mutate: deleteTrackFromLocalPlaylist } =
 		useBatchDeleteTracksFromLocalPlaylist()
 	const { mutate: reorderTrack } = useReorderLocalPlaylistTrack()
-	const { mutate: pullSharedPlaylist, isPending: isPullingShared } =
-		usePullSharedPlaylist()
-
-	const presentMembersSheet = useCallback(() => {
-		if (membersSheetRef.current) {
-			void membersSheetRef.current.present()
-			return
-		}
-		setMembersSheetMounted(true)
-	}, [])
-
-	const presentSyncFailuresSheet = useCallback(() => {
-		if (syncFailuresSheetRef.current) {
-			void syncFailuresSheetRef.current.present()
-			return
-		}
-		setSyncFailuresSheetMounted(true)
-	}, [])
-
-	const handlePressShareMember = () => {
-		if (isSharedLoggedOut) {
-			toast.error('BBPlayerアカウントにログインすると共有メンバーを確認できます')
-			return
-		}
-		if (playlistMetadata?.shareId) {
-			presentMembersSheet()
-		}
-	}
-
 	const onClickDeletePlaylist = () => {
 		deletePlaylist(
 			{ playlistId: Number(id) },
@@ -504,7 +399,7 @@ function LocalPlaylistContent({
 	const handleSync = () => {
 		if (!playlistMetadata || !playlistMetadata.remoteSyncId) {
 			toast.error(
-				'同期できません：プレイリストのメタデータが見つからないか、remoteSyncIdが空です',
+				tr('同期できません：プレイリスト情報がありません'),
 			)
 			return
 		}
@@ -542,7 +437,7 @@ function LocalPlaylistContent({
 		}
 
 		const toastId = 'sync-playlist'
-		toast.show('同期中...', { id: toastId, duration: Infinity })
+		toast.show(tr('同期中...'), { id: toastId, duration: Infinity })
 		syncPlaylist({
 			remoteSyncId: playlistMetadata.remoteSyncId,
 			type: playlistMetadata.type,
@@ -554,15 +449,6 @@ function LocalPlaylistContent({
 		Number(id),
 		isOffline,
 		playableOfflineKeys,
-	)
-	const pullingIcon = useMemo(
-		() => () => (
-			<ActivityIndicator
-				size='small'
-				color={colors.primary}
-			/>
-		),
-		[colors.primary],
 	)
 
 	const deleteTrack = (trackId: number) => {
@@ -578,7 +464,7 @@ function LocalPlaylistContent({
 			openModal('UpdateTrackLocalPlaylists', { track }),
 		openEditTrackModal: (track) => openModal('EditTrackMetadata', { track }),
 		playlist: playlistMetadata,
-		isReadOnly: isSharedSubscriber,
+		isReadOnly: false,
 	})
 
 	const deleteSelectedTracks = () => {
@@ -593,7 +479,7 @@ function LocalPlaylistContent({
 	const clearInvalidVideos = async () => {
 		const tracksResult = await playlistService.getPlaylistTracks(Number(id))
 		if (tracksResult.isErr()) {
-			toastAndLogError('プレイリストの曲を取得できませんでした', tracksResult.error, SCOPE)
+			toastAndLogError(tr('プレイリストの曲を取得できませんでした'), tracksResult.error, SCOPE)
 			return
 		}
 
@@ -604,7 +490,7 @@ function LocalPlaylistContent({
 			)
 			.map((track) => track.id)
 		if (invalidTrackIds.length === 0) {
-			toast.info('削除が必要な無効な動画はありません')
+			toast.info(tr('削除が必要な無効な動画はありません'))
 			return
 		}
 
@@ -620,7 +506,7 @@ function LocalPlaylistContent({
 				? await playlistService.searchTrackInPlaylist(Number(id), deferredQuery)
 				: await playlistService.getPlaylistTracks(Number(id))
 		if (tracksResult.isErr()) {
-			toastAndLogError('プレイリストの曲を取得できませんでした', tracksResult.error, SCOPE)
+			toastAndLogError(tr('プレイリストの曲を取得できませんでした'), tracksResult.error, SCOPE)
 			return null
 		}
 		return tracksResult.value
@@ -667,7 +553,7 @@ function LocalPlaylistContent({
 		try {
 			const tracksResult = await playlistService.getPlaylistTracks(Number(id))
 			if (tracksResult.isErr()) {
-				toastAndLogError('プレイリストの曲を取得できませんでした', tracksResult.error, SCOPE)
+				toastAndLogError(tr('プレイリストの曲を取得できませんでした'), tracksResult.error, SCOPE)
 				setIsResolvingSelection(false)
 				return
 			}
@@ -686,13 +572,6 @@ function LocalPlaylistContent({
 		}
 	}
 
-	/** 防止重复处理共享歌单被删除的场景 */
-	const handledRemoteDeletionRef = useRef(false)
-
-	useEffect(() => {
-		handledRemoteDeletionRef.current = false
-	}, [id])
-
 	useEffect(() => {
 		if (typeof id !== 'string') {
 			router.replace('/+not-found')
@@ -709,58 +588,6 @@ function LocalPlaylistContent({
 			withTiming(startSearch ? SEARCHBAR_HEIGHT : 0, { duration: 180 }),
 		)
 	}, [searchbarHeight, startSearch])
-
-	useEffect(() => {
-		if (typeof id !== 'string') return
-		if (!playlistMetadata?.shareId || !playlistMetadata.shareRole) return
-		if (isOffline) return
-		if (!bbplayerToken) return
-		pullSharedPlaylist(
-			{ playlistId: Number(id) },
-			{
-				onError: (error) => {
-					if (
-						handledRemoteDeletionRef.current ||
-						!(error instanceof CustomError) ||
-						error.type !== 'SharedPlaylistDeleted'
-					) {
-						return
-					}
-					handledRemoteDeletionRef.current = true
-					toast.error('共有元がプレイリストを削除したため、ローカルのコピーを削除しました')
-					deletePlaylist(
-						{ playlistId: Number(id) },
-						{ onSuccess: () => router.back() },
-					)
-				},
-			},
-		)
-	}, [
-		id,
-		isOffline,
-		playlistMetadata?.shareId,
-		playlistMetadata?.shareRole,
-		bbplayerToken,
-		handledRemoteDeletionRef,
-		deletePlaylist,
-		router,
-		pullSharedPlaylist,
-	])
-
-	const { data: syncFailures } = useLiveQuery(
-		db
-			.select({ id: schema.playlistSyncQueue.id })
-			.from(schema.playlistSyncQueue)
-			.where(
-				and(
-					eq(schema.playlistSyncQueue.playlistId, playlistMetadata?.id ?? -1),
-					eq(schema.playlistSyncQueue.status, 'failed'),
-				),
-			)
-			.limit(1),
-	)
-	const hasSyncFailures =
-		!!playlistMetadata?.shareId && (syncFailures?.length ?? 0) > 0
 
 	const searchbarAnimatedStyle = useAnimatedStyle(() => ({
 		height: searchbarHeight.value,
@@ -938,45 +765,42 @@ function LocalPlaylistContent({
 		const isLocal = playlistMetadata.type === 'local'
 
 		menu.add({
-			title: 'プレーヤー設定',
+			title: tr('プレーヤー設定'),
 			image: PREFERRED_ICON,
 			onPress: () => setPlayerPreferenceVisible(true),
 		})
 
-		if (isLocal && !isSharedSubscriber) {
+		if (isLocal) {
 			menu.add({
-				title: '並べ替え',
+				title: tr('並べ替え'),
 				image: SORT_ICON,
 				onPress: enterSelectMode,
 			})
 		}
 
-		if (!isSharedSubscriber) {
-			menu.add({
-				title: 'プレイリスト情報を編集',
-				image: EDIT_ICON,
-				onPress: () => {
-					openModal('EditPlaylistMetadata', { playlist: playlistMetadata })
-				},
-			})
-		}
+		menu.add({
+			title: tr('プレイリスト情報を編集'),
+			image: EDIT_ICON,
+			onPress: () => {
+				openModal('EditPlaylistMetadata', { playlist: playlistMetadata })
+			},
+		})
 
 		if (
 			isLocal &&
-			playlistMetadata.validTrackCount < playlistMetadata.itemCount &&
-			!isSharedSubscriber
+			playlistMetadata.validTrackCount < playlistMetadata.itemCount
 		) {
 			menu.add({
-				title: '無効な動画を削除',
+				title: tr('無効な動画を削除'),
 				image: DELETE_ICON,
 				attributes: { destructive: true },
 				onPress: () => {
 					alert(
-						'無効な動画を削除',
-						'プレイリストからすべての無効な動画を削除しますか？',
+						tr('無効な動画を削除'),
+						tr('プレイリストからすべての無効な動画を削除しますか？'),
 						[
-							{ text: 'キャンセル' },
-							{ text: 'OK', onPress: () => void clearInvalidVideos() },
+							{ text: tr('キャンセル') },
+							{ text: tr('OK'), onPress: () => void clearInvalidVideos() },
 						],
 						{ cancelable: true },
 					)
@@ -986,11 +810,10 @@ function LocalPlaylistContent({
 
 		if (
 			isLocal &&
-			playlistMetadata.remoteSyncId === null &&
-			!isSharedSubscriber
+			playlistMetadata.remoteSyncId === null
 		) {
 			menu.add({
-				title: 'B站に同期',
+				title: tr('B站に同期'),
 				image: SYNC_ICON,
 				onPress: () => {
 					openModal(
@@ -1002,34 +825,8 @@ function LocalPlaylistContent({
 			})
 		}
 
-		if (isLocal && !playlistMetadata.shareId) {
-			menu.add({
-				title: '共有プレイリストにする',
-				image: SHARE_ICON,
-				onPress: () => {
-					openModal('EnableSharing', { playlistId: playlistMetadata.id })
-				},
-			})
-		}
-
-		const shareId = playlistMetadata.shareId
-
-		if (shareId) {
-			menu.add({
-				title: '共有設定',
-				image: LINK_ICON,
-				onPress: () => {
-					openModal('EnableSharing', {
-						playlistId: playlistMetadata.id,
-						shareId,
-						shareRole: playlistMetadata.shareRole,
-					})
-				},
-			})
-		}
-
 		menu.add({
-			title: playlistMetadata.isPinned ? 'ピン留め解除' : 'ピン留め',
+			title: playlistMetadata.isPinned ? tr('ピン留め解除') : tr('ピン留め'),
 			image: playlistMetadata.isPinned ? UNPIN_ICON : PIN_ICON,
 			onPress: () => {
 				editPlaylistMetadata({
@@ -1042,14 +839,14 @@ function LocalPlaylistContent({
 		})
 
 		menu.add({
-			title: 'プレイリストを削除',
+			title: tr('プレイリストを削除'),
 			image: DELETE_ICON,
 			attributes: { destructive: true },
 			onPress: () => {
 				alert(
-					'プレイリストを削除',
-					deletePlaylistDialogPrompt(playlistMetadata, colors),
-					[{ text: 'キャンセル' }, { text: 'OK', onPress: onClickDeletePlaylist }],
+					tr('プレイリストを削除'),
+					tr('このプレイリストを削除しますか？'),
+					[{ text: tr('キャンセル') }, { text: tr('OK'), onPress: onClickDeletePlaylist }],
 					{ cancelable: true },
 				)
 			},
@@ -1071,7 +868,7 @@ function LocalPlaylistContent({
 				<Appbar.Content
 					title={
 						selectMode
-							? `${selected.size}\u2009曲を選択中`
+							? `${selected.size}${tr('\u2009曲を選択中')}`
 							: playlistMetadata.title
 					}
 					onPress={handleDoubleTap}
@@ -1093,11 +890,11 @@ function LocalPlaylistContent({
 								icon='trash-can'
 								onPress={() =>
 									alert(
-										'曲を削除',
-										'プレイリストからこれらの曲を削除しますか？',
+										tr('曲を削除'),
+										tr('プレイリストからこれらの曲を削除しますか？'),
 										[
-											{ text: 'キャンセル' },
-											{ text: 'OK', onPress: deleteSelectedTracks },
+											{ text: tr('キャンセル') },
+											{ text: tr('OK'), onPress: deleteSelectedTracks },
 										],
 										{ cancelable: true },
 									)
@@ -1112,20 +909,6 @@ function LocalPlaylistContent({
 					</>
 				) : (
 					<>
-						{playlistMetadata.shareId && hasSyncFailures && (
-							<Appbar.Action
-								icon='alert-circle'
-								color={colors.error}
-								onPress={presentSyncFailuresSheet}
-								accessibilityLabel='同期失敗'
-							/>
-						)}
-						{isPullingShared && (
-							<Appbar.Action
-								icon={pullingIcon}
-								disabled
-							/>
-						)}
 						<Appbar.Action
 							icon={startSearch ? 'close' : 'magnify'}
 							onPress={() => setStartSearch((prev) => !prev)}
@@ -1134,7 +917,7 @@ function LocalPlaylistContent({
 							<Appbar.Action
 								icon='dots-vertical'
 								testID='local-playlist-menu'
-								accessibilityLabel='プレイリスト操作'
+								accessibilityLabel={tr('プレイリスト操作')}
 							/>
 						</MenuView>
 					</>
@@ -1146,7 +929,7 @@ function LocalPlaylistContent({
 				style={[styles.searchbarContainer, searchbarAnimatedStyle]}
 			>
 				<SearchBar
-					placeholder='曲を検索'
+					placeholder={tr('曲を検索')}
 					onChangeText={setSearchQuery}
 					value={searchQuery}
 				/>
@@ -1183,24 +966,21 @@ function LocalPlaylistContent({
 					onDragStart={
 						selectMode &&
 						playlistMetadata.type === 'local' &&
-						!startSearch &&
-						!isSharedSubscriber
+						!startSearch
 							? handleDragStart
 							: undefined
 					}
 					onDragUpdate={
 						selectMode &&
 						playlistMetadata.type === 'local' &&
-						!startSearch &&
-						!isSharedSubscriber
+						!startSearch
 							? handleDragUpdate
 							: undefined
 					}
 					onDragEnd={
 						selectMode &&
 						playlistMetadata.type === 'local' &&
-						!startSearch &&
-						!isSharedSubscriber
+						!startSearch
 							? handleDragEnd
 							: undefined
 					}
@@ -1231,29 +1011,11 @@ function LocalPlaylistContent({
 										params: { mid: author.remoteId },
 									})
 								}
-								shareMembers={shareMembers}
-								onPressShareMember={handlePressShareMember}
 								primaryButtonColor={primaryButtonColor}
 								primaryButtonTextColor={primaryButtonTextColor}
 								secondaryButtonContainerColor={secondaryButtonContainerColor}
 								secondaryButtonIconColor={secondaryButtonIconColor}
 							/>
-							{isSharedLoggedOut && (
-								<View
-									style={[
-										styles.syncPausedNotice,
-										{ backgroundColor: colors.surfaceVariant },
-									]}
-								>
-									<Text
-										variant='bodyMedium'
-										style={{ color: colors.onSurfaceVariant }}
-									>
-										BBPlayerアカウントに
-										ログインすると共有同期機能を使えます。現在の変更はローカルに保存され、次回ログイン後に同期されます。
-									</Text>
-								</View>
-							)}
 						</>
 					}
 				/>
@@ -1265,7 +1027,7 @@ function LocalPlaylistContent({
 							size={32}
 							loading={isLocatingCurrentTrack}
 							onPress={locateCurrentTrack}
-							accessibilityLabel='再生中の曲に移動'
+							accessibilityLabel={tr('再生中の曲に移動')}
 							testID='local-playlist-scroll-to-current'
 						/>
 					</View>
@@ -1293,18 +1055,6 @@ function LocalPlaylistContent({
 				)}
 			</View>
 
-			{membersSheetMounted && (
-				<SharedPlaylistMembersSheet
-					ref={setMembersSheetRef}
-					shareId={playlistMetadata.shareId}
-				/>
-			)}
-			{syncFailuresSheetMounted && (
-				<SyncFailuresSheet
-					ref={setSyncFailuresSheetRef}
-					playlistId={playlistMetadata.id}
-				/>
-			)}
 		</View>
 	)
 }
@@ -1329,12 +1079,5 @@ const styles = StyleSheet.create({
 		shadowOffset: { width: 0, height: 4 },
 		shadowOpacity: 0.3,
 		shadowRadius: 6,
-	},
-	syncPausedNotice: {
-		marginHorizontal: 16,
-		marginBottom: 12,
-		borderRadius: 8,
-		paddingHorizontal: 12,
-		paddingVertical: 10,
 	},
 })

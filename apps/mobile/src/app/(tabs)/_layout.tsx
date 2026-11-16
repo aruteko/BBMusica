@@ -7,6 +7,7 @@ import type { MD3Theme } from 'react-native-paper'
 
 import useSkinStore from '@/hooks/stores/useSkinStore'
 import useActiveSkin from '@/hooks/theme/useActiveSkin'
+import { t } from '@/i18n'
 
 const searchIcon = Icon.getImageSourceSync('magnify', 24)
 const libraryIcon = Icon.getImageSourceSync('bookshelf', 24)
@@ -121,7 +122,7 @@ export default function TabLayout() {
 				disableAutomaticContentInsets
 				unstable_nativeProps={nativeIconProps(icons?.home, searchIcon, colors)}
 			>
-				<NativeTabs.Trigger.Label>ホーム</NativeTabs.Trigger.Label>
+				<NativeTabs.Trigger.Label>{t('ホーム')}</NativeTabs.Trigger.Label>
 				<NativeTabs.Trigger.Icon
 					src={iconSource(icons?.home, searchIcon)}
 					renderingMode={icons?.home.default ? 'original' : 'template'}
@@ -137,7 +138,7 @@ export default function TabLayout() {
 					colors,
 				)}
 			>
-				<NativeTabs.Trigger.Label>ライブラリ</NativeTabs.Trigger.Label>
+				<NativeTabs.Trigger.Label>{t('ライブラリ')}</NativeTabs.Trigger.Label>
 				<NativeTabs.Trigger.Icon
 					src={iconSource(icons?.library, libraryIcon)}
 					renderingMode={icons?.library.default ? 'original' : 'template'}
@@ -153,7 +154,7 @@ export default function TabLayout() {
 					colors,
 				)}
 			>
-				<NativeTabs.Trigger.Label>マイページ</NativeTabs.Trigger.Label>
+				<NativeTabs.Trigger.Label>{t('マイページ')}</NativeTabs.Trigger.Label>
 				<NativeTabs.Trigger.Icon
 					src={iconSource(icons?.settings, profileIcon)}
 					renderingMode={icons?.settings.default ? 'original' : 'template'}

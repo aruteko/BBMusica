@@ -18,6 +18,7 @@ import {
 	MainPlaybackControls,
 	SecondaryPlaybackControls,
 } from './PlayerControlContent'
+import { t } from '@/i18n'
 
 export function MusicControls({
 	onOpenQueue,
@@ -46,7 +47,7 @@ export function MusicControls({
 						try {
 							await setPlayerShuffleMode(!shuffleMode)
 						} catch (error) {
-							toastAndLogError('シャッフルの変更に失敗しました', error, 'Player.Controls')
+							toastAndLogError(t('シャッフルの変更に失敗しました'), error, 'Player.Controls')
 							return
 						}
 						void analyticsService.logPlayerAction('shuffle', {
@@ -78,7 +79,7 @@ export function MusicControls({
 									? RepeatMode.QUEUE
 									: RepeatMode.OFF
 						void setPlayerRepeatMode(nextMode).catch((error: unknown) =>
-							toastAndLogError('リピートモードの変更に失敗しました', error, 'Player.Controls'),
+							toastAndLogError(t('リピートモードの変更に失敗しました'), error, 'Player.Controls'),
 						)
 						void analyticsService.logPlayerAction('repeat', {
 							mode: nextMode,

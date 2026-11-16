@@ -13,6 +13,7 @@ import type { Playlist } from '@/types/core/media'
 import { toastAndLogError } from '@/utils/error-handling'
 import log from '@/utils/log'
 import toast from '@/utils/toast'
+import { t } from '@/i18n'
 
 const logger = log.extend('Components.EditPlaylistMetadataModal')
 
@@ -33,7 +34,7 @@ export default function EditPlaylistMetadataModal({
 
 	const fetchRemoteMetadata = useCallback(async () => {
 		if (!playlist.remoteSyncId) {
-			toast.error('プレイリストの remoteSyncId が空のため、リモートのデータを取得できません')
+			toast.error(t('リモートのデータを取得できません'))
 			return
 		}
 		const result = await bilibiliFacade.fetchRemotePlaylistMetadata(
@@ -42,7 +43,7 @@ export default function EditPlaylistMetadataModal({
 		)
 		if (result.isErr()) {
 			toastAndLogError(
-				'リモートのプレイリスト情報の取得に失敗しました',
+				t('リモートのプレイリスト情報の取得に失敗しました'),
 				result.error,
 				'Components.EditPlaylistMetadataModal',
 			)
@@ -53,12 +54,12 @@ export default function EditPlaylistMetadataModal({
 		setDescription(metadata.description)
 		setCoverUrl(metadata.coverUrl)
 		logger.debug('获取远程播放列表元数据成功', metadata)
-		toast.success('リモートのプレイリスト情報を取得しました')
+		toast.success(t('リモートのプレイリスト情報を取得しました'))
 	}, [playlist.remoteSyncId, playlist.type])
 
 	const handleConfirm = useCallback(() => {
 		if (title.trim().length === 0) {
-			toast.error('タイトルを入力してください')
+			toast.error(t('タイトルを入力してください'))
 			return
 		}
 		editPlaylistMetadata({
@@ -104,10 +105,10 @@ export default function EditPlaylistMetadataModal({
 
 	return (
 		<>
-			<Dialog.Title>情報を編集</Dialog.Title>
+			<Dialog.Title>{t('情報を編集')}</Dialog.Title>
 			<Dialog.Content style={styles.content}>
 				<TextInput
-					label='タイトル'
+					label={t('タイトル')}
 					testID='edit-playlist-title-input'
 					value={title}
 					onChangeText={setTitle}
@@ -116,7 +117,7 @@ export default function EditPlaylistMetadataModal({
 					textAlignVertical='top'
 				/>
 				<TextInput
-					label='説明'
+					label={t('説明')}
 					onChangeText={setDescription}
 					value={description ?? undefined}
 					mode='outlined'
@@ -126,7 +127,7 @@ export default function EditPlaylistMetadataModal({
 				/>
 				<View style={styles.coverUrlContainer}>
 					<TextInput
-						label='カバー'
+						label={t('カバー')}
 						onChangeText={setCoverUrl}
 						value={coverUrl ?? undefined}
 						mode='outlined'
@@ -144,12 +145,12 @@ export default function EditPlaylistMetadataModal({
 			</Dialog.Content>
 			<Dialog.Actions style={styles.actionsContainer}>
 				{playlist.type !== 'local' && playlist.type !== 'dynamic' ? (
-					<Button onPress={fetchRemoteMetadata}>リモートのデータを取得</Button>
+					<Button onPress={fetchRemoteMetadata}>{t('リモートのデータを取得')}</Button>
 				) : (
 					<View />
 				)}
 				<View style={styles.rightActionsContainer}>
-					<Button onPress={handleDismiss}>キャンセル</Button>
+					<Button onPress={handleDismiss}>{t('キャンセル')}</Button>
 					<Button
 						testID='edit-playlist-confirm-button'
 						onPress={handleConfirm}

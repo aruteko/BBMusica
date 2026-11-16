@@ -15,6 +15,7 @@ import type {
 import type { RequestOptions } from './request'
 import { createRequest } from './request'
 import { createOption } from './utils'
+import { t } from '@/i18n'
 
 interface SearchParams {
 	keywords: string
@@ -128,7 +129,7 @@ export class NeteaseApi {
 				if (searchResult.length === 0) {
 					return errAsync(
 						new NeteaseApiError({
-							message: '該当する曲が見つかりません\n\n検索キーワード：' + keyword,
+							message: t('該当する曲が見つかりません\n\n検索キーワード：') + keyword,
 							type: 'SearchResultNoMatch',
 						}),
 					)

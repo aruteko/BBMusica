@@ -2,7 +2,7 @@ import { useImage } from 'expo-image'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { RefreshControl, StyleSheet, View } from 'react-native'
-import { Appbar, Text, useTheme } from 'react-native-paper'
+import { Appbar, useTheme } from 'react-native-paper'
 import { Searchbar as SearchBar } from 'react-native-paper'
 import Animated, {
 	useAnimatedStyle,
@@ -10,7 +10,6 @@ import Animated, {
 	withTiming,
 } from 'react-native-reanimated'
 
-import Button from '@/components/common/Button'
 import { PlaylistError } from '@/features/playlist/remote/components/PlaylistError'
 import { PlaylistHeader } from '@/features/playlist/remote/components/PlaylistHeader'
 import { TrackList } from '@/features/playlist/remote/components/RemoteTrackList'
@@ -41,6 +40,7 @@ import type {
 import type { BilibiliTrack, Track } from '@/types/core/media'
 import { resolveBilibiliImageUrl } from '@/utils/imageUrl'
 import { formatMMSSToSeconds } from '@/utils/time'
+import { t as tr } from '@/i18n'
 
 const SEARCHBAR_HEIGHT = 72
 
@@ -82,7 +82,8 @@ export default function UploaderPage() {
 	const { colors } = theme
 	const router = useRouter()
 	const [refreshing, setRefreshing] = useState(false)
-	const enable = useAppStore((state) => state.hasBilibiliCookie())
+	// フォロー状態の取得・変更だけはログインが必要（動画一覧はログイン無しで見られる）
+	const hasCookie = useAppStore((state) => state.hasBilibiliCookie())
 	const accountMid = useAppStore((state) => state.bilibiliCookie?.DedeUserID)
 	const { data: personalInfo } = usePersonalInformation()
 	const isSelf = Number(accountMid ?? personalInfo?.mid) === Number(mid)
@@ -93,6 +94,10 @@ export default function UploaderPage() {
 		relation.data?.attribute === 2 || relation.data?.attribute === 6
 	const isBlocked = relation.data?.attribute === 128
 	const handleFollowing = async () => {
+		if (!hasCookie) {
+			router.navigate('/settings/bilibili-account/qrcode-login')
+			return
+		}
 		if (followingBusy.current) return
 		if (relation.isError) {
 			void relation.refetch()
@@ -195,32 +200,6 @@ export default function UploaderPage() {
 		return null
 	}
 
-	if (!enable) {
-		return (
-			<View
-				style={[styles.loginContainer, { backgroundColor: colors.background }]}
-			>
-				<Text
-					variant='titleMedium'
-					style={styles.loginText}
-				>
-					Bilibiliアカウントにログインすると、投稿者の動画を確認できます
-					{'\n\n'}
-					理由：Bilibili
-					ユーザーのスペースや投稿動画のAPIに、厳しいリスク制御があるためです
-				</Text>
-				<Button
-					mode='contained'
-					onPress={() => {
-						router.navigate('/settings/bilibili-account/qrcode-login')
-					}}
-				>
-					ログイン
-				</Button>
-			</View>
-		)
-	}
-
 	if (isUserInfoPending || !isListReady) {
 		return <PlaylistPageSkeleton animate={isListReady} />
 	}
@@ -230,7 +209,7 @@ export default function UploaderPage() {
 	}
 
 	if (isUploadedVideosError || isUserInfoError) {
-		return <PlaylistError text='読み込みに失敗しました' />
+		return <PlaylistError text={tr('読み込みに失敗しました')} />
 	}
 
 	return (
@@ -242,7 +221,7 @@ export default function UploaderPage() {
 				<Appbar.Content
 					title={
 						selectMode
-							? `${selected.size}\u2009曲を選択中`
+							? `${selected.size}${tr('\u2009曲を選択中')}`
 							: uploaderUserInfo.name
 					}
 					onPress={handleDoubleTap}
@@ -273,7 +252,7 @@ export default function UploaderPage() {
 					<>
 						<Appbar.Action
 							icon='radio-tower'
-							accessibilityLabel='この投稿者のステーション'
+							accessibilityLabel={tr('この投稿者のステーション')}
 							disabled={tracks.length === 0}
 							onPress={() => void startStation(tracks.slice(0, 5))}
 						/>
@@ -290,7 +269,7 @@ export default function UploaderPage() {
 				style={[styles.searchbarContainer, searchbarAnimatedStyle]}
 			>
 				<SearchBar
-					placeholder='曲を検索'
+					placeholder={tr('曲を検索')}
 					onChangeText={setSearchQuery}
 					value={searchQuery}
 				/>
@@ -307,26 +286,31 @@ export default function UploaderPage() {
 						<PlaylistHeader
 							cover={coverRef ?? undefined}
 							title={uploaderUserInfo.name}
-							subtitles={`${uploadedVideos?.pages[0].page.count ?? 0}\u2009曲`}
+							subtitles={`${uploadedVideos?.pages[0].page.count ?? 0}${tr('\u2009曲')}`}
 							description={uploaderUserInfo.sign}
 							onClickMainButton={isSelf ? undefined : handleFollowing}
 							mainButtonIcon={isFollowing ? 'account-check' : 'account-plus'}
 							mainButtonText={
-								setFollowing.isPending
-									? '処理中'
+								!hasCookie
+									? tr('ログインしてフォロー')
+									: setFollowing.isPending
+									? tr('処理中')
 									: relation.isError
-										? 'フォロー状態の取得に失敗しました。再試行'
+										? tr('フォロー状態の取得に失敗しました。再試行')
 										: isBlocked
-											? 'ブロック中'
+											? tr('ブロック中')
 											: relation.isPending
-												? 'フォロー状態を読み込み中'
+												? tr('フォロー状態を読み込み中')
 												: isFollowing
-													? 'フォロー解除'
-													: '投稿者をフォロー'
+													? tr('フォロー解除')
+													: tr('投稿者をフォロー')
 							}
-							mainButtonLoading={setFollowing.isPending || relation.isFetching}
+							mainButtonLoading={
+								hasCookie && (setFollowing.isPending || relation.isFetching)
+							}
 							disableMainButton={
-								setFollowing.isPending || relation.isFetching || isBlocked
+								hasCookie &&
+								(setFollowing.isPending || relation.isFetching || isBlocked)
 							}
 							id={Number(mid)}
 							primaryButtonColor={primaryButtonColor}
@@ -340,7 +324,10 @@ export default function UploaderPage() {
 							refreshing={refreshing}
 							onRefresh={async () => {
 								setRefreshing(true)
-								await Promise.all([refetch(), relation.refetch()])
+								await Promise.all([
+									refetch(),
+									hasCookie ? relation.refetch() : undefined,
+								])
 								setRefreshing(false)
 							}}
 							colors={[colors.primary]}
@@ -356,16 +343,6 @@ export default function UploaderPage() {
 }
 
 const styles = StyleSheet.create({
-	loginContainer: {
-		flex: 1,
-		alignItems: 'center',
-		justifyContent: 'center',
-		gap: 16,
-		paddingHorizontal: 25,
-	},
-	loginText: {
-		textAlign: 'center',
-	},
 	container: {
 		flex: 1,
 	},

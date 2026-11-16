@@ -220,7 +220,7 @@ private fun writeToPublicMusic(
     // Pre-Q (API < 29): Use legacy external storage directory
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
         val musicDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
-        val bbplayerDir = File(musicDir, "BBPlayer")
+        val bbplayerDir = File(musicDir, "BBMusica")
         if (!bbplayerDir.exists()) {
             bbplayerDir.mkdirs()
         }
@@ -265,7 +265,7 @@ private fun writeToPublicMusic(
             put(MediaStore.MediaColumns.MIME_TYPE, "audio/mp4")
             put(
                 MediaStore.MediaColumns.RELATIVE_PATH,
-                "${Environment.DIRECTORY_MUSIC}/BBPlayer",
+                "${Environment.DIRECTORY_MUSIC}/BBMusica",
             )
             put(MediaStore.MediaColumns.IS_PENDING, 1)
         },

@@ -14,6 +14,7 @@ import log, { reportErrorToSentry } from '@/utils/log'
 import { isActuallyOffline } from '@/utils/network'
 import { finalizeAndRecordCurrentTrack } from '@/utils/player'
 import toast from '@/utils/toast'
+import { t } from '@/i18n'
 
 const logger = log.extend('Manager.PlayerSideEffects')
 
@@ -122,29 +123,29 @@ class PlayerSideEffects {
 
 			if (biliCode === '-412') {
 				return {
-					message: 'Bilibiliの認証(CAPTCHA)が必要です。再ログインするか、しばらくしてからお試しください',
+					message: t('Bilibiliの認証が必要です。再ログインしてください'),
 					shouldReport: false,
 				}
 			}
 			if (biliCode === '-101') {
-				return { message: 'Bilibiliアカウントにログインしていません', shouldReport: false }
+				return { message: t('Bilibiliアカウントにログインしていません'), shouldReport: false }
 			}
 			return {
-				message: `Bilibili APIエラー: ${msg} (${biliCode})`,
+				message: `${t('Bilibili APIエラー: ')}${msg} (${biliCode})`,
 				shouldReport: false,
 			}
 		}
 
 		if (rawMessage.includes('Bilibili API Logic Error')) {
 			return {
-				message: 'Bilibiliのデータ解析に失敗しました。ネットワークを確認するか、しばらくしてからお試しください',
+				message: t('Bilibiliのデータを解析できませんでした'),
 				shouldReport: false,
 			}
 		}
 
 		if (rawMessage.includes('AudioStreamError')) {
 			return {
-				message: '音声ストリームを取得できません。大会員が必要か、曲が削除された可能性があります',
+				message: t('音声を取得できません'),
 				shouldReport: false,
 			}
 		}
@@ -152,7 +153,7 @@ class PlayerSideEffects {
 		if (rawMessage.includes('Bilibili API Http Error')) {
 			const codeMatch = rawMessage.match(/Http Error: (\d+)/)
 			return {
-				message: `Bilibiliのネットワークリクエストに失敗しました: ${codeMatch ? codeMatch[1] : 'Unknown'}`,
+				message: `${t('Bilibiliのネットワークリクエストに失敗しました: ')}${codeMatch ? codeMatch[1] : 'Unknown'}`,
 				shouldReport: false,
 			}
 		}
@@ -179,7 +180,7 @@ class PlayerSideEffects {
 				errorCode < 3000
 			) {
 				return {
-					message: '現在の曲はキャッシュされておらず、オフラインでは再生できません（またはIO/ネットワークの問題があります）',
+					message: t('キャッシュがなく、オフラインでは再生できません'),
 					shouldReport: false,
 				}
 			}
@@ -189,7 +190,7 @@ class PlayerSideEffects {
 				offlinePlaybackErrorPattern.test(rootMessage)
 			) {
 				return {
-					message: '現在の曲はキャッシュされておらず、オフラインでは再生できません',
+					message: t('現在の曲はキャッシュされておらず、オフラインでは再生できません'),
 					shouldReport: false,
 				}
 			}
@@ -221,7 +222,7 @@ class PlayerSideEffects {
 			rawMessage.includes('failed to connect') ||
 			rawMessage === 'timeout'
 		) {
-			return { message: 'ネットワーク接続に失敗しました。設定を確認してください', shouldReport: false }
+			return { message: t('ネットワーク接続に失敗しました。設定を確認してください'), shouldReport: false }
 		}
 
 		// 错误码落在「用户 / 内容 / 设备侧」分段，或为 ExoPlayer 的通用
@@ -232,14 +233,14 @@ class PlayerSideEffects {
 			rawMessage.includes('Source error')
 		) {
 			return {
-				message: 'この音声は再生できません。音源またはデバイスが対応していない可能性があります',
+				message: t('この音声は再生できません'),
 				shouldReport: false,
 			}
 		}
 
 		return {
 			message:
-				('message' in event ? event.message : null) || 'プレーヤーで不明なエラーが発生しました',
+				('message' in event ? event.message : null) || t('プレーヤーで不明なエラーが発生しました'),
 			shouldReport: true,
 		}
 	}
@@ -268,7 +269,7 @@ class PlayerSideEffects {
 
 			let playerErrorInfo = {
 				message:
-					('message' in event ? event.message : null) || 'プレーヤーで不明なエラーが発生しました',
+					('message' in event ? event.message : null) || t('プレーヤーで不明なエラーが発生しました'),
 				shouldReport: true,
 			}
 
@@ -311,11 +312,11 @@ class PlayerSideEffects {
 						))
 
 					if (!hasPermission) {
-						toast.info('マイクの権限がないため、スペクトラム表示をオフにしました')
+						toast.info(t('マイクの権限がないため、スペクトラム表示をオフにしました'))
 						return
 					}
 
-					toast.error('この端末または音声出力はシステムのスペクトラム解析に対応していないため、スペクトラム表示をオフにしました', {
+					toast.error(t('スペクトラム表示をオフにしました'), {
 						description: event.message,
 					})
 				} catch (error) {

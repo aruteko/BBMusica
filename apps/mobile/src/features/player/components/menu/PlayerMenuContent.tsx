@@ -13,6 +13,7 @@ import { switchPlayerMode } from '@/lib/player/playbackSession'
 import { toastAndLogError } from '@/utils/error-handling'
 import { getInternalPlayUri } from '@/utils/player'
 import toast from '@/utils/toast'
+import { t } from '@/i18n'
 
 export interface PlayerMenuContentProps {
 	onAction: (action: () => void) => void
@@ -98,12 +99,12 @@ export function PlayerDownloadButton({ onAction }: PlayerMenuContentProps) {
 	)
 	const downloadHandler = useCallback(async () => {
 		if (!currentTrack) {
-			toast.error('再生中の曲が見つかりません')
+			toast.error(t('再生中の曲が見つかりません'))
 			return
 		}
 		const url = getInternalPlayUri(currentTrack)
 		if (!url) {
-			toast.error('内部再生URLを取得できませんでした')
+			toast.error(t('内部再生URLを取得できませんでした'))
 			return
 		}
 		const artistName = currentTrack.artist?.name
@@ -117,10 +118,10 @@ export function PlayerDownloadButton({ onAction }: PlayerMenuContentProps) {
 				artwork: artworkUrl,
 				duration: currentTrack.duration,
 			})
-			toast.success('ダウンロードキューに追加しました')
+			toast.success(t('ダウンロードキューに追加しました'))
 		} catch (e) {
 			toastAndLogError(
-				'音声のダウンロードに失敗しました',
+				t('音声のダウンロードに失敗しました'),
 				e,
 				'Features.Player.PlayerFunctionalMenu',
 			)
@@ -132,8 +133,8 @@ export function PlayerDownloadButton({ onAction }: PlayerMenuContentProps) {
 			icon='download'
 			label={
 				downloadStatus?.[trackId ?? ''] === DownloadState.COMPLETED
-					? '再ダウンロード'
-					: 'ダウンロード'
+					? t('再ダウンロード')
+					: t('ダウンロード')
 			}
 			onPress={() => onAction(downloadHandler)}
 		/>
@@ -151,7 +152,7 @@ export function SharedTrackActions({
 		<>
 			{currentTrack?.source === 'bilibili' && (
 				<List.Item
-					title='bilibiliのお気に入りに追加'
+					title={t('bilibiliのお気に入りに追加')}
 					left={(props) => (
 						<List.Icon
 							{...props}
@@ -169,7 +170,7 @@ export function SharedTrackActions({
 				/>
 			)}
 			<List.Item
-				title='ローカルプレイリストに追加'
+				title={t('ローカルプレイリストに追加')}
 				left={(props) => (
 					<List.Icon
 						{...props}
@@ -184,7 +185,7 @@ export function SharedTrackActions({
 				}
 			/>
 			<List.Item
-				title='情報を編集'
+				title={t('情報を編集')}
 				left={(props) => (
 					<List.Icon
 						{...props}
@@ -199,7 +200,7 @@ export function SharedTrackActions({
 				}
 			/>
 			<List.Item
-				title='投稿者を表示'
+				title={t('投稿者を表示')}
 				left={(props) => (
 					<List.Icon
 						{...props}
@@ -209,7 +210,7 @@ export function SharedTrackActions({
 				onPress={() =>
 					handleAction(() => {
 						if (!uploaderMid) {
-							toast.error('動画の詳細を取得できませんでした')
+							toast.error(t('動画の詳細を取得できませんでした'))
 						} else {
 							router.navigate({
 								pathname: '/playlist/remote/uploader/[mid]',
@@ -221,7 +222,7 @@ export function SharedTrackActions({
 			/>
 			{currentTrack?.source === 'bilibili' && (
 				<List.Item
-					title='動画の詳細を表示'
+					title={t('動画の詳細を表示')}
 					left={(props) => (
 						<List.Icon
 							{...props}
@@ -250,7 +251,7 @@ export function ShareSongAction({
 	const openModal = useModalStore((state) => state.open)
 	return (
 		<List.Item
-			title='曲を共有'
+			title={t('曲を共有')}
 			left={(props) => (
 				<List.Icon
 					{...props}
@@ -270,7 +271,7 @@ export function ShareSongAction({
 export function PlayerModeSwitch({ onAction }: PlayerMenuContentProps) {
 	return (
 		<List.Item
-			title='プレーヤーモードを切り替え'
+			title={t('プレーヤーモードを切り替え')}
 			left={(props) => (
 				<List.Icon
 					{...props}
@@ -281,18 +282,18 @@ export function PlayerModeSwitch({ onAction }: PlayerMenuContentProps) {
 				const currentMode = playbackContextStore$.context.mode.peek()
 				if (!currentMode) return
 				const mode = currentMode === 'podcast' ? 'music' : 'podcast'
-				const label = mode === 'podcast' ? 'ポッドキャスト' : '音楽'
+				const label = mode === 'podcast' ? t('ポッドキャスト') : t('音楽')
 				onAction(() =>
 					useModalStore.getState().open('Alert', {
-						title: `${label}モードに切り替えますか？`,
-						message: `今回の再生のみ${label}モードを使用します。プレイリスト設定やデフォルト設定は変更されません。再生を開始し直すと、プレイリスト設定またはデフォルト設定に従ってモードが選ばれます。`,
+						title: t('{0}モードに切り替えますか？', label),
+						message: t('今回の再生のみ{0}モードを使用します。設定は変更されません。', label),
 						buttons: [
-							{ text: 'キャンセル' },
+							{ text: t('キャンセル') },
 							{
-								text: '切り替え',
+								text: t('切り替え'),
 								onPress: () => {
 									void switchPlayerMode(mode).catch((error: unknown) =>
-										toastAndLogError('再生設定の更新に失敗しました', error, 'Player.Mode'),
+										toastAndLogError(t('再生設定の更新に失敗しました'), error, 'Player.Mode'),
 									)
 								},
 							},

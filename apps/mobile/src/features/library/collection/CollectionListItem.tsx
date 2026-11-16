@@ -1,87 +1,42 @@
 import { useRouter } from 'expo-router'
 import { memo } from 'react'
-import { StyleSheet, View } from 'react-native'
-import { Touchable } from 'react-native-gesture-handler'
-import { Divider, Icon, Text } from 'react-native-paper'
 
 import CoverWithPlaceHolder from '@/components/common/CoverWithPlaceHolder'
-import { LIST_ITEM_COVER_SIZE } from '@/theme/dimensions'
+import GridCard from '@/components/common/GridCard'
 import type { BilibiliCollection } from '@/types/apis/bilibili'
+import { t } from '@/i18n'
 
 const CollectionListItem = memo(({ item }: { item: BilibiliCollection }) => {
 	const router = useRouter()
 
 	return (
-		<View>
-			<Touchable
-				androidRipple={{}}
-				disabled={item.state === 1}
-				onPress={() => {
-					if (item.attr === 0) {
-						router.navigate({
-							pathname: '/playlist/remote/collection/[id]',
-							params: { id: String(item.id) },
-						})
-					} else {
-						router.navigate({
-							pathname: '/playlist/remote/favorite/[id]',
-							params: { id: String(item.id) },
-						})
-					}
-				}}
-				style={styles.rectButton}
-			>
-				<View>
-					<View style={styles.itemContainer}>
-						<CoverWithPlaceHolder
-							id={item.id}
-							cover={item.cover}
-							title={item.title}
-							size={LIST_ITEM_COVER_SIZE}
-						/>
-						<View style={styles.textContainer}>
-							<Text
-								variant='titleMedium'
-								style={styles.title}
-							>
-								{item.title}
-							</Text>
-							<Text variant='bodySmall'>
-								{item.state === 0 ? item.upper.name : '無効'}
-								{'\u2009'}•{''}
-								{item.media_count}
-								{'\u2009'}曲
-							</Text>
-						</View>
-						<Icon
-							source='arrow-right'
-							size={24}
-						/>
-					</View>
-				</View>
-			</Touchable>
-			<Divider />
-		</View>
+		<GridCard
+			title={item.title}
+			disabled={item.state === 1}
+			subtitle={`${item.state === 0 ? item.upper.name : t('無効')} • ${item.media_count} ${t('曲')}`}
+			onPress={() => {
+				if (item.attr === 0) {
+					router.navigate({
+						pathname: '/playlist/remote/collection/[id]',
+						params: { id: String(item.id) },
+					})
+				} else {
+					router.navigate({
+						pathname: '/playlist/remote/favorite/[id]',
+						params: { id: String(item.id) },
+					})
+				}
+			}}
+			renderCover={(size) => (
+				<CoverWithPlaceHolder
+					id={item.id}
+					cover={item.cover}
+					title={item.title}
+					size={size}
+				/>
+			)}
+		/>
 	)
-})
-
-const styles = StyleSheet.create({
-	rectButton: {
-		paddingVertical: 8,
-		overflow: 'hidden',
-	},
-	itemContainer: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		padding: 8,
-	},
-	textContainer: {
-		marginLeft: 12,
-		flex: 1,
-	},
-	title: {
-		paddingRight: 8,
-	},
 })
 
 CollectionListItem.displayName = 'CollectionListItem'

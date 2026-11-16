@@ -13,6 +13,7 @@ import useCurrentTrack from '@/hooks/player/useCurrentTrack'
 import useAppStore from '@/hooks/stores/useAppStore'
 import { useMenuActions } from '@/hooks/ui/useMenuActions'
 import { toastAndLogError } from '@/utils/error-handling'
+import { t } from '@/i18n'
 
 export default function PlaybackSettingsPage() {
 	const router = useRouter()
@@ -49,12 +50,12 @@ export default function PlaybackSettingsPage() {
 
 	const menuActions = useMenuActions([
 		{
-			title: '音楽',
+			title: t('音楽'),
 			state: defaultPlayerMode === 'music' ? 'on' : 'off',
 			onPress: () => setDefaultPlayerMode('music'),
 		},
 		{
-			title: 'ポッドキャスト',
+			title: t('ポッドキャスト'),
 			state: defaultPlayerMode === 'podcast' ? 'on' : 'off',
 			onPress: () => setDefaultPlayerMode('podcast'),
 		},
@@ -64,7 +65,7 @@ export default function PlaybackSettingsPage() {
 		<View style={[styles.container, { backgroundColor: colors.background }]}>
 			<Appbar.Header>
 				<Appbar.BackAction onPress={() => router.back()} />
-				<Appbar.Content title='再生設定' />
+				<Appbar.Content title={t('再生設定')} />
 			</Appbar.Header>
 			<ScrollView
 				style={styles.scrollView}
@@ -74,15 +75,13 @@ export default function PlaybackSettingsPage() {
 				]}
 			>
 				<SettingsSectionTitle
-					title='再生の動作'
+					title={t('再生の動作')}
 					first
 				/>
 				<View style={styles.settingRow}>
 					<View style={{ flexShrink: 1 }}>
-						<Text>デフォルトのプレーヤー</Text>
-						<Text variant='bodySmall'>
-							これから始める再生にのみ影響します。プレイリストごとに個別の設定もできます。
-						</Text>
+						<Text>{t('デフォルトのプレーヤー')}</Text>
+						<Text variant='bodySmall'>{t('次の再生から適用されます')}</Text>
 					</View>
 					<MenuView {...menuActions}>
 						<IconButton
@@ -92,7 +91,7 @@ export default function PlaybackSettingsPage() {
 					</MenuView>
 				</View>
 				<View style={styles.settingRow}>
-					<Text>音量の自動調整</Text>
+					<Text>{t('音量の自動調整')}</Text>
 					<UniversalSwitch
 						value={enableLoudnessNormalization}
 						onValueChange={() => {
@@ -100,7 +99,7 @@ export default function PlaybackSettingsPage() {
 								Orpheus.loudnessNormalizationEnabled =
 									!enableLoudnessNormalization
 							} catch (e) {
-								toastAndLogError('設定に失敗しました', e, 'Settings')
+								toastAndLogError(t('設定に失敗しました'), e, 'Settings')
 								return
 							}
 							setEnableLoudnessNormalization(!enableLoudnessNormalization)
@@ -109,10 +108,8 @@ export default function PlaybackSettingsPage() {
 				</View>
 				<View style={styles.settingRow}>
 					<View style={{ flexShrink: 1, paddingRight: 12 }}>
-						<Text>曲の冒頭の無音をスキップ</Text>
-						<Text variant='bodySmall'>
-							曲の始まりにある無音部分だけを飛ばします（最大6秒）。曲の途中の無音は飛ばしません。
-						</Text>
+						<Text>{t('曲の冒頭の無音をスキップ')}</Text>
+						<Text variant='bodySmall'>{t('曲の冒頭の無音だけを飛ばします')}</Text>
 					</View>
 					<UniversalSwitch
 						value={enableLeadingSilenceSkip}
@@ -120,7 +117,7 @@ export default function PlaybackSettingsPage() {
 							try {
 								Orpheus.isLeadingSilenceSkipEnabled = !enableLeadingSilenceSkip
 							} catch (e) {
-								toastAndLogError('設定に失敗しました', e, 'Settings')
+								toastAndLogError(t('設定に失敗しました'), e, 'Settings')
 								return
 							}
 							setEnableLeadingSilenceSkip(!enableLeadingSilenceSkip)
@@ -128,7 +125,7 @@ export default function PlaybackSettingsPage() {
 					/>
 				</View>
 				<View style={styles.settingRow}>
-					<Text>他のアプリと同時に再生を許可</Text>
+					<Text>{t('他のアプリと同時に再生を許可')}</Text>
 					<UniversalSwitch
 						value={allowSimultaneousPlayback}
 						onValueChange={(value) => {
@@ -139,10 +136,8 @@ export default function PlaybackSettingsPage() {
 
 				<View style={styles.settingRow}>
 					<View style={{ flexShrink: 1, paddingRight: 12 }}>
-						<Text>キュー終了時におすすめを自動再生</Text>
-						<Text variant='bodySmall'>
-							再生リストが最後まで終わったら、似た曲を続けて再生します。
-						</Text>
+						<Text>{t('キュー終了時におすすめを自動再生')}</Text>
+						<Text variant='bodySmall'>{t('再生リストが最後まで終わったら、似た曲を続けて再生します。')}</Text>
 					</View>
 					<UniversalSwitch
 						value={autoPlayRecommendations}
@@ -153,10 +148,10 @@ export default function PlaybackSettingsPage() {
 				</View>
 				<TouchableRipple
 					onPress={() => router.navigate('/settings/equalizer')}
-					accessibilityLabel='イコライザー'
+					accessibilityLabel={t('イコライザー')}
 				>
 					<View style={styles.settingRow}>
-						<Text>イコライザー</Text>
+						<Text>{t('イコライザー')}</Text>
 						<IconButton
 							icon='chevron-right'
 							size={20}
@@ -164,9 +159,9 @@ export default function PlaybackSettingsPage() {
 					</View>
 				</TouchableRipple>
 
-				<SettingsSectionTitle title='起動時の動作' />
+				<SettingsSectionTitle title={t('起動時の動作')} />
 				<View style={styles.settingRow}>
-					<Text>アプリ起動時に前回の再生位置を復元</Text>
+					<Text>{t('アプリ起動時に前回の再生位置を復元')}</Text>
 					<UniversalSwitch
 						value={enablePersistCurrentPosition}
 						onValueChange={() => {
@@ -174,7 +169,7 @@ export default function PlaybackSettingsPage() {
 								Orpheus.restorePlaybackPositionEnabled =
 									!enablePersistCurrentPosition
 							} catch (e) {
-								toastAndLogError('設定に失敗しました', e, 'Settings')
+								toastAndLogError(t('設定に失敗しました'), e, 'Settings')
 								return
 							}
 							setEnablePersistCurrentPosition(!enablePersistCurrentPosition)
@@ -182,14 +177,14 @@ export default function PlaybackSettingsPage() {
 					/>
 				</View>
 				<View style={styles.settingRow}>
-					<Text>アプリ起動時に自動で再生</Text>
+					<Text>{t('アプリ起動時に自動で再生')}</Text>
 					<UniversalSwitch
 						value={enableAutostartPlayOnStart}
 						onValueChange={() => {
 							try {
 								Orpheus.autoplayOnStartEnabled = !enableAutostartPlayOnStart
 							} catch (e) {
-								toastAndLogError('設定に失敗しました', e, 'Settings')
+								toastAndLogError(t('設定に失敗しました'), e, 'Settings')
 								return
 							}
 							setEnableAutostartPlayOnStart(!enableAutostartPlayOnStart)

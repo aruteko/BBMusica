@@ -12,6 +12,7 @@ import type { Playlist, Track } from '@/types/core/media'
 import { toastAndLogError } from '@/utils/error-handling'
 import { addToQueue, getInternalPlayUri } from '@/utils/player'
 import toast from '@/utils/toast'
+import { t } from '@/i18n'
 
 const RADIO_ICON = Icon.select({
 	ios: 'dot.radiowaves.left.and.right',
@@ -93,7 +94,7 @@ export function useLocalPlaylistMenu({
 				clearQueue: false,
 				playNext: true,
 			})
-			if (added) toast.success('次に再生に追加しました')
+			if (added) toast.success(t('次に再生に追加しました'))
 		},
 		[playlistId],
 	)
@@ -105,13 +106,13 @@ export function useLocalPlaylistMenu({
 		if (!playlist) return []
 		const menuItems: TrackMenuItem[] = [
 			{
-				title: '次に再生',
+				title: t('次に再生'),
 				leadingIcon: PLAY_NEXT_ICON,
 				onPress: () => playNext(item),
 				isHighFreq: true,
 			},
 			{
-				title: 'ローカルプレイリストに追加',
+				title: t('ローカルプレイリストに追加'),
 				leadingIcon: ADD_TO_PLAYLIST_ICON,
 				onPress: () => openAddToPlaylistModal(item),
 				isHighFreq: true,
@@ -120,14 +121,14 @@ export function useLocalPlaylistMenu({
 		if (item.source === 'bilibili') {
 			menuItems.push(
 				{
-					title: 'この曲からステーション',
+					title: t('この曲からステーション'),
 					leadingIcon: RADIO_ICON,
 					onPress: () => {
 						void startStation(item)
 					},
 				},
 				{
-					title: '詳細を表示',
+					title: t('詳細を表示'),
 					leadingIcon: INFO_ICON,
 					onPress: () =>
 						router.navigate({
@@ -136,7 +137,7 @@ export function useLocalPlaylistMenu({
 						}),
 				},
 				{
-					title: '投稿者の動画を表示',
+					title: t('投稿者の動画を表示'),
 					leadingIcon: ARTIST_ICON,
 					onPress: () => {
 						if (!item.artist?.remoteId) {
@@ -150,7 +151,7 @@ export function useLocalPlaylistMenu({
 				},
 				{
 					title:
-						downloadState === DownloadState.COMPLETED ? 'キャッシュを削除' : '音声をキャッシュ',
+						downloadState === DownloadState.COMPLETED ? t('キャッシュを削除') : t('音声をキャッシュ'),
 					leadingIcon:
 						downloadState === DownloadState.COMPLETED
 							? REMOVE_CACHE_ICON
@@ -158,7 +159,7 @@ export function useLocalPlaylistMenu({
 					onPress: async () => {
 						if (downloadState === DownloadState.COMPLETED) {
 							await Orpheus.removeDownload(item.uniqueKey)
-							toast.success('キャッシュを削除しました')
+							toast.success(t('キャッシュを削除しました'))
 							await queryClient.invalidateQueries({
 								queryKey: ['batchDownloadStatus'],
 							})
@@ -168,7 +169,7 @@ export function useLocalPlaylistMenu({
 						try {
 							const url = getInternalPlayUri(item)
 							if (!url) {
-								toastAndLogError('内部再生URLを取得できませんでした', '失敗しました！', SCOPE)
+								toastAndLogError(t('内部再生URLを取得できませんでした'), t('失敗しました！'), SCOPE)
 								return
 							}
 							let artistName: string | undefined
@@ -189,9 +190,9 @@ export function useLocalPlaylistMenu({
 								duration: item.duration,
 							})
 
-							toast.success('ダウンロードを開始しました')
+							toast.success(t('ダウンロードを開始しました'))
 						} catch (error) {
-							toastAndLogError('音声のキャッシュに失敗しました', error, SCOPE)
+							toastAndLogError(t('音声のキャッシュに失敗しました'), error, SCOPE)
 						}
 					},
 					isHighFreq: true,
@@ -200,33 +201,33 @@ export function useLocalPlaylistMenu({
 		}
 		menuItems.push(
 			{
-				title: 'カバーURLをコピー',
+				title: t('カバーURLをコピー'),
 				leadingIcon: LINK_ICON,
 				onPress: () => {
 					void Clipboard.setStringAsync(item.coverUrl ?? '')
-					toast.success('クリップボードにコピーしました')
+					toast.success(t('クリップボードにコピーしました'))
 				},
 			},
 			{
-				title: '情報を編集',
+				title: t('情報を編集'),
 				leadingIcon: EDIT_ICON,
 				onPress: () => openEditTrackModal(item),
 			},
 		)
 		if (playlist?.type === 'local' && !isReadOnly) {
 			menuItems.push({
-				title: '曲を削除',
+				title: t('曲を削除'),
 				leadingIcon: DELETE_ICON,
 				onPress: () =>
 					alert(
-						'確認',
-						'リストからこの曲を削除しますか？',
+						t('確認'),
+						t('リストからこの曲を削除しますか？'),
 						[
 							{
-								text: 'キャンセル',
+								text: t('キャンセル'),
 							},
 							{
-								text: 'OK',
+								text: t('OK'),
 								onPress: () => deleteTrack(item.id),
 							},
 						],

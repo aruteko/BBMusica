@@ -5,6 +5,7 @@ import { queryClient } from '@/lib/config/queryClient'
 import lyricService from '@/lib/services/lyricService'
 import type { LyricSearchResult } from '@/types/player/lyrics'
 import toast from '@/utils/toast'
+import { t } from '@/i18n'
 
 export const useFetchLyrics = () => {
 	return useMutation({
@@ -23,7 +24,7 @@ export const useFetchLyrics = () => {
 			return result.value
 		},
 		onSuccess: (_, { uniqueKey }) => {
-			toast.show('歌詞を取得しました')
+			toast.show(t('歌詞を取得しました'))
 			void queryClient.invalidateQueries({
 				queryKey: lyricsQueryKeys.smartFetchLyrics(uniqueKey),
 			})

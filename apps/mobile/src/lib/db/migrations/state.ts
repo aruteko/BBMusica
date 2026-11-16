@@ -10,6 +10,7 @@ export const legacyMigrationKeys = [
 	'sort_key_migrated_v3',
 	'play_history_migrated_v1',
 	'independent_account_migrated_v1',
+	'account_removed_migrated_v1',
 	'play_history_ms_migrated_v1',
 ] as const
 

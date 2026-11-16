@@ -16,6 +16,10 @@ import Button from '@/components/common/Button'
 import { usePlayHistoryHeatmap } from '@/hooks/queries/playHistory'
 import db from '@/lib/db/db'
 import { playHistory, tracks } from '@/lib/db/schema'
+import { language, t } from '@/i18n'
+import { CORNER_RADIUS } from '@/theme/dimensions'
+
+const numberLocale = language === 'zh' ? 'zh-CN' : 'ja-JP'
 
 export default function ListeningRecordSection({
 	compact = false,
@@ -47,13 +51,13 @@ export default function ListeningRecordSection({
 	const hours =
 		summaryError || !summary[0]
 			? '—'
-			: (Math.max(0, summary[0].duration) / 3600).toLocaleString('zh-CN', {
+			: (Math.max(0, summary[0].duration) / 3600).toLocaleString(numberLocale, {
 					maximumFractionDigits: 1,
 				})
 	const plays =
 		summaryError || !summary[0]
 			? '—'
-			: summary[0].playCount.toLocaleString('zh-CN')
+			: summary[0].playCount.toLocaleString(numberLocale)
 
 	return (
 		<View style={[styles.section, compact && { paddingVertical: 8, gap: 8 }]}>
@@ -61,9 +65,7 @@ export default function ListeningRecordSection({
 				<Text
 					variant='titleMedium'
 					style={styles.bold}
-				>
-					再生記録
-				</Text>
+				>{t('再生記録')}</Text>
 				<Touchable
 					accessibilityRole='button'
 					onPress={() => router.navigate('/history/overall')}
@@ -72,9 +74,7 @@ export default function ListeningRecordSection({
 					<Text
 						variant='bodyMedium'
 						style={{ color: colors.onSurfaceVariant }}
-					>
-						すべての統計
-					</Text>
+					>{t('すべての統計')}</Text>
 					<Icon
 						source='chevron-right'
 						size={20}
@@ -84,8 +84,8 @@ export default function ListeningRecordSection({
 			</View>
 			<View style={styles.metrics}>
 				{[
-					{ icon: 'headphones', value: hours, unit: '時間', label: '累計再生' },
-					{ icon: 'play-outline', value: plays, unit: '回', label: '最後まで再生' },
+					{ icon: 'headphones', value: hours, unit: t('時間'), label: t('累計再生') },
+					{ icon: 'play-outline', value: plays, unit: t('回'), label: t('最後まで再生') },
 				].map((metric) => (
 					<View
 						key={metric.label}
@@ -118,19 +118,17 @@ export default function ListeningRecordSection({
 				<Text
 					variant='bodySmall'
 					style={{ color: colors.error }}
-				>
-					再生の概要を読み込めませんでした
-				</Text>
+				>{t('再生の概要を読み込めませんでした')}</Text>
 			)}
 			{isError ? (
-				<Button onPress={() => void refetch()}>再生記録の読み込みに失敗しました。再試行</Button>
+				<Button onPress={() => void refetch()}>{t('再生記録の読み込みに失敗しました。再試行')}</Button>
 			) : isPending ? (
 				<View
 					style={[
 						styles.heatmapPlaceholder,
 						{ backgroundColor: colors.surfaceVariant },
 					]}
-					accessibilityLabel='再生記録を読み込み中'
+					accessibilityLabel={t('再生記録を読み込み中')}
 				/>
 			) : (
 				<WeeklyHeatMap
@@ -139,7 +137,7 @@ export default function ListeningRecordSection({
 					cellGap={4}
 					cellRadius={4}
 					initialScrollEnd
-					locale='zh-cn'
+					locale={language === 'zh' ? 'zh-cn' : 'ja'}
 					weekStartsOn={1}
 					scheme={theme.dark ? 'dark' : 'light'}
 					onCellPress={({ date }) =>
@@ -159,9 +157,7 @@ export default function ListeningRecordSection({
 			<Text
 				variant='bodySmall'
 				style={[styles.hint, { color: colors.onSurfaceVariant }]}
-			>
-				時間は最後まで再生したものだけを集計 · 日付をタップして履歴を見る
-			</Text>
+			>{t('時間は最後まで再生したものだけを集計 · 日付をタップして履歴を見る')}</Text>
 		</View>
 	)
 }
@@ -187,6 +183,6 @@ const styles = StyleSheet.create({
 		gap: 8,
 	},
 	metricText: { flex: 1, gap: 4 },
-	heatmapPlaceholder: { height: 160, borderRadius: 8 },
+	heatmapPlaceholder: { height: 160, borderRadius: CORNER_RADIUS },
 	hint: { textAlign: 'center' },
 })

@@ -34,6 +34,7 @@ import useAppStoreObj from '@/hooks/stores/useAppStore'
 import { initPlayerQueueStore } from '@/hooks/stores/usePlayerQueueStore'
 import { usePlayerStore } from '@/hooks/stores/usePlayerStore'
 import { initializeSentry } from '@/lib/config/sentry'
+import { isUpstreamOfficialApp } from '@/lib/config/telemetry'
 import drizzleDb from '@/lib/db/db'
 import { playerSideEffects } from '@/lib/player/PlayerSideEffects'
 import { analyticsService } from '@/lib/services/analyticsService'
@@ -43,18 +44,20 @@ import {
 	reportUpdateActivity,
 	reportUpdateLaunch,
 } from '@/lib/services/updateTelemetry'
-import { playlistSyncWorker } from '@/lib/workers/PlaylistSyncWorker'
 import { ProjectScope } from '@/types/core/scope'
 import log, { cleanOldLogFiles, reportErrorToSentry } from '@/utils/log'
 import { storage } from '@/utils/mmkv'
 import { isActuallyOffline } from '@/utils/network'
 
 import migrations from '../../drizzle/migrations'
+import { t } from '@/i18n'
 
 const logger = log.extend('UI.RootLayout')
 
 Observe.configure({
-	dispatchingEnabled: useAppStoreObj.getState().settings.enableDataCollection,
+	dispatchingEnabled:
+		isUpstreamOfficialApp &&
+		useAppStoreObj.getState().settings.enableDataCollection,
 	integrations: { 'expo-router': true },
 })
 
@@ -74,12 +77,12 @@ const checkOverlayPermissionOnStart = async () => {
 			// 延迟显示，确保 UI 已经加载
 			setTimeout(() => {
 				alert(
-					'デスクトップ歌詞',
-					'デスクトップ歌詞はオンですが、重ねて表示する権限がありません。権限を許可すると、表示が元に戻ります。',
+					t('デスクトップ歌詞'),
+					t('権限がないため表示できません'),
 					[
-						{ text: 'キャンセル' },
+						{ text: t('キャンセル') },
 						{
-							text: '権限を許可',
+							text: t('権限を許可'),
 							onPress: () => Orpheus.requestOverlayPermission(),
 						},
 					],
@@ -102,7 +105,7 @@ function runAppInit() {
 				}
 			})
 			.orTee((e) => {
-				logger.warning('清理旧日志失败', { error: e.message })
+				logger.warning(t('古いログを消去できませんでした'), { error: e.message })
 			})
 
 		void lyricService.migrateFromOldFormat()
@@ -132,11 +135,11 @@ function runAppInit() {
 			}
 		} catch (error) {
 			logger.error('播放器初始化失败: ', error)
-			reportErrorToSentry(error, '播放器初始化失败', ProjectScope.Player)
+			reportErrorToSentry(error, t('プレーヤーの初期化に失敗しました'), ProjectScope.Player)
 		}
 	} catch (error) {
 		logger.error('初始化失败:', error)
-		reportErrorToSentry(error, '初始化失败', ProjectScope.UI)
+		reportErrorToSentry(error, t('初期化に失敗しました'), ProjectScope.UI)
 	}
 }
 
@@ -208,10 +211,6 @@ function RootLayout() {
 	useEffect(() => {
 		if (isReady && migrationsSuccess) {
 			reportUpdateLaunch()
-			// 恢复上次被中断的同步任务（syncing → pending），并触发同步
-			playlistSyncWorker.recoverStuckRows().catch((error) => {
-				logger.error('恢复同步任务失败:', error)
-			})
 
 			const firstOpen = storage.getBoolean('first_open') ?? true
 			if (firstOpen) {
@@ -230,8 +229,8 @@ function RootLayout() {
 	if (migrationsError) {
 		return (
 			<View style={styles.errorContainer}>
-				<Text>データベースの移行に失敗しました: {migrationsError?.message}</Text>
-				<Text>エラーの画面をスクリーンショットして、プロジェクトの issues に報告することをおすすめします</Text>
+				<Text>{t('データベースの移行に失敗しました: ')}{migrationsError?.message}</Text>
+				<Text>{t('エラー画面のスクリーンショットを報告してください')}</Text>
 			</View>
 		)
 	}
@@ -338,10 +337,6 @@ function RootLayout() {
 							name='playlist/local/[id]'
 							options={{ headerShown: false }}
 						/>
-						<Stack.Screen
-							name='share/playlist'
-							options={{ headerShown: false }}
-						/>
 
 						<Stack.Screen
 							name='history/overall'
@@ -428,14 +423,6 @@ function RootLayout() {
 						/>
 						<Stack.Screen
 							name='settings/backup'
-							options={{ headerShown: false }}
-						/>
-						<Stack.Screen
-							name='settings/account'
-							options={{ headerShown: false }}
-						/>
-						<Stack.Screen
-							name='settings/donate'
 							options={{ headerShown: false }}
 						/>
 					</Stack>

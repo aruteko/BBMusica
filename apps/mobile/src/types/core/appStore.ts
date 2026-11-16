@@ -8,6 +8,8 @@ interface Settings {
 	enableOldSchoolStyleLyric: boolean
 	playerBackgroundStyle: 'gradient' | 'fluid'
 	pureWhiteBackground: boolean
+	/** テーマのメインカラーで、アプリ全体の配色を変える。未設定（旧版本）は、オン扱い */
+	skinAccentColor?: boolean
 	nowPlayingBarStyle: 'float' | 'bottom'
 	lyricSource: 'auto' | 'netease' | 'qqmusic' | 'kugou'
 	enableVerbatimLyrics: boolean
@@ -29,18 +31,9 @@ interface BilibiliUserSummary {
 	cachedAt?: number
 }
 
-interface BBPlayerAccount {
-	id: string
-	username: string
-	name: string
-	face?: string | null
-}
-
 interface AppState {
 	bilibiliCookie: Record<string, string> | null
 	bilibiliUserInfo: BilibiliUserSummary | null
-	bbplayerToken: string | null
-	bbplayerAccount: BBPlayerAccount | null
 	settings: Settings
 
 	// Cookies
@@ -50,12 +43,6 @@ interface AppState {
 	clearBilibiliCookie: () => void
 	setBilibiliUserInfo: (info: BilibiliUserSummary | null) => void
 
-	// Auth
-	setBbplayerToken: (token: string) => void
-	setBBPlayerAccount: (account: BBPlayerAccount | null) => void
-	clearBbplayerToken: () => void
-	clearBBPlayerAccount: () => void
-
 	// Settings
 	setSettings: (updates: Partial<Settings>) => void
 
@@ -63,4 +50,4 @@ interface AppState {
 	setEnableDataCollection: (value: boolean) => void
 }
 
-export type { AppState, BBPlayerAccount, BilibiliUserSummary, Settings }
+export type { AppState, BilibiliUserSummary, Settings }

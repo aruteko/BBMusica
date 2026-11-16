@@ -30,7 +30,6 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import Lyrics from '@/features/player/components/lyrics/PlayerLyrics'
-import PlayerVideo from '@/features/player/components/video/PlayerVideo'
 import { PodcastSubtitles } from '@/features/player/components/lyrics/PodcastSubtitles'
 import { PlayerChaptersSheet } from '@/features/player/components/main/PlayerChaptersSheet'
 import { PlayerHeader } from '@/features/player/components/main/PlayerHeader'
@@ -115,8 +114,18 @@ export default function PlayerPage() {
 	)
 	const [isPreventingBack, setIsPreventingBack] = useState(true)
 
-	const [index, setIndex] = useState(0)
-	const suppressDesktopLyrics = isFocused && isForeground && index === 1
+	// 音楽モードのページ構成：[MV, メイン, 歌詞]。右へなぞると MV、左へなぞると歌詞。
+	// MV のページも、歌詞と同じくページャーの1ページなので、どこをなぞっても切り替わる。
+	// ポッドキャストモードは [メイン, 字幕] のまま。
+	const [isPodcast, setIsPodcast] = useState(
+		() => playbackContextStore$.context.mode.peek() === 'podcast',
+	)
+	const mainIndex = isPodcast ? 0 : 1
+	const lyricsIndex = isPodcast ? 1 : 2
+	const videoIndex = 0
+	const [index, setIndex] = useState(mainIndex)
+	const suppressDesktopLyrics =
+		isFocused && isForeground && index === lyricsIndex
 
 	useEffect(() => {
 		if (Platform.OS !== 'android') return
@@ -168,8 +177,8 @@ export default function PlayerPage() {
 	}, [isPreventingBack])
 
 	const handleDismiss = () => {
-		if (index > 0) {
-			pagerRef.current?.setPage(0)
+		if (index !== mainIndex) {
+			pagerRef.current?.setPage(mainIndex)
 			return
 		}
 		dismissPlayer()
@@ -185,20 +194,23 @@ export default function PlayerPage() {
 		}
 	}, [])
 
-	const scrollX = useSharedValue(0)
+	const scrollX = useSharedValue(mainIndex)
 
+	// モードが変わったら、新しいモードのメインページに戻す（ページ構成が変わるため）
 	useObserveEffect(() => {
-		if (playbackContextStore$.context.mode.get() === 'podcast') {
-			pagerRef.current?.setPageWithoutAnimation(0)
-			setIndex(0)
-			scrollX.set(0)
-		}
+		const podcast = playbackContextStore$.context.mode.get() === 'podcast'
+		const target = podcast ? 0 : 1
+		setIsPodcast(podcast)
+		pagerRef.current?.setPageWithoutAnimation(target)
+		setIndex(target)
+		scrollX.set(target)
 	})
 
 	const [menuVisible, setMenuVisible] = useState(false)
 
 	const jumpTo = (key: string) => {
-		const targetIndex = key === 'video' ? 2 : key === 'lyrics' ? 1 : 0
+		const targetIndex =
+			key === 'video' ? videoIndex : key === 'lyrics' ? lyricsIndex : mainIndex
 		pagerRef.current?.setPage(targetIndex)
 	}
 
@@ -273,8 +285,8 @@ export default function PlayerPage() {
 			void usePlayerQueueSheetStore.getState().close()
 			return
 		}
-		if (index === 1) {
-			pagerRef.current?.setPage(0)
+		if (index !== mainIndex) {
+			pagerRef.current?.setPage(mainIndex)
 			return
 		}
 		handleDismiss()
@@ -353,6 +365,7 @@ export default function PlayerPage() {
 								onMorePress={() => setMenuVisible(true)}
 								onBack={handleDismiss}
 								index={index}
+								mainIndex={mainIndex}
 								scrollX={scrollX}
 							/>
 						</Computed>
@@ -365,11 +378,32 @@ export default function PlayerPage() {
 								}
 								ref={pagerRef}
 								style={styles.tabView}
-								initialPage={0}
+								initialPage={
+									playbackContextStore$.context.mode.get() === 'podcast' ? 0 : 1
+								}
 								onPageScroll={pageScrollHandler}
 								onPageSelected={(e) => setIndex(e.nativeEvent.position)}
 							>
 								{[
+									// メインページの左：MV のページ（丸いカバーの部分が動画になる）。ポッドキャストでは出さない
+									...(playbackContextStore$.context.mode.get() === 'podcast'
+										? []
+										: [
+												<View
+													key='video'
+													style={styles.tabView}
+												>
+													<PlayerMainTab
+														videoMode
+														jumpTo={jumpTo}
+														imageRef={coverRef}
+														active={
+															index === videoIndex && isFocused && isForeground
+														}
+														onPresent={() => {}}
+													/>
+												</View>,
+											]),
 									<View
 										key='main'
 										style={styles.tabView}
@@ -377,6 +411,9 @@ export default function PlayerPage() {
 										<PlayerMainTab
 											jumpTo={jumpTo}
 											imageRef={coverRef}
+											active={
+												index === mainIndex && isFocused && isForeground
+											}
 											onPresent={() => {}}
 										/>
 									</View>,
@@ -385,27 +422,14 @@ export default function PlayerPage() {
 										style={styles.tabView}
 									>
 										{playbackContextStore$.context.mode.get() === 'podcast' ? (
-											<PodcastSubtitles active={index === 1 && isFocused} />
+											<PodcastSubtitles active={index === lyricsIndex && isFocused} />
 										) : (
 											<Lyrics
-												currentIndex={index}
+												currentIndex={index === lyricsIndex ? 1 : 0}
 												onPressBackground={() => jumpTo('main')}
 											/>
 										)}
 									</View>,
-									// 歌词的右側：動画（MV）。ポッドキャストモードでは出さない
-									...(playbackContextStore$.context.mode.get() === 'podcast'
-										? []
-										: [
-												<View
-													key='video'
-													style={styles.tabView}
-												>
-													<PlayerVideo
-														active={index === 2 && isFocused && isForeground}
-													/>
-												</View>,
-											]),
 								]}
 							</AnimatedPagerView>
 						</Computed>

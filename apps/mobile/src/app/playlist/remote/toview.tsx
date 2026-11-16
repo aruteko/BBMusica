@@ -33,6 +33,7 @@ import { toastAndLogError } from '@/utils/error-handling'
 import { reportErrorToSentry } from '@/utils/log'
 import { addToQueue } from '@/utils/player'
 import toast from '@/utils/toast'
+import { t as tr } from '@/i18n'
 
 const DELETE_ICON = Icon.select({
 	ios: 'trash',
@@ -127,13 +128,13 @@ export default function ToViewPage() {
 		const createIt = await syncFacade.addTrackToLocal(track)
 		if (createIt.isErr()) {
 			toastAndLogError(
-				'曲のローカル登録に失敗しました',
+				tr('曲のローカル登録に失敗しました'),
 				createIt.error,
 				'UI.Playlist.Remote',
 			)
 			reportErrorToSentry(
 				createIt.error,
-				'曲のローカル登録に失敗しました',
+				tr('曲のローカル登録に失敗しました'),
 				'UI.Playlist.Remote',
 			)
 			return
@@ -149,7 +150,7 @@ export default function ToViewPage() {
 
 	const handlePlayAll = useCallback(async () => {
 		if (!tracksData || tracksData.length === 0) {
-			toast.error('再生できる曲がありません')
+			toast.error(tr('再生できる曲がありません'))
 			return
 		}
 
@@ -163,7 +164,7 @@ export default function ToViewPage() {
 
 	const menuActions = useMenuActions([
 		{
-			title: '再生済みの曲をすべて削除',
+			title: tr('再生済みの曲をすべて削除'),
 			image: DELETE_ICON,
 			onPress: () => {
 				deleteToViewVideo({
@@ -173,19 +174,19 @@ export default function ToViewPage() {
 			},
 		},
 		{
-			title: 'すべての曲を削除',
+			title: tr('すべての曲を削除'),
 			image: DELETE_ICON,
 			attributes: { destructive: true },
 			onPress: () => {
 				alert(
-					'あとで見るの曲をすべて削除',
-					'あとで見るの曲をすべて削除しますか？',
+					tr('あとで見るの曲をすべて削除'),
+					tr('あとで見るの曲をすべて削除しますか？'),
 					[
 						{
-							text: 'キャンセル',
+							text: tr('キャンセル'),
 						},
 						{
-							text: 'OK',
+							text: tr('OK'),
 							onPress: () => {
 								clearToViewVideoList()
 							},
@@ -202,7 +203,7 @@ export default function ToViewPage() {
 	}
 
 	if (isToViewDataError) {
-		return <PlaylistError text='読み込みに失敗しました' />
+		return <PlaylistError text={tr('読み込みに失敗しました')} />
 	}
 
 	return (
@@ -213,7 +214,7 @@ export default function ToViewPage() {
 			>
 				<Appbar.Content
 					title={
-						selectMode ? `${selected.size}\u2009曲を選択中` : 'あとで見る'
+						selectMode ? `${selected.size}${tr('\u2009曲を選択中')}` : tr('あとで見る')
 					}
 					onPress={handleDoubleTap}
 				/>
@@ -273,14 +274,14 @@ export default function ToViewPage() {
 					ListHeaderComponent={
 						<PlaylistHeader
 							cover={coverRef ?? undefined}
-							title={'あとで見る'}
-							subtitles={`再生待ちの曲が\u2009${tracksData.length}\u2009曲`}
+							title={tr('あとで見る')}
+							subtitles={`${tr('再生待ちの曲が\u2009')}${tracksData.length}${tr('\u2009曲')}`}
 							description={undefined}
 							onClickMainButton={handlePlayAll}
 							mainButtonIcon={'play'}
 							linkedPlaylistId={undefined}
-							mainButtonText='すべて再生'
-							id={'あとで見る'}
+							mainButtonText={tr('すべて再生')}
+							id={tr('あとで見る')}
 							primaryButtonColor={primaryButtonColor}
 							primaryButtonTextColor={primaryButtonTextColor}
 							secondaryButtonContainerColor={secondaryButtonContainerColor}

@@ -23,6 +23,7 @@ import type { BilibiliFavoriteListContent } from '@/types/apis/bilibili'
 import type { BilibiliTrack, Track } from '@/types/core/media'
 import { resolveBilibiliImageUrl } from '@/utils/imageUrl'
 import toast from '@/utils/toast'
+import { t as tr } from '@/i18n'
 
 const mapApiItemToTrack = (
 	apiItem: BilibiliFavoriteListContent,
@@ -114,7 +115,7 @@ export default function FavoritePage() {
 
 	const handleSync = useCallback(() => {
 		if (favoriteData?.pages.flatMap((page) => page.medias).length === 0) {
-			toast.info('お気に入りが空のため、同期は不要です')
+			toast.info(tr('お気に入りが空のため、同期は不要です'))
 			return
 		}
 
@@ -155,7 +156,7 @@ export default function FavoritePage() {
 	if (isFavoriteDataError) {
 		return (
 			<PlaylistError
-				text='お気に入りの内容を読み込めませんでした'
+				text={tr('お気に入りの内容を読み込めませんでした')}
 				onRetry={refetch}
 			/>
 		)
@@ -164,7 +165,7 @@ export default function FavoritePage() {
 	if (!favoriteData.pages[0].info) {
 		return (
 			<PlaylistError
-				text='お気に入りの情報が無効か、存在しません'
+				text={tr('お気に入りの情報が無効か、存在しません')}
 				onRetry={refetch}
 			/>
 		)
@@ -179,7 +180,7 @@ export default function FavoritePage() {
 				<Appbar.Content
 					title={
 						selectMode
-							? `${selected.size}\u2009曲を選択中`
+							? `${selected.size}${tr('\u2009曲を選択中')}`
 							: favoriteData.pages[0].info.title
 					}
 					onPress={handleDoubleTap}
@@ -221,7 +222,7 @@ export default function FavoritePage() {
 						<PlaylistHeader
 							cover={coverRef ?? undefined}
 							title={favoriteData.pages[0].info.title}
-							subtitles={`${favoriteData.pages[0].info.upper.name}\u2009•\u2009${favoriteData.pages[0].info.media_count}\u2009曲`}
+							subtitles={`${favoriteData.pages[0].info.upper.name}\u2009•\u2009${favoriteData.pages[0].info.media_count}${tr('\u2009曲')}`}
 							description={favoriteData.pages[0].info.intro}
 							onClickMainButton={handleSync}
 							mainButtonIcon={'sync'}

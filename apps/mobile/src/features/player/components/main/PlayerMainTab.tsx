@@ -18,12 +18,22 @@ import { TrackInfo } from './PlayerTrackInfo'
 interface PlayerMainTabProps {
 	jumpTo: (key: string) => void
 	imageRef: ImageRef | null
+	/** このページが表示中か（MVを読み込むかどうか） */
+	active?: boolean
+	/**
+	 * 丸いカバーの部分を MV（動画）にしたページ。
+	 * 歌詞のページと同じく、プレーヤーのページャーの1ページとして並べる
+	 * （どこをなぞっても、ネイティブのページャーの動きで切り替わる）。
+	 */
+	videoMode?: boolean
 	onPresent: () => void
 }
 
 const PlayerMainTab = memo(function PlayerMainTab({
 	jumpTo,
 	imageRef,
+	active = true,
+	videoMode = false,
 	onPresent,
 }: PlayerMainTabProps) {
 	const router = useRouter()
@@ -40,21 +50,25 @@ const PlayerMainTab = memo(function PlayerMainTab({
 				style={styles.container}
 				onLayout={({ nativeEvent }) => setSize(nativeEvent.layout)}
 			>
-				<TrackInfo
-					onArtistPress={() =>
-						currentTrack.artist?.remoteId
-							? router.navigate({
-									pathname: '/playlist/remote/uploader/[mid]',
-									params: { mid: currentTrack.artist?.remoteId },
-								})
-							: void 0
-					}
-					onPressCover={() => {
-						void Haptics.performHaptics(Haptics.AndroidHaptics.Context_Click)
-						jumpTo('lyrics')
-					}}
-					coverRef={imageRef}
-				/>
+				<View style={styles.trackInfoArea}>
+					<TrackInfo
+						onArtistPress={() =>
+							currentTrack.artist?.remoteId
+								? router.navigate({
+										pathname: '/playlist/remote/uploader/[mid]',
+										params: { mid: currentTrack.artist?.remoteId },
+									})
+								: void 0
+						}
+						onPressCover={() => {
+							void Haptics.performHaptics(Haptics.AndroidHaptics.Context_Click)
+							jumpTo('lyrics')
+						}}
+						coverRef={imageRef}
+						active={active}
+						showVideo={videoMode}
+					/>
+				</View>
 
 				<View
 					style={[
@@ -87,6 +101,10 @@ const PlayerMainTab = memo(function PlayerMainTab({
 
 const styles = StyleSheet.create({
 	container: {
+		flex: 1,
+		minHeight: 0,
+	},
+	trackInfoArea: {
 		flex: 1,
 		minHeight: 0,
 	},

@@ -7,6 +7,7 @@ import { toastAndLogError } from '@/utils/error-handling'
 import log from '@/utils/log'
 import { returnOrThrowAsync } from '@/utils/neverthrow-utils'
 import toast from '@/utils/toast'
+import { t } from '@/i18n'
 
 const logger = log.extend('Mutation.Bilibili.Favorite')
 
@@ -30,10 +31,10 @@ export const useDealFavoriteForOneVideo = () => {
 				}),
 			),
 		onSuccess: async (_data, _value) => {
-			toast.success('操作しました', {
+			toast.success(t('操作しました'), {
 				description:
 					_data.toast_msg.length > 0
-						? `APIからのメッセージ：${_data.toast_msg}`
+						? `${t('APIからのメッセージ：')}${_data.toast_msg}`
 						: undefined,
 			})
 			// 只刷新当前显示的收藏夹
@@ -43,16 +44,16 @@ export const useDealFavoriteForOneVideo = () => {
 			})
 		},
 		onError: (error) => {
-			let errorMessage = '削除に失敗しました。しばらくしてからお試しください'
+			let errorMessage = t('削除に失敗しました。しばらくしてからお試しください')
 			if (error instanceof BilibiliApiError) {
 				if (error.type === 'CsrfError') {
-					errorMessage = '削除に失敗しました：csrfトークンの有効期限が切れています。Cookieを確認してから、もう一度お試しください'
+					errorMessage = t('削除に失敗しました：ログインの期限が切れています')
 				} else {
-					errorMessage = `削除に失敗しました：${error.message} (${error.data.msgCode})`
+					errorMessage = `${t('削除に失敗しました：')}${error.message} (${error.data.msgCode})`
 				}
 			}
 
-			toast.error('操作に失敗しました', {
+			toast.error(t('操作に失敗しました'), {
 				description: errorMessage,
 				duration: Number.POSITIVE_INFINITY,
 			})
@@ -76,7 +77,7 @@ export const useBatchDeleteFavoriteListContents = () => {
 				}),
 			),
 		onSuccess: async (_data, variables) => {
-			toast.success('削除しました')
+			toast.success(t('削除しました'))
 			await queryClient.refetchQueries({
 				queryKey: favoriteListQueryKeys.infiniteFavoriteList(
 					variables.favoriteId,
@@ -84,12 +85,12 @@ export const useBatchDeleteFavoriteListContents = () => {
 			})
 		},
 		onError: (error) => {
-			let errorMessage = '削除に失敗しました。しばらくしてからお試しください'
+			let errorMessage = t('削除に失敗しました。しばらくしてからお試しください')
 			if (error instanceof BilibiliApiError) {
 				if (error.type === 'CsrfError') {
-					errorMessage = '削除に失敗しました：csrfトークンの有効期限が切れています。Cookieを確認してから、もう一度お試しください'
+					errorMessage = t('削除に失敗しました：ログインの期限が切れています')
 				} else {
-					errorMessage = `削除に失敗しました：${error.message} (${error.data.msgCode})`
+					errorMessage = `${t('削除に失敗しました：')}${error.message} (${error.data.msgCode})`
 				}
 			}
 

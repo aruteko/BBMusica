@@ -15,6 +15,7 @@ import { usePlayerChaptersSheetStore } from '@/hooks/stores/usePlayerChaptersShe
 import { seekWithinTrack } from '@/lib/player/seek'
 import { toastAndLogError } from '@/utils/error-handling'
 import { formatDurationToHHMMSS } from '@/utils/time'
+import { t } from '@/i18n'
 
 export function PlayerChaptersSheet() {
 	const data = usePlayerChapters()
@@ -58,7 +59,7 @@ export function PlayerChaptersSheet() {
 			if (target !== null) void usePlayerChaptersSheetStore.getState().close()
 			setSeeking(false)
 		} catch (error) {
-			toastAndLogError('チャプターへの移動に失敗しました', error, 'Player.Chapters')
+			toastAndLogError(t('チャプターへの移動に失敗しました'), error, 'Player.Chapters')
 			setSeeking(false)
 		}
 	}
@@ -87,9 +88,7 @@ export function PlayerChaptersSheet() {
 					<Text
 						variant='titleMedium'
 						style={{ padding: 20 }}
-					>
-						チャプター
-					</Text>
+					>{t('チャプター')}</Text>
 					<View style={{ flex: 1, minHeight: 2 }}>
 						{data.chapters.length > 0 ? (
 							<ScrollView
@@ -115,7 +114,7 @@ export function PlayerChaptersSheet() {
 										title={item.title}
 										titleNumberOfLines={3}
 										description={
-											chapterIndex === currentIndex ? '再生中' : undefined
+											chapterIndex === currentIndex ? t('再生中') : undefined
 										}
 										left={() => (
 											<Text
@@ -167,22 +166,20 @@ export function PlayerChaptersSheet() {
 								{data.isLoading ? (
 									<>
 										<ActivityIndicator />
-										<Text>チャプターを読み込み中…</Text>
+										<Text>{t('チャプターを読み込み中…')}</Text>
 									</>
 								) : data.isError ? (
 									<>
-										<Text>チャプターの読み込みに失敗しました（再生には影響しません）</Text>
+										<Text>{t('チャプターの読み込みに失敗しました')}</Text>
 										<Button
 											onPress={() => {
 												void data.retry()
 											}}
-										>
-											再試行
-										</Button>
+										>{t('再試行')}</Button>
 									</>
 								) : (
 									<Text>
-										{data.isLocal ? 'この音声にはチャプターがありません' : 'この動画にはチャプターがありません'}
+										{data.isLocal ? t('この音声にはチャプターがありません') : t('この動画にはチャプターがありません')}
 									</Text>
 								)}
 							</View>

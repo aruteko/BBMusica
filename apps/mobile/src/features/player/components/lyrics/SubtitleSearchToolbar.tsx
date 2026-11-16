@@ -10,6 +10,7 @@ import Animated, {
 
 import IconButton from '@/components/common/IconButton'
 import { VariantPlainText } from '@/components/common/VariantPlainText'
+import { t } from '@/i18n'
 
 export function SubtitleSearchToolbar({
 	label,
@@ -70,7 +71,7 @@ export function SubtitleSearchToolbar({
 						onPress={onSelect}
 						disabled={!canSelect}
 						accessibilityRole='button'
-						accessibilityLabel={`字幕を選択：${label}`}
+						accessibilityLabel={`${t('字幕を選択：')}${label}`}
 						testID='subtitle-language'
 						style={[
 							styles.language,
@@ -106,8 +107,8 @@ export function SubtitleSearchToolbar({
 					>
 						<Searchbar
 							ref={input}
-							placeholder='この動画の字幕を検索'
-							accessibilityLabel='この動画の字幕を検索'
+							placeholder={t('この動画の字幕を検索')}
+							accessibilityLabel={t('この動画の字幕を検索')}
 							testID='subtitle-search-input'
 							value={search}
 							onChangeText={onChangeSearch}
@@ -116,7 +117,7 @@ export function SubtitleSearchToolbar({
 							right={() => (
 								<IconButton
 									icon='close'
-									accessibilityLabel='字幕の検索を閉じる'
+									accessibilityLabel={t('字幕の検索を閉じる')}
 									onPress={onClose}
 									style={styles.icon}
 								/>
@@ -129,7 +130,7 @@ export function SubtitleSearchToolbar({
 					{!visible && (
 						<IconButton
 							icon='magnify'
-							accessibilityLabel='字幕を検索'
+							accessibilityLabel={t('字幕を検索')}
 							testID='subtitle-search-open'
 							disabled={!canSearch}
 							onPress={onOpen}
@@ -146,13 +147,13 @@ export function SubtitleSearchToolbar({
 						style={{ color: colors.onSurfaceVariant, flex: 1 }}
 					>
 						{resultCount
-							? `${resultIndex + 1} / ${resultCount} 件一致`
-							: '一致する内容が見つかりません'}
+							? `${resultIndex + 1} / ${resultCount}${t(' 件一致')}`
+							: t('一致する内容が見つかりません')}
 					</VariantPlainText>
 					<View style={styles.navigation}>
 						<IconButton
 							icon='chevron-up'
-							accessibilityLabel='前の検索結果'
+							accessibilityLabel={t('前の検索結果')}
 							testID='subtitle-search-previous'
 							disabled={!hasQuery || !resultCount || resultIndex === 0}
 							onPress={() => onNavigate(-1)}
@@ -160,7 +161,7 @@ export function SubtitleSearchToolbar({
 						/>
 						<IconButton
 							icon='chevron-down'
-							accessibilityLabel='次の検索結果'
+							accessibilityLabel={t('次の検索結果')}
 							testID='subtitle-search-next'
 							disabled={!hasQuery || resultIndex >= resultCount - 1}
 							onPress={() => onNavigate(1)}

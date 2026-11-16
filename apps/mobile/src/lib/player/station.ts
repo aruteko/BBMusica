@@ -4,9 +4,9 @@ import { playbackContextStore$ } from '@/hooks/stores/playbackContextStore'
 import useAppStore from '@/hooks/stores/useAppStore'
 import {
 	bvidFromUniqueKey,
-	fetchPopularMusicTracks,
 	fetchRecommendedTracks,
 	getFrequentTracks,
+	getLibrarySeedBvids,
 	persistTracksToLocal,
 	seedBvidOf,
 } from '@/lib/services/recommendationService'
@@ -16,6 +16,7 @@ import log from '@/utils/log'
 import { AndroidHaptics, performHaptics } from '@/utils/haptics'
 import { addToQueue } from '@/utils/player'
 import toast from '@/utils/toast'
+import { t } from '@/i18n'
 
 const logger = log.extend('Player.Station')
 
@@ -39,7 +40,7 @@ export function isStationTrack(trackId: string) {
 /**
  * 开始电台。
  * - 传入 seed（一首或多首）：以它们为起点，推荐相关的曲目；第一首会排在队列开头
- * - 不传：以最近常听的曲目为种子；没有播放记录时使用音乐分区热门榜
+ * - 不传：以最近常听的曲目为种子；没有播放记录时用本地歌单里的曲目
  */
 export async function startStation(seed?: Track | Track[]): Promise<boolean> {
 	// 点击后立刻震动，之后取得推荐需要一点时间
@@ -55,33 +56,41 @@ export async function startStation(seed?: Track | Track[]): Promise<boolean> {
 		} else {
 			const frequent = await getFrequentTracks()
 			seedBvids.push(...frequent.map((track) => track.bilibiliMetadata.bvid))
+			if (seedBvids.length === 0) seedBvids.push(...(await getLibrarySeedBvids()))
 		}
 
-		let tracks = await fetchRecommendedTracks({
+		const tracks = await fetchRecommendedTracks({
 			seedBvids,
 			excludeKeys: new Set(seeds.map((item) => item.uniqueKey)),
 			limit: INITIAL_BATCH,
 		})
-		if (tracks.length === 0) {
-			tracks = await fetchPopularMusicTracks(INITIAL_BATCH)
-		}
-		if (tracks.length === 0) {
-			toast.error('おすすめできる曲が見つかりません。しばらくしてからお試しください')
+		// 起点の曲があれば、おすすめが取れなくても、その曲だけで始める（あとで補充される）
+		if (tracks.length === 0 && !(seeds[0]?.source === 'bilibili')) {
+			toast.error(
+				t('おすすめの曲が見つかりません'),
+			)
 			return false
 		}
 
 		// 先入库再入队：否则播放器按 uniqueKey 读取当前曲目时会 TrackNotFound
 		const first = seeds[0]
+		const firstKey = first?.source === 'bilibili' ? first.uniqueKey : undefined
 		const candidates = first?.source === 'bilibili' ? [first, ...tracks] : tracks
 		const queueTracks = await persistTracksToLocal(candidates)
-		if (queueTracks.length === 0) {
-			toast.error('ステーションを開始できません：曲情報の保存に失敗しました')
+		// 起点の曲を保存できなかったときは、別の曲から始めず、中止する
+		if (
+			queueTracks.length === 0 ||
+			(firstKey && !queueTracks.some((item) => item.uniqueKey === firstKey))
+		) {
+			toast.error(t('ステーションを開始できません：曲情報の保存に失敗しました'))
 			return false
 		}
 		const ok = await addToQueue({
 			tracks: queueTracks,
 			playNow: true,
 			clearQueue: true,
+			// 指定した曲から必ず始める（ホームのステーション画像の曲など）
+			startFromKey: firstKey,
 			playNext: false,
 			// 已在 startStation 开头震动过
 			haptic: false,
@@ -93,12 +102,12 @@ export async function startStation(seed?: Track | Track[]): Promise<boolean> {
 		stationSeeds = seedBvids
 		toast.success(
 			seeds.length > 0
-				? 'ステーションを開始しました'
-				: 'ステーションを開始しました',
+				? t('ステーションを開始しました')
+				: t('ステーションを開始しました'),
 		)
 		return true
 	} catch (error) {
-		toastAndLogError('ステーションの開始に失敗しました', error, 'Player.Station')
+		toastAndLogError(t('ステーションの開始に失敗しました'), error, 'Player.Station')
 		return false
 	}
 }
@@ -188,11 +197,11 @@ export async function refillStationIfNeeded(trackId: string): Promise<void> {
 			// 自动再生的曲目之后按电台的方式继续补充
 			stationKeys.add(trackId)
 			stationSeeds = seedBvids
-			toast.info('おすすめの曲を続けて再生します')
+			toast.info(t('おすすめの曲を続けて再生します'))
 		}
 		logger.info('追加了推荐曲目', { count: persisted.length, inStation })
 	} catch (error) {
-		logger.warning('追加推荐曲目失败', error)
+		logger.warning(t('おすすめ曲を追加できませんでした'), error)
 	} finally {
 		refilling = false
 	}

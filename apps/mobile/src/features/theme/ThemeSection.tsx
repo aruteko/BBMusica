@@ -30,15 +30,17 @@ import type {
 import { assetFeaturesFromManifest } from '@/lib/theme/types'
 import { storage } from '@/utils/mmkv'
 import toast from '@/utils/toast'
+import { t } from '@/i18n'
+import { CORNER_RADIUS } from '@/theme/dimensions'
 
 const SKIN_FEATURE_LABELS: Array<[keyof SkinAssetFeatures, string]> = [
-	['cards', 'ポスター'],
+	['cards', t('ポスター')],
 	// ['spaceBackgrounds', '海报'],
-	['skins', 'アプリのテーマ'],
-	['playIcons', 'スライダー'],
-	['thumbups', 'いいねのアニメーション'],
-	['loadings', '更新アニメーション'],
-	['avatarFrames', 'アイコンフレーム'],
+	['skins', t('アプリのテーマ')],
+	['playIcons', t('スライダー')],
+	['thumbups', t('いいねのアニメーション')],
+	['loadings', t('更新アニメーション')],
+	['avatarFrames', t('アイコンフレーム')],
 	// ['cardBackgrounds', '卡片背景'],
 	// ['emojiPackages', '表情'],
 ]
@@ -47,12 +49,12 @@ const EMPTY_INSTALLED_SKINS: InstalledSkinMeta[] = []
 
 const deleteSkin = (skin: InstalledSkinMeta) => {
 	alert(
-		'装扮を削除',
-		`「${skin.name}」を削除しますか？`,
+		t('装扮を削除'),
+		t('「{0}」を削除しますか？', skin.name),
 		[
-			{ text: 'キャンセル' },
+			{ text: t('キャンセル') },
 			{
-				text: '削除',
+				text: t('削除'),
 				onPress: () => {
 					void uninstallSkin(skin.id)
 				},
@@ -128,8 +130,8 @@ function ThemeSectionContent({ disabled }: { disabled: boolean }) {
 		) ?? activeSkin?.bootSplash.items?.[0]
 	const selectedMode =
 		selectedBootSplashAsset?.video && selectedSkinBootSplashMode === 'video'
-			? '動画'
-			: '静止画のポスター'
+			? t('動画')
+			: t('静止画のポスター')
 
 	const selectBootSplashAsset = (
 		item: SkinBootSplashAsset,
@@ -160,20 +162,18 @@ function ThemeSectionContent({ disabled }: { disabled: boolean }) {
 				<View style={styles.settingTextContainer}>
 					<Text
 						style={disabled ? { color: colors.onSurfaceDisabled } : undefined}
-					>
-						ダイナミックテーマ
-					</Text>
+					>{t('ダイナミックテーマ')}</Text>
 					<Text
 						variant='bodySmall'
 						style={{ color: colors.onSurfaceVariant }}
 					>
 						{disabled
-							? '純白の背景がオンのときは使えません'
+							? t('純白の背景がオンのときは使えません')
 							: activeSkin
 								? activeSkin.name
 								: installedSkins.length > 0
-									? 'オンにすると、選んだスキンの素材を使います'
-									: 'スキンの素材をダウンロードすると有効にできます'}
+									? t('オンにすると、選んだスキンの素材を使います')
+									: t('スキンの素材をダウンロードすると有効にできます')}
 					</Text>
 				</View>
 				<UniversalSwitch
@@ -197,14 +197,12 @@ function ThemeSectionContent({ disabled }: { disabled: boolean }) {
 					mode='outlined'
 					disabled={disabled}
 					onPress={() => router.navigate('/settings/appearance/theme-search')}
-				>
-					テーマを追加
-				</Button>
+				>{t('テーマを追加')}</Button>
 			</View>
 
 			{!disabled && installedSkins.length > 0 ? (
 				<View style={styles.section}>
-					<Text variant='titleMedium'>インストール済みのテーマ</Text>
+					<Text variant='titleMedium'>{t('インストール済みのテーマ')}</Text>
 					<View style={styles.skinList}>
 						{installedSkins.map((skin) => {
 							const coverUri = localAssetUri(skin.rootUri, skin.coverPath)
@@ -251,7 +249,7 @@ function ThemeSectionContent({ disabled }: { disabled: boolean }) {
 											variant='bodySmall'
 											style={{ color: colors.onSurfaceVariant }}
 										>
-											{selected ? '使用中' : 'タップして切り替え'}
+											{selected ? t('使用中') : t('タップして切り替え')}
 										</Text>
 									</View>
 									{selected ? (
@@ -308,10 +306,10 @@ function ThemeSectionContent({ disabled }: { disabled: boolean }) {
 							}
 							onDisableSkin={() => {
 								setSkinSettings({ activeSkinIndex: -1 })
-								alert('アプリのテーマをオフにする', '変更を反映するには、アプリの再起動が必要です', [
-									{ text: 'キャンセル' },
+								alert(t('アプリのテーマをオフにする'), t('変更を反映するには、アプリの再起動が必要です'), [
+									{ text: t('キャンセル') },
 									{
-										text: 'オフにして再起動',
+										text: t('オフにして再起動'),
 										onPress: () => {
 											void Expo.reloadAppAsync()
 										},
@@ -320,19 +318,19 @@ function ThemeSectionContent({ disabled }: { disabled: boolean }) {
 							}}
 							onDisablePlayIcon={() => {
 								setSkinSettings({ activePlayIconIndex: -1 })
-								toast.success('スライダーの表示をオフにしました')
+								toast.success(t('スライダーの表示をオフにしました'))
 							}}
 							onDisableThumbUp={() => {
 								setSkinSettings({ activeThumbUpIndex: -1 })
-								toast.success('いいねのアニメーションの表示をオフにしました')
+								toast.success(t('いいねのアニメーションの表示をオフにしました'))
 							}}
 							onDisableLoading={() => {
 								setSkinSettings({ activeLoadingIndex: -1 })
-								toast.success('更新アニメーションの表示をオフにしました')
+								toast.success(t('更新アニメーションの表示をオフにしました'))
 							}}
 							onDisableAvatarFrame={() => {
 								setSkinSettings({ activeAvatarFrameIndex: -1 })
-								toast.success('アイコンフレームの表示をオフにしました')
+								toast.success(t('アイコンフレームの表示をオフにしました'))
 							}}
 							skin={activeInstalledSkin}
 							activeSkin={activeSkin}
@@ -340,14 +338,14 @@ function ThemeSectionContent({ disabled }: { disabled: boolean }) {
 					) : null}
 					<View style={styles.sectionHeader}>
 						<View style={styles.settingTextContainer}>
-							<Text>起動アニメーションの素材</Text>
+							<Text>{t('起動アニメーションの素材')}</Text>
 							<Text
 								variant='bodySmall'
 								style={{ color: colors.onSurfaceVariant }}
 							>
 								{selectedBootSplashAsset
 									? `${selectedBootSplashAsset.name} · ${selectedMode}`
-									: '既定の素材'}
+									: t('既定の素材')}
 							</Text>
 						</View>
 					</View>
@@ -415,13 +413,11 @@ function ThemeSectionContent({ disabled }: { disabled: boolean }) {
 			{activeSkinId ? (
 				<View style={styles.settingRow}>
 					<View style={styles.settingTextContainer}>
-						<Text>テーマの起動アニメーションを最後まで再生</Text>
+						<Text>{t('テーマの起動アニメーションを最後まで再生')}</Text>
 						<Text
 							variant='bodySmall'
 							style={{ color: colors.onSurfaceVariant }}
-						>
-							アプリの起動時に、スプラッシュアニメーションが終わるのを待ってからホームを開きます（長いものが多いため、おすすめしません）
-						</Text>
+						>{t('起動アニメーションの終了を待ってから開く')}</Text>
 					</View>
 					<UniversalSwitch
 						value={playFullSkinBootSplashAnimation}
@@ -444,12 +440,11 @@ function ThemeSectionContent({ disabled }: { disabled: boolean }) {
 					>
 						<View style={styles.sectionHeader}>
 							<View style={styles.settingTextContainer}>
-								<Text variant='titleMedium'>プレーヤーのスライダー</Text>
+								<Text variant='titleMedium'>{t('プレーヤーのスライダー')}</Text>
 								<Text
 									variant='bodySmall'
 									style={{ color: colors.onSurfaceVariant }}
-								>
-									サイズ {skinSliderThumbSize} · X {skinSliderThumbOffsetX} · Y{' '}
+								>{t('サイズ ')}{skinSliderThumbSize} · X {skinSliderThumbOffsetX} · Y{' '}
 									{skinSliderThumbOffsetY}
 								</Text>
 							</View>
@@ -467,7 +462,7 @@ function ThemeSectionContent({ disabled }: { disabled: boolean }) {
 							offsetY={skinSliderThumbOffsetY}
 						/>
 						<SliderControl
-							label='サイズ'
+							label={t('サイズ')}
 							value={skinSliderThumbSize}
 							minimumValue={12}
 							maximumValue={36}
@@ -573,7 +568,7 @@ function AssetFeaturePanel({ features }: { features: SkinAssetFeatures }) {
 
 	return (
 		<View style={styles.featurePanel}>
-			<Text variant='titleMedium'>素材の上書き</Text>
+			<Text variant='titleMedium'>{t('素材の上書き')}</Text>
 			<View style={styles.featureGrid}>
 				{SKIN_FEATURE_LABELS.map(([key, label]) => {
 					const available = features[key]
@@ -690,24 +685,24 @@ function InstalledAssetSections({
 		<View style={styles.installedAssets}>
 			<AssetFeaturePanel features={features} />
 			<AssetStrip
-				title='アプリのテーマ'
+				title={t('アプリのテーマ')}
 				onDisable={onDisableSkin}
 				disableActive={activeSkinIndex === -1}
 				items={(assets?.skins ?? []).map((_item, index) => ({
 					id: `skin-${_item.id}-${index}`,
-					name: _item.name ?? `テーマ ${index + 1}`,
+					name: _item.name ?? `${t('テーマ ')}${index + 1}`,
 					onPress: () => onSelectSkin(index),
 					selected: index === activeSkinIndex,
 					uri: activeSkin.skins[index]?.background.head ?? null,
 				}))}
 			/>
 			<AssetStrip
-				title='スライダー'
+				title={t('スライダー')}
 				onDisable={onDisablePlayIcon}
 				disableActive={activePlayIconIndex === -1}
 				items={(assets?.play_icons ?? []).map((_item, index) => ({
 					id: `play-icon-${_item.id}-${index}`,
-					name: _item.name ?? `スライダー ${index + 1}`,
+					name: _item.name ?? `${t('スライダー ')}${index + 1}`,
 					onPress: () => onSelectPlayIcon(index),
 					selected: index === activePlayIconIndex,
 					uri: activeSkin.sliderThumbs[index]?.normal ?? null,
@@ -715,12 +710,12 @@ function InstalledAssetSections({
 				compact
 			/>
 			<AssetStrip
-				title='いいねのアニメーション'
+				title={t('いいねのアニメーション')}
 				onDisable={onDisableThumbUp}
 				disableActive={activeThumbUpIndex === -1}
 				items={(assets?.thumbups ?? []).map((_item, index) => ({
 					id: `thumbup-${_item.id}-${index}`,
-					name: _item.name ?? `いいねのアニメーション ${index + 1}`,
+					name: _item.name ?? `${t('いいねのアニメーション ')}${index + 1}`,
 					onPress: () => onSelectThumbUp(index),
 					selected: index === activeThumbUpIndex,
 					uri: activeSkin.thumbUps[index]?.preview ?? null,
@@ -728,12 +723,12 @@ function InstalledAssetSections({
 				compact
 			/>
 			<AssetStrip
-				title='更新アニメーション'
+				title={t('更新アニメーション')}
 				onDisable={onDisableLoading}
 				disableActive={activeLoadingIndex === -1}
 				items={(assets?.loadings ?? []).map((_item, index) => ({
 					id: `loading-${_item.id}-${index}`,
-					name: _item.name ?? `更新アニメーション ${index + 1}`,
+					name: _item.name ?? `${t('更新アニメーション ')}${index + 1}`,
 					onPress: () => onSelectLoading(index),
 					selected: index === activeLoadingIndex,
 					uri: activeSkin.loadings[index]?.frame ?? null,
@@ -741,12 +736,12 @@ function InstalledAssetSections({
 				compact
 			/>
 			<AssetStrip
-				title='アイコンフレーム'
+				title={t('アイコンフレーム')}
 				onDisable={onDisableAvatarFrame}
 				disableActive={activeAvatarFrameIndex === -1}
 				items={(assets?.avatar_frames ?? []).map((_item, index) => ({
 					id: `avatar-${_item.id}-${index}`,
-					name: _item.name ?? `アイコンフレーム ${index + 1}`,
+					name: _item.name ?? `${t('アイコンフレーム ')}${index + 1}`,
 					onPress: () => onSelectAvatarFrame(index),
 					selected: index === activeAvatarFrameIndex,
 					uri: activeSkin.avatarFrames[index] ?? null,
@@ -944,7 +939,7 @@ function BootSplashAssetPreview({
 											mode: selectedIndex === 0 ? 'poster' : 'video',
 										})
 									}}
-									values={['静止画のポスター', '動画']}
+									values={[t('静止画のポスター'), t('動画')]}
 								/>
 							</View>
 						) : null}
@@ -979,12 +974,8 @@ function BootSplashAssetPreview({
 						<Button
 							mode='outlined'
 							onPress={onDismiss}
-						>
-							キャンセル
-						</Button>
-						<Button onPress={() => onSelect(asset, mode)}>
-							この{mode === 'poster' ? 'ポスター' : '動画'}を使う
-						</Button>
+						>{t('キャンセル')}</Button>
+						<Button onPress={() => onSelect(asset, mode)}>{t('この')}{mode === 'poster' ? t('ポスター') : t('動画')}{t('を使う')}</Button>
 					</Dialog.Actions>
 				</>
 			) : null}
@@ -1020,13 +1011,13 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		gap: 12,
 		borderWidth: 1,
-		borderRadius: 8,
+		borderRadius: CORNER_RADIUS,
 		padding: 10,
 	},
 	skinCover: {
 		width: 48,
 		height: 48,
-		borderRadius: 6,
+		borderRadius: CORNER_RADIUS,
 	},
 	skinText: {
 		flex: 1,
@@ -1050,7 +1041,7 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: 4,
-		borderRadius: 8,
+		borderRadius: CORNER_RADIUS,
 		paddingHorizontal: 8,
 		paddingVertical: 5,
 	},
@@ -1082,7 +1073,7 @@ const styles = StyleSheet.create({
 		width: '100%',
 		aspectRatio: 522 / 696,
 		borderWidth: 2,
-		borderRadius: 8,
+		borderRadius: CORNER_RADIUS,
 		overflow: 'hidden',
 	},
 	assetTileImageCompact: {
@@ -1113,7 +1104,7 @@ const styles = StyleSheet.create({
 		width: '31%',
 		aspectRatio: 522 / 696,
 		borderWidth: 2,
-		borderRadius: 8,
+		borderRadius: CORNER_RADIUS,
 		overflow: 'hidden',
 	},
 	assetPoster: {
@@ -1146,7 +1137,7 @@ const styles = StyleSheet.create({
 	previewFrame: {
 		width: '100%',
 		aspectRatio: 522 / 696,
-		borderRadius: 8,
+		borderRadius: CORNER_RADIUS,
 		overflow: 'hidden',
 	},
 	previewMedia: {
@@ -1160,7 +1151,7 @@ const styles = StyleSheet.create({
 		left: 8,
 	},
 	sliderPanel: {
-		borderRadius: 8,
+		borderRadius: CORNER_RADIUS,
 		padding: 14,
 	},
 	sliderControlRow: {

@@ -66,7 +66,7 @@
 			"client_info": {
 				"mobilesdk_app_id": "1:123456789012:android:mockandroidappid04",
 				"android_client_info": {
-					"package_name": "com.roitium.bbplayer.jp"
+					"package_name": "com.aruteko.bbmusica"
 				}
 			},
 			"oauth_client": [],

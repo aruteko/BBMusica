@@ -11,6 +11,7 @@ import SettingsSectionTitle from '@/components/common/SettingsSectionTitle'
 import UniversalSwitch from '@/components/common/UniversalSwitch'
 import useCurrentTrack from '@/hooks/player/useCurrentTrack'
 import { toastAndLogError } from '@/utils/error-handling'
+import { t } from '@/i18n'
 
 const SCOPE = 'UI.Settings.Equalizer'
 
@@ -43,7 +44,7 @@ export default function EqualizerSettingsPage() {
 				),
 			)
 		} catch (error) {
-			toastAndLogError('イコライザーの読み込みに失敗しました', error, SCOPE)
+			toastAndLogError(t('イコライザーの読み込みに失敗しました'), error, SCOPE)
 		}
 	}, [])
 
@@ -58,7 +59,7 @@ export default function EqualizerSettingsPage() {
 			await Orpheus.setEqualizerEnabled(enabled)
 			setInfo((prev) => (prev ? { ...prev, enabled } : prev))
 		} catch (error) {
-			toastAndLogError('イコライザーの切り替えに失敗しました', error, SCOPE)
+			toastAndLogError(t('イコライザーの切り替えに失敗しました'), error, SCOPE)
 		}
 	}
 
@@ -66,7 +67,7 @@ export default function EqualizerSettingsPage() {
 		const rounded = Math.round(level)
 		setLevels((prev) => ({ ...prev, [band]: rounded }))
 		void Orpheus.setEqualizerBandLevel(band, rounded).catch((error) =>
-			toastAndLogError('バンドの設定に失敗しました', error, SCOPE),
+			toastAndLogError(t('バンドの設定に失敗しました'), error, SCOPE),
 		)
 	}
 
@@ -75,7 +76,7 @@ export default function EqualizerSettingsPage() {
 			await Orpheus.applyEqualizerPreset(index)
 			await load()
 		} catch (error) {
-			toastAndLogError('プリセットの適用に失敗しました', error, SCOPE)
+			toastAndLogError(t('プリセットの適用に失敗しました'), error, SCOPE)
 		}
 	}
 
@@ -84,31 +85,25 @@ export default function EqualizerSettingsPage() {
 			await Orpheus.resetEqualizer()
 			await load()
 		} catch (error) {
-			toastAndLogError('リセットに失敗しました', error, SCOPE)
+			toastAndLogError(t('リセットに失敗しました'), error, SCOPE)
 		}
 	}
 
 	let body: React.ReactNode
 	if (Platform.OS !== 'android') {
 		body = (
-			<Text style={styles.notice}>
-				イコライザーは Android でのみ利用できます。
-			</Text>
+			<Text style={styles.notice}>{t('イコライザーは Android でのみ利用できます。')}</Text>
 		)
 	} else if (!info) {
 		body = null
 	} else if (!info.available) {
 		body = (
 			<View>
-				<Text style={styles.notice}>
-					イコライザーは、曲の再生を開始したあとに設定できます。何か1曲を再生してから、この画面を開き直してください。
-				</Text>
+				<Text style={styles.notice}>{t('曲を再生してから、もう一度開いてください。')}</Text>
 				<Button
 					mode='outlined'
 					onPress={() => void load()}
-				>
-					再読み込み
-				</Button>
+				>{t('再読み込み')}</Button>
 			</View>
 		)
 	} else {
@@ -117,7 +112,7 @@ export default function EqualizerSettingsPage() {
 		body = (
 			<View>
 				<View style={styles.settingRow}>
-					<Text>イコライザーを有効にする</Text>
+					<Text>{t('イコライザーを有効にする')}</Text>
 					<UniversalSwitch
 						value={info.enabled}
 						onValueChange={(value) => void handleToggle(value)}
@@ -126,7 +121,7 @@ export default function EqualizerSettingsPage() {
 
 				{info.presets && info.presets.length > 0 && (
 					<>
-						<SettingsSectionTitle title='プリセット' />
+						<SettingsSectionTitle title={t('プリセット')} />
 						<View style={styles.presets}>
 							{info.presets.map((name, index) => (
 								<Chip
@@ -142,7 +137,7 @@ export default function EqualizerSettingsPage() {
 					</>
 				)}
 
-				<SettingsSectionTitle title='バンド' />
+				<SettingsSectionTitle title={t('バンド')} />
 				{(info.bands ?? []).map((band) => {
 					const level = levels[band.index] ?? band.level
 					return (
@@ -178,9 +173,7 @@ export default function EqualizerSettingsPage() {
 						mode='outlined'
 						icon='restore'
 						onPress={() => void handleReset()}
-					>
-						フラットに戻す
-					</Button>
+					>{t('フラットに戻す')}</Button>
 				</View>
 			</View>
 		)
@@ -190,7 +183,7 @@ export default function EqualizerSettingsPage() {
 		<View style={[styles.container, { backgroundColor: colors.background }]}>
 			<Appbar.Header>
 				<Appbar.BackAction onPress={() => router.back()} />
-				<Appbar.Content title='イコライザー' />
+				<Appbar.Content title={t('イコライザー')} />
 			</Appbar.Header>
 			<ScrollView
 				style={styles.scrollView}

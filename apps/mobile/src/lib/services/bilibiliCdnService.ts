@@ -5,12 +5,13 @@ import { bilibiliApi } from '@/lib/api/bilibili/api'
 import { BILIBILI_WEB_USER_AGENT } from '@/lib/api/bilibili/client'
 import type { BilibiliTrack } from '@/types/core/media'
 import { returnOrThrowAsync } from '@/utils/neverthrow-utils'
+import { t } from '@/i18n'
 
 export const BILIBILI_CDN_OPTIONS: {
 	id: BilibiliCdnPreference
 	label: string
 }[] = [
-	{ id: 'auto', label: '自動（通常のCDNを優先）' },
+	{ id: 'auto', label: t('自動') },
 	{ id: 'ali', label: 'Alibaba Cloud' },
 	{ id: 'tencent', label: 'Tencent Cloud' },
 	{ id: 'huawei', label: 'Huawei Cloud' },
@@ -95,7 +96,7 @@ export async function getCdnTestNodes(
 			})
 		}
 	}
-	if (!nodes.size) throw new Error('未获取到可测速的音频地址')
+	if (!nodes.size) throw new Error(t('テスト用の音声アドレスを取得できませんでした'))
 	return [...nodes.values()]
 }
 
@@ -104,7 +105,7 @@ export async function measureCdnSpeed(
 	url: string,
 	signal: AbortSignal,
 ): Promise<CdnSpeedResult> {
-	if (signal.aborted) throw new Error('测速已取消')
+	if (signal.aborted) throw new Error(t('テストを中止しました'))
 	const controller = new AbortController()
 	const onAbort = () => controller.abort()
 	signal.addEventListener('abort', onAbort, { once: true })
@@ -129,18 +130,18 @@ export async function measureCdnSpeed(
 			throw new Error(`HTTP ${response.status}`)
 		}
 		if (/text\/|json/i.test(response.headers.get('content-type') ?? '')) {
-			throw new Error('节点未返回音频数据')
+			throw new Error(t('ノードが音声データを返しませんでした'))
 		}
 		reader = response.body?.getReader()
-		if (!reader) throw new Error('无法读取测速数据')
+		if (!reader) throw new Error(t('テストデータを読み込めません'))
 		let received = 0
 		while (received < SAMPLE_BYTES) {
 			const { done, value } = await reader.read()
 			if (done) break
 			received += value.byteLength
 		}
-		if (controller.signal.aborted) throw new Error('测速已中断')
-		if (!received) throw new Error('节点返回空数据')
+		if (controller.signal.aborted) throw new Error(t('テストが中断されました'))
+		if (!received) throw new Error(t('ノードが空のデータを返しました'))
 		return {
 			megabytesPerSecond:
 				received /
@@ -149,9 +150,9 @@ export async function measureCdnSpeed(
 			latencyMs,
 		}
 	} catch (error) {
-		if (signal.aborted) throw new Error('测速已取消', { cause: error })
+		if (signal.aborted) throw new Error(t('テストを中止しました'), { cause: error })
 		if (controller.signal.aborted)
-			throw new Error('测速超时（8 秒）', { cause: error })
+			throw new Error(t('テストがタイムアウトしました: 8 秒'), { cause: error })
 		throw error
 	} finally {
 		clearTimeout(timeout)

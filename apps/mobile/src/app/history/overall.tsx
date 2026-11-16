@@ -15,6 +15,7 @@ import {
 } from '@/hooks/queries/db/track'
 import { useScreenTransitionReady } from '@/hooks/router/useScreenTransitionReady'
 import type { Track } from '@/types/core/media'
+import { t } from '@/i18n'
 
 interface HistoryItemData {
 	track: Track
@@ -43,7 +44,7 @@ function PlaybackDurationFlow({ seconds }: { seconds: number }) {
 		<View
 			style={styles.totalDurationFlow}
 			accessible
-			accessibilityLabel={`${hours}時間${minutes}分${remainingSeconds}秒`}
+			accessibilityLabel={`${hours}${t('時間')}${minutes}分${remainingSeconds}秒`}
 		>
 			<NumberFlow
 				value={hours}
@@ -132,7 +133,7 @@ export default function OverallHistoryPage() {
 		if (isHistoryError) {
 			return (
 				<View style={styles.centeredContainer}>
-					<Text>読み込みに失敗しました</Text>
+					<Text>{t('読み込みに失敗しました')}</Text>
 				</View>
 			)
 		}
@@ -140,7 +141,7 @@ export default function OverallHistoryPage() {
 		if (allTracks.length === 0) {
 			return (
 				<View style={styles.centeredContainer}>
-					<Text>データがありません</Text>
+					<Text>{t('データがありません')}</Text>
 				</View>
 			)
 		}
@@ -167,9 +168,7 @@ export default function OverallHistoryPage() {
 						<Text
 							variant='bodyMedium'
 							style={[styles.footerText, { color: colors.onSurfaceVariant }]}
-						>
-							これ以上ありません
-						</Text>
+						>{t('これ以上ありません')}</Text>
 					) : null
 				}
 			/>
@@ -180,7 +179,7 @@ export default function OverallHistoryPage() {
 		<View style={[styles.container, { backgroundColor: colors.background }]}>
 			<Appbar.Header elevated>
 				<Appbar.BackAction onPress={() => router.back()} />
-				<Appbar.Content title='全体の統計' />
+				<Appbar.Content title={t('全体の統計')} />
 			</Appbar.Header>
 			{(showSkeleton || (allTracks.length > 0 && !isTotalDurationError)) && (
 				<Surface
@@ -210,7 +209,7 @@ export default function OverallHistoryPage() {
 						</>
 					) : (
 						<>
-							<Text variant='titleMedium'>合計の再生時間</Text>
+							<Text variant='titleMedium'>{t('合計の再生時間')}</Text>
 							<PlaybackDurationFlow seconds={totalDuration} />
 							<Text
 								variant='bodySmall'
@@ -218,9 +217,7 @@ export default function OverallHistoryPage() {
 									styles.totalDurationSubText,
 									{ color: colors.onSurfaceVariant },
 								]}
-							>
-								（最後まで再生した曲のみ集計）
-							</Text>
+							>{t('最後まで再生した曲のみ')}</Text>
 						</>
 					)}
 				</Surface>

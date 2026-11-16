@@ -15,6 +15,7 @@ import LocalPlaylistListComponent from '@/features/library/local/LocalPlaylistLi
 import MultiPageVideosListComponent from '@/features/library/multipage/MultiPageVideosList'
 import useSkinForegroundColor from '@/hooks/theme/useSkinForegroundColor'
 import { markPerfInteractive } from '@/lib/performance'
+import { t } from '@/i18n'
 
 const renderScene = SceneMap({
 	local: LocalPlaylistListComponent,
@@ -24,10 +25,10 @@ const renderScene = SceneMap({
 })
 
 const routes = [
-	{ key: 'local', title: 'プレイリスト', testID: 'library-tab-local' },
-	{ key: 'favorite', title: 'お気に入り' },
-	{ key: 'collection', title: 'コレクション' },
-	{ key: 'multiPage', title: 'マルチP' },
+	{ key: 'local', title: t('プレイリスト'), testID: 'library-tab-local' },
+	{ key: 'favorite', title: t('お気に入り') },
+	{ key: 'collection', title: t('コレクション') },
+	{ key: 'multiPage', title: t('マルチP') },
 ]
 
 export enum Tabs {
@@ -78,9 +79,7 @@ function LibraryContent() {
 					<Text
 						variant='headlineSmall'
 						style={[styles.title, { color: headerForegroundColor }]}
-					>
-						ライブラリ
-					</Text>
+					>{t('ライブラリ')}</Text>
 				</View>
 				<TabView
 					style={[styles.tabView, { backgroundColor: 'transparent' }]}

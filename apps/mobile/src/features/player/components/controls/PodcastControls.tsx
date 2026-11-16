@@ -13,6 +13,7 @@ import {
 	MainPlaybackControls,
 	SecondaryPlaybackControls,
 } from './PlayerControlContent'
+import { t } from '@/i18n'
 
 export function PodcastControls({ compact = false }: { compact?: boolean }) {
 	const { colors } = useTheme()
@@ -29,27 +30,27 @@ export function PodcastControls({ compact = false }: { compact?: boolean }) {
 	const actions = [
 		{
 			icon: 'speedometer',
-			accessibilityLabel: `再生速度、現在 ${speed} 倍`,
+			accessibilityLabel: `${t('再生速度、現在 ')}${speed} 倍`,
 			onPress: () => useModalStore.getState().open('PlaybackSpeed', undefined),
 		},
 		{
 			icon: 'timer-outline',
 			accessibilityLabel:
 				remaining > 0
-					? `スリープタイマー、残り ${formatDurationToHHMMSS(remaining)}`
-					: 'スリープタイマー',
+					? `${t('スリープタイマー、残り ')}${formatDurationToHHMMSS(remaining)}`
+					: t('スリープタイマー'),
 			onPress: () => useModalStore.getState().open('SleepTimer', undefined),
 		},
 		{
 			icon: 'book-open-page-variant-outline',
-			accessibilityLabel: 'チャプター一覧を開く',
+			accessibilityLabel: t('チャプター一覧を開く'),
 			onPress: () => {
 				void usePlayerChaptersSheetStore.getState().open()
 			},
 		},
 		{
 			icon: 'format-list-bulleted',
-			accessibilityLabel: '再生キューを開く',
+			accessibilityLabel: t('再生キューを開く'),
 			onPress: () => {
 				void usePlayerQueueSheetStore.getState().open()
 			},

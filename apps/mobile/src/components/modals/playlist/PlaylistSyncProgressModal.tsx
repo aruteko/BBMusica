@@ -8,6 +8,7 @@ import LinearProgressIndicator from '@/components/common/LinearProgressIndicator
 import { usePlaylistSync } from '@/hooks/mutations/db/playlist'
 import { useModalStore } from '@/hooks/stores/useModalStore'
 import type { PlaylistSyncProgress } from '@/lib/facades/syncBilibiliPlaylist'
+import { t } from '@/i18n'
 
 const PlaylistSyncProgressModal = memo(function PlaylistSyncProgressModal({
 	remoteId,
@@ -55,8 +56,8 @@ const PlaylistSyncProgressModal = memo(function PlaylistSyncProgressModal({
 					syncedPlaylistId.current = id
 					setProgress((prev) =>
 						prev
-							? { ...prev, stage: 'completed', message: '同期が完了しました' }
-							: { stage: 'completed', message: '同期が完了しました' },
+							? { ...prev, stage: 'completed', message: t('同期が完了しました') }
+							: { stage: 'completed', message: t('同期が完了しました') },
 					)
 				},
 				onError: (error) => {
@@ -65,9 +66,9 @@ const PlaylistSyncProgressModal = memo(function PlaylistSyncProgressModal({
 							? {
 									...prev,
 									stage: 'error',
-									message: `同期に失敗しました: ${error.message}`,
+									message: `${t('同期に失敗しました: ')}${error.message}`,
 								}
-							: { stage: 'error', message: `同期に失敗しました: ${error.message}` },
+							: { stage: 'error', message: `${t('同期に失敗しました: ')}${error.message}` },
 					)
 				},
 			},
@@ -94,10 +95,10 @@ const PlaylistSyncProgressModal = memo(function PlaylistSyncProgressModal({
 		<>
 			<Dialog.Title>
 				{progress?.stage === 'completed'
-					? '同期が完了しました'
+					? t('同期が完了しました')
 					: progress?.stage === 'error'
-						? '同期に失敗しました'
-						: `${type === 'series' ? 'シリーズ' : 'お気に入り'}を同期中`}
+						? t('同期に失敗しました')
+						: `${type === 'series' ? t('シリーズ') : t('お気に入り')}${t('を同期中')}`}
 			</Dialog.Title>
 			<Dialog.Content>
 				<View style={styles.content}>
@@ -105,7 +106,7 @@ const PlaylistSyncProgressModal = memo(function PlaylistSyncProgressModal({
 						variant='bodyMedium'
 						style={styles.message}
 					>
-						{progress?.message ?? '準備中...'}
+						{progress?.message ?? t('準備中...')}
 					</Text>
 					<LinearProgressIndicator
 						progress={localProgress}
@@ -119,7 +120,7 @@ const PlaylistSyncProgressModal = memo(function PlaylistSyncProgressModal({
 					onPress={close}
 					disabled={!isFinished && isPending}
 				>
-					{isFinished ? '閉じる' : 'お待ちください'}
+					{isFinished ? t('閉じる') : t('お待ちください')}
 				</Button>
 			</Dialog.Actions>
 		</>

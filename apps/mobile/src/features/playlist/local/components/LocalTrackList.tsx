@@ -28,7 +28,7 @@ import useCurrentTrack from '@/hooks/player/useCurrentTrack'
 import { useBatchDownloadStatus } from '@/hooks/queries/orpheus'
 import usePreventRemove from '@/hooks/router/usePreventRemove'
 import { useDeferredSheetAction } from '@/hooks/ui/useDeferredSheetAction'
-import { LIST_ITEM_COVER_SIZE } from '@/theme/dimensions'
+import { LIST_ITEM_COVER_SIZE, CORNER_RADIUS } from '@/theme/dimensions'
 import type { Playlist, Track } from '@/types/core/media'
 import type {
 	ListRenderItemInfoWithExtraData,
@@ -39,6 +39,7 @@ import { resolveTrackCover } from '@/utils/imageUrl'
 
 import type { TrackMenuItem } from './LocalPlaylistItem'
 import { TrackListItem } from './LocalPlaylistItem'
+import { t as tr } from '@/i18n'
 
 interface LocalTrackListProps extends Omit<
 	LegendListProps<Track>,
@@ -109,7 +110,7 @@ const renderItem = ({
 		isReadOnly?: boolean
 	}
 >) => {
-	if (!extraData) throw new Error('Extradata 不存在')
+	if (!extraData) throw new Error(tr('Extradata がありません'))
 	const {
 		handleTrackPress,
 		handleMenuPress,
@@ -196,7 +197,7 @@ const HighFreqButton = ({
 	return (
 		<SquircleView
 			style={{
-				borderRadius: 16,
+				borderRadius: CORNER_RADIUS,
 				overflow: 'hidden',
 				backgroundColor: theme.colors.elevation.level2,
 				flex: 1,
@@ -264,7 +265,7 @@ export function LocalTrackList({
 	const insets = useSafeAreaInsets()
 	const theme = useTheme()
 	const isReadOnly =
-		playlist.shareRole === 'subscriber' || playlist.type === 'dynamic'
+		playlist.type === 'dynamic'
 	const ids = tracks.map((t) => t.uniqueKey)
 	const { data: downloadStatus } = useBatchDownloadStatus(ids)
 	const sheetRef = useRef<TrueSheet>(null)
@@ -453,7 +454,7 @@ export function LocalTrackList({
 													style={{ opacity: 0.6 }}
 													numberOfLines={1}
 												>
-													{menuState.track.artist?.name ?? '不明なアーティスト'}
+													{menuState.track.artist?.name ?? tr('不明なアーティスト')}
 												</Text>
 											</View>
 										</View>

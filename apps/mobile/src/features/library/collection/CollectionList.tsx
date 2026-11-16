@@ -13,6 +13,8 @@ import useAppStore from '@/hooks/stores/useAppStore'
 import type { BilibiliCollection } from '@/types/apis/bilibili'
 
 import CollectionListItem from './CollectionListItem'
+import { t } from '@/i18n'
+import { GRID_COLUMNS } from '@/components/common/GridCard'
 
 const renderCollectionItem = ({ item }: { item: BilibiliCollection }) => (
 	<CollectionListItem item={item} />
@@ -57,7 +59,7 @@ const CollectionListComponent = memo(() => {
 	if (collectionsIsError) {
 		return (
 			<DataFetchingError
-				text='読み込みに失敗しました'
+				text={t('読み込みに失敗しました')}
 				onRetry={() => onRefresh()}
 			/>
 		)
@@ -69,18 +71,16 @@ const CollectionListComponent = memo(() => {
 				<Text
 					variant='titleMedium'
 					style={styles.headerTitle}
-				>
-					フォロー中のコレクション / お気に入り
-				</Text>
+				>{t('フォロー中のコレクション / お気に入り')}</Text>
 				<Text variant='bodyMedium'>
 					{collections.pages[0]?.count ?? 0}
-					{'\u2009'}件
-				</Text>
+					{'\u2009'}{t('件')}</Text>
 			</View>
 			<LegendList
 				data={collections.pages.flatMap((page) => page.list)}
 				renderItem={renderCollectionItem}
 				recycleItems
+				numColumns={GRID_COLUMNS}
 				refreshControl={
 					<RefreshControl
 						refreshing={refreshing || collectionsIsRefetching}

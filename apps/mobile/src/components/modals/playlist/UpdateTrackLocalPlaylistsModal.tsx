@@ -16,6 +16,7 @@ import generateUniqueTrackKey from '@/lib/services/genKey'
 import type { Playlist, Track } from '@/types/core/media'
 import type { ListRenderItemInfoWithExtraData } from '@/types/legendlist'
 import toast from '@/utils/toast'
+import { t } from '@/i18n'
 
 const renderPlaylistItem = ({
 	item,
@@ -27,7 +28,7 @@ const renderPlaylistItem = ({
 		handleCheckboxPress: (id: number) => void
 	}
 >) => {
-	if (!extraData) throw new Error('Extradata 不存在')
+	if (!extraData) throw new Error(t('Extradata がありません'))
 	const { checkedPlaylistIds, handleCheckboxPress } = extraData
 	const isChecked = checkedPlaylistIds.includes(item.id)
 	const isDisabled = item.type !== 'local'
@@ -96,7 +97,7 @@ const UpdateTrackLocalPlaylistsModal = memo(
 		)
 
 		const uniqueKey = generateUniqueTrackKey(track).unwrapOr(undefined)
-		if (!uniqueKey) toast.error('uniqueKeyを生成できません')
+		if (!uniqueKey) toast.error(t('uniqueKeyを生成できません'))
 		const {
 			data: playlistsContainingTrack,
 			isPending: isContainingTrackPending,
@@ -208,13 +209,11 @@ const UpdateTrackLocalPlaylistsModal = memo(
 				return (
 					<>
 						<Dialog.Content>
-							<Text style={[styles.errorText, { color: colors.error }]}>
-								プレイリスト一覧の読み込みに失敗しました
-							</Text>
+							<Text style={[styles.errorText, { color: colors.error }]}>{t('プレイリスト一覧の読み込みに失敗しました')}</Text>
 						</Dialog.Content>
 						<Dialog.Actions>
-							<Button onPress={handleDismiss}>閉じる</Button>
-							<Button onPress={handleRetry}>再試行</Button>
+							<Button onPress={handleDismiss}>{t('閉じる')}</Button>
+							<Button onPress={handleRetry}>{t('再試行')}</Button>
 						</Dialog.Actions>
 					</>
 				)
@@ -231,38 +230,31 @@ const UpdateTrackLocalPlaylistsModal = memo(
 							recycleItems
 							ListEmptyComponent={
 								<View style={styles.emptyListContainer}>
-									<Text>まだプレイリストを作成していません</Text>
+									<Text>{t('まだプレイリストを作成していません')}</Text>
 								</View>
 							}
 						/>
 					</Dialog.ScrollArea>
 					<Dialog.Content>
 						<Text variant='bodySmall'>
-							*{'\u2009'}与远程同步或订阅的共享歌单不会显示
-						</Text>
+							*{'\u2009'}{t('リモート同期・購読中のプレイリストは表示されません')}</Text>
 					</Dialog.Content>
 					<Dialog.Actions style={styles.actionsContainer}>
 						<Button
 							onPress={() =>
 								open('CreatePlaylist', { redirectToNewPlaylist: false })
 							}
-						>
-							新規作成
-						</Button>
+						>{t('新規作成')}</Button>
 						<View style={styles.rightActionsContainer}>
 							<Button
 								onPress={handleDismiss}
 								disabled={isMutating}
-							>
-								キャンセル
-							</Button>
+							>{t('キャンセル')}</Button>
 							<Button
 								onPress={handleConfirm}
 								loading={isMutating}
 								disabled={isMutating}
-							>
-								追加
-							</Button>
+							>{t('追加')}</Button>
 						</View>
 					</Dialog.Actions>
 				</>
@@ -271,7 +263,7 @@ const UpdateTrackLocalPlaylistsModal = memo(
 
 		return (
 			<>
-				<Dialog.Title>プレイリストに追加</Dialog.Title>
+				<Dialog.Title>{t('プレイリストに追加')}</Dialog.Title>
 				{renderContent()}
 			</>
 		)

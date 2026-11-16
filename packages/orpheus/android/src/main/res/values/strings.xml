@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="desktop_lyrics">桌面歌词</string>
-    <string name="size">大小</string>
-    <string name="lock">锁定</string>
-    <string name="close">关闭</string>
-    <string name="clear_lyrics">清空歌词</string>
-    
-    <string name="lyric_mode_all">全显</string>
-    <string name="lyric_mode_trans">翻译</string>
-    <string name="lyric_mode_roma">罗马音</string>
-    <string name="lyric_mode_none">无</string>
+    <string name="desktop_lyrics">デスクトップ歌詞</string>
+    <string name="size">サイズ</string>
+    <string name="lock">ロック</string>
+    <string name="close">閉じる</string>
+    <string name="clear_lyrics">歌詞を消去</string>
+
+    <string name="lyric_mode_all">すべて</string>
+    <string name="lyric_mode_trans">翻訳</string>
+    <string name="lyric_mode_roma">ローマ字</string>
+    <string name="lyric_mode_none">なし</string>
 
     <string-array name="lyricon_module_tags">
         <item>$translation</item>

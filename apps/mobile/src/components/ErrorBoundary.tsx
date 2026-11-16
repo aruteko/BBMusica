@@ -2,6 +2,7 @@ import { StyleSheet, Text, View } from 'react-native'
 import { Button } from 'react-native-paper'
 
 import { flatErrorMessage } from '@/utils/log'
+import { t } from '@/i18n'
 
 export default function GlobalErrorFallback({
 	error,
@@ -12,7 +13,7 @@ export default function GlobalErrorFallback({
 }) {
 	return (
 		<View style={styles.container}>
-			<Text style={styles.title}>予期しないエラーが発生しました</Text>
+			<Text style={styles.title}>{t('予期しないエラーが発生しました')}</Text>
 			<Text style={styles.message}>
 				{error instanceof Error ? flatErrorMessage(error) : String(error)}
 			</Text>
@@ -20,9 +21,7 @@ export default function GlobalErrorFallback({
 				mode='contained'
 				labelStyle={styles.buttonLabel}
 				onPress={resetError}
-			>
-				再試行
-			</Button>
+			>{t('再試行')}</Button>
 		</View>
 	)
 }

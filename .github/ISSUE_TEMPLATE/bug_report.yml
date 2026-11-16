@@ -1,5 +1,5 @@
 name: '🐞 Bug 报告'
-description: '提交 Bug 报告以帮助我们改进 BBPlayer'
+description: '提交 Bug 报告以帮助我们改进 BBMusica'
 title: '[Bug] <title>'
 labels: ['bug']
 type: Bug
@@ -16,7 +16,7 @@ body:
     id: version
     attributes:
       label: 'App 版本'
-      description: '当前你使用的 BBPlayer 版本号（建议优先升级最新版本尝试，我们不会对旧版本做 backport 修复）'
+      description: '当前你使用的 BBMusica 版本号（建议优先升级最新版本尝试，我们不会对旧版本做 backport 修复）'
       placeholder: '例如：v1.2.3'
     validations:
       required: true

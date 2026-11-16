@@ -7,6 +7,7 @@ import {
 	createValidationError,
 } from '@/lib/errors/service'
 import type { TrackSourceData } from '@/types/services/track'
+import { t } from '@/i18n'
 
 export default function generateUniqueTrackKey(
 	payload: TrackSourceData,
@@ -26,13 +27,13 @@ export default function generateUniqueTrackKey(
 			// return ok(`${payload.source}::${localMeta.localPath}`)
 			// 基于 localPath 的业务主键太不可靠，考虑基于文件生成 hash
 			return err(
-				createNotImplementedError(`ローカルの曲のuniqueKey生成は未実装です`),
+				createNotImplementedError(t(`ローカルの曲のuniqueKey生成は未実装です`)),
 			)
 		}
 		default:
 			return err(
 				createValidationError(
-					`不明なTrackのsource: ${(payload as TrackSourceData).source}}`,
+					`${t('不明なTrackのsource: ')}${(payload as TrackSourceData).source}}`,
 				),
 			)
 	}

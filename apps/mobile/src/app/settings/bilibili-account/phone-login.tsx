@@ -15,6 +15,7 @@ import GeetestVerifyStep from './_components/GeetestVerifyStep'
 import InputCodeStep from './_components/InputCodeStep'
 import InputPhoneStep from './_components/InputPhoneStep'
 import SuccessStep from './_components/SuccessStep'
+import { t } from '@/i18n'
 
 export default function PhoneLoginPage() {
 	const router = useRouter()
@@ -80,7 +81,7 @@ export default function PhoneLoginPage() {
 		<View style={[styles.container, { backgroundColor: colors.background }]}>
 			<Appbar.Header>
 				<Appbar.BackAction onPress={() => router.back()} />
-				<Appbar.Content title='電話番号でBilibiliにログイン' />
+				<Appbar.Content title={t('電話番号でBilibiliにログイン')} />
 			</Appbar.Header>
 			<KeyboardAvoidingView
 				behavior={Platform.OS === 'ios' ? 'padding' : 'height'}

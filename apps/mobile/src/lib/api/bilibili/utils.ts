@@ -3,6 +3,7 @@ import { err, ok } from 'neverthrow'
 
 import useAppStore from '@/hooks/stores/useAppStore'
 import { BilibiliApiError } from '@/lib/errors/thirdparty/bilibili'
+import { t } from '@/i18n'
 
 /**
  * 转换B站bvid为avid
@@ -56,7 +57,7 @@ export function getCsrfToken(): Result<string, BilibiliApiError> {
 	if (!cookieList)
 		return err(
 			new BilibiliApiError({
-				message: 'Cookieが見つかりません',
+				message: t('Cookieが見つかりません'),
 				type: 'NoCookie',
 			}),
 		)
@@ -64,7 +65,7 @@ export function getCsrfToken(): Result<string, BilibiliApiError> {
 	if (!csrfToken) {
 		return err(
 			new BilibiliApiError({
-				message: 'CSRFトークンが見つかりません',
+				message: t('CSRFトークンが見つかりません'),
 				type: 'CsrfError',
 			}),
 		)

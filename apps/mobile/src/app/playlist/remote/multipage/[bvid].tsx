@@ -35,6 +35,7 @@ import type { ListRenderItemInfoWithExtraData } from '@/types/legendlist'
 import * as Haptics from '@/utils/haptics'
 import { resolveBilibiliImageUrl } from '@/utils/imageUrl'
 import toast from '@/utils/toast'
+import { t as tr } from '@/i18n'
 
 const mapApiItemToTrack = (
 	mp: BilibiliMultipageVideo,
@@ -130,7 +131,7 @@ export default function MultipagePage() {
 
 	const handleSync = useCallback(() => {
 		const toastId = 'sync-playlist'
-		toast.show('同期中...', { id: toastId, duration: Infinity })
+		toast.show(tr('同期中...'), { id: toastId, duration: Infinity })
 		setRefreshing(true)
 		syncMultipage(
 			{
@@ -176,7 +177,7 @@ export default function MultipagePage() {
 			index,
 			extraData,
 		}: ListRenderItemInfoWithExtraData<BilibiliTrack, ExtraData>) => {
-			if (!extraData) throw new Error('Extradata 不存在')
+			if (!extraData) throw new Error(tr('Extradata がありません'))
 			const {
 				playTrack: play,
 				trackMenuItems: _trackMenuItems,
@@ -233,7 +234,7 @@ export default function MultipagePage() {
 	}
 
 	if (isMultipageDataError || isVideoDataError) {
-		return <PlaylistError text='読み込みに失敗しました' />
+		return <PlaylistError text={tr('読み込みに失敗しました')} />
 	}
 
 	return (
@@ -245,7 +246,7 @@ export default function MultipagePage() {
 				<Appbar.Content
 					title={
 						selectMode
-							? `${selected.size}\u2009曲を選択中`
+							? `${selected.size}${tr('\u2009曲を選択中')}`
 							: videoData.title
 					}
 					onPress={handleDoubleTap}
@@ -306,11 +307,11 @@ export default function MultipagePage() {
 						<PlaylistHeader
 							cover={coverRef ?? undefined}
 							title={videoData.title}
-							subtitles={`${videoData.owner.name}\u2009•\u2009${tracksData.length}\u2009曲`}
+							subtitles={`${videoData.owner.name}\u2009•\u2009${tracksData.length}${tr('\u2009曲')}`}
 							description={videoData.desc}
 							onClickMainButton={handleSync}
 							mainButtonIcon={'sync'}
-							secondaryButtonText='元の動画を開く'
+							secondaryButtonText={tr('元の動画を開く')}
 							secondaryButtonIcon='open-in-new'
 							onClickSecondaryButton={() =>
 								void WebBrowser.openBrowserAsync(

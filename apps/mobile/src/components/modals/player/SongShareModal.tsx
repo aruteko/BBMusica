@@ -17,6 +17,7 @@ import { useModalStore } from '@/hooks/stores/useModalStore'
 import { resolveTrackCover } from '@/utils/imageUrl'
 import log, { reportErrorToSentry } from '@/utils/log'
 import toast from '@/utils/toast'
+import { t } from '@/i18n'
 
 const sanitizeFileName = (name: string) => name.replace(/[/\\?%*:|"<>]/g, '-')
 
@@ -47,13 +48,13 @@ async function performShare(
 					fileName,
 				})
 			} catch {
-				toast.error('画像の生成に失敗しました')
+				toast.error(t('画像の生成に失敗しました'))
 				return
 			}
 		}
 
 		if (!uri) {
-			toast.error('画像の生成に失敗しました')
+			toast.error(t('画像の生成に失敗しました'))
 			return
 		}
 
@@ -61,26 +62,26 @@ async function performShare(
 		if (action === 'save' && permissionStatus !== PermissionStatus.GRANTED) {
 			const { status } = await requestPermission()
 			if (status !== PermissionStatus.GRANTED) {
-				toast.error('画像を保存できません', { description: 'アルバムへのアクセスを許可してください' })
+				toast.error(t('画像を保存できません'), { description: t('アルバムへのアクセスを許可してください') })
 				return
 			}
 		}
 
 		if (action === 'save') {
 			await MediaLibrary.Asset.create(uri)
-			toast.success('アルバムに保存しました')
+			toast.success(t('アルバムに保存しました'))
 		} else {
 			const sharingAvailable = await Sharing.isAvailableAsync()
 			if (sharingAvailable) {
 				await Sharing.shareAsync(uri)
 			} else {
-				toast.error('共有は利用できません')
+				toast.error(t('共有は利用できません'))
 				return
 			}
 		}
 		closeModal()
 	} catch {
-		toast.error('操作に失敗しました')
+		toast.error(t('操作に失敗しました'))
 	} finally {
 		setIsSharing(false)
 		isSharingRef.current = false
@@ -179,7 +180,7 @@ const SongShareModal = () => {
 			setPreviewUri(uri)
 			setIsGenerating(false)
 		} catch {
-			toast.error('プレビューの生成に失敗しました')
+			toast.error(t('プレビューの生成に失敗しました'))
 			setIsGenerating(false)
 		}
 	}, [imageRef, resolvedCoverUrl, isPageListPending])
@@ -218,17 +219,15 @@ const SongShareModal = () => {
 	if (!currentTrack) {
 		return (
 			<>
-				<Dialog.Title>曲を共有</Dialog.Title>
+				<Dialog.Title>{t('曲を共有')}</Dialog.Title>
 				<Dialog.Content style={styles.errorContainer}>
 					<Text
 						variant='bodyMedium'
 						style={styles.errorText}
-					>
-						再生中の曲がありません
-					</Text>
+					>{t('再生中の曲がありません')}</Text>
 				</Dialog.Content>
 				<Dialog.Actions>
-					<Button onPress={() => close('SongShare')}>閉じる</Button>
+					<Button onPress={() => close('SongShare')}>{t('閉じる')}</Button>
 				</Dialog.Actions>
 			</>
 		)
@@ -237,34 +236,32 @@ const SongShareModal = () => {
 	if (currentTrack.source !== 'bilibili') {
 		return (
 			<>
-				<Dialog.Title>曲を共有</Dialog.Title>
+				<Dialog.Title>{t('曲を共有')}</Dialog.Title>
 				<Dialog.Content style={styles.errorContainer}>
 					<Text
 						variant='bodyMedium'
 						style={styles.errorText}
-					>
-						現在は、Bilibiliの曲のみ共有できます
-					</Text>
+					>{t('現在は、Bilibiliの曲のみ共有できます')}</Text>
 				</Dialog.Content>
 				<Dialog.Actions>
-					<Button onPress={() => close('SongShare')}>閉じる</Button>
+					<Button onPress={() => close('SongShare')}>{t('閉じる')}</Button>
 				</Dialog.Actions>
 			</>
 		)
 	}
 
 	// 计算 shareUrl
-	let shareUrl = `https://bbplayer.roitium.com/share/track?id=${encodeURIComponent(currentTrack.uniqueKey)}&title=${encodeURIComponent(currentTrack.title)}&cover=${encodeURIComponent(currentTrack.coverUrl ?? '')}`
-	if (cid && pageList) {
+	let shareUrl = bvid ? `https://www.bilibili.com/video/${bvid}` : ''
+	if (bvid && cid && pageList) {
 		const page = pageList.find((p) => p.cid === cid)
 		if (page) {
-			shareUrl += `&p=${page.page}`
+			shareUrl += `?p=${page.page}`
 		}
 	}
 
 	return (
 		<>
-			<Dialog.Title>曲を共有</Dialog.Title>
+			<Dialog.Title>{t('曲を共有')}</Dialog.Title>
 			<Dialog.Content style={styles.contentArea}>
 				{isGenerating ? (
 					<View style={styles.loadingContainer}>
@@ -272,9 +269,7 @@ const SongShareModal = () => {
 						<Text
 							variant='bodyMedium'
 							style={styles.loadingText}
-						>
-							プレビューを生成中...
-						</Text>
+						>{t('プレビューを生成中...')}</Text>
 					</View>
 				) : previewUri ? (
 					<Image
@@ -287,16 +282,12 @@ const SongShareModal = () => {
 						<Text
 							variant='bodyMedium'
 							style={styles.loadingText}
-						>
-							プレビューの読み込みに失敗しました
-						</Text>
+						>{t('プレビューの読み込みに失敗しました')}</Text>
 						<Button
 							mode='outlined'
 							onPress={() => generatePreview()}
 							icon='refresh'
-						>
-							再試行
-						</Button>
+						>{t('再試行')}</Button>
 					</View>
 				)}
 			</Dialog.Content>
@@ -316,10 +307,8 @@ const SongShareModal = () => {
 					loading={isSharing}
 					disabled={isSharing || isGenerating}
 					icon='share-variant'
-				>
-					共有
-				</Button>
-				<Button onPress={() => close('SongShare')}>閉じる</Button>
+				>{t('共有')}</Button>
+				<Button onPress={() => close('SongShare')}>{t('閉じる')}</Button>
 			</Dialog.Actions>
 
 			{/* Hidden Capture View */}

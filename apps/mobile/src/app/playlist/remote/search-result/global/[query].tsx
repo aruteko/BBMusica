@@ -2,8 +2,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router'
 import { decode } from 'he'
 import { useMemo, useEffect, useState } from 'react'
 import { RefreshControl, StyleSheet, View } from 'react-native'
-import { useMMKVString } from 'react-native-mmkv'
-import { Appbar, SegmentedButtons, Text, useTheme } from 'react-native-paper'
+import { Appbar, Text, useTheme } from 'react-native-paper'
 
 import ActivityIndicator from '@/components/common/ActivityIndicator'
 import { PlaylistError } from '@/features/playlist/remote/components/PlaylistError'
@@ -15,10 +14,7 @@ import {
 	PlaylistTrackListSkeleton,
 	TrackListItemSkeletonGroup,
 } from '@/features/playlist/skeletons/PlaylistSkeleton'
-import {
-	type SearchVideoFilter,
-	useSearchResults,
-} from '@/hooks/queries/bilibili/search'
+import { useSearchResults } from '@/hooks/queries/bilibili/search'
 import { useScreenTransitionReady } from '@/hooks/router/useScreenTransitionReady'
 import { useModalStore } from '@/hooks/stores/useModalStore'
 import { useDoubleTapScrollToTop } from '@/hooks/ui/useDoubleTapScrollToTop'
@@ -26,6 +22,7 @@ import { analyticsService } from '@/lib/services/analyticsService'
 import type { BilibiliSearchVideo } from '@/types/apis/bilibili'
 import type { BilibiliTrack, Track } from '@/types/core/media'
 import { formatMMSSToSeconds } from '@/utils/time'
+import { t as tr } from '@/i18n'
 
 const mapApiItemToTrack = (apiItem: BilibiliSearchVideo): BilibiliTrack => {
 	return {
@@ -76,10 +73,6 @@ export default function SearchResultsPage() {
 
 	const { listRef, handleDoubleTap } = useDoubleTapScrollToTop()
 
-	const [storedFilter, setStoredFilter] = useMMKVString('search_result_filter')
-	const filter: SearchVideoFilter =
-		storedFilter === 'music' || storedFilter === 'nonMusic' ? storedFilter : 'all'
-
 	const {
 		data: searchData,
 		isPending: isPendingSearchData,
@@ -88,24 +81,7 @@ export default function SearchResultsPage() {
 		isFetchingNextPage,
 		refetch,
 		fetchNextPage,
-	} = useSearchResults(query, filter)
-
-	const loadedCount = searchData?.pages.reduce(
-		(sum, page) => sum + page.result.length,
-		0,
-	)
-	// 筛选后一页里剩下的结果很少时（例如「音乐以外」），自动多取几页，
-	// 否则列表太短滚不动，就没法触发翻页
-	useEffect(() => {
-		if (
-			filter !== 'all' &&
-			hasNextPage &&
-			!isFetchingNextPage &&
-			(loadedCount ?? 0) < 12
-		) {
-			void fetchNextPage()
-		}
-	}, [filter, hasNextPage, isFetchingNextPage, loadedCount, fetchNextPage])
+	} = useSearchResults(query)
 
 	useEffect(() => {
 		if (query) {
@@ -139,7 +115,7 @@ export default function SearchResultsPage() {
 	}
 
 	if (isErrorSearchData) {
-		return <PlaylistError text='読み込みに失敗しました' />
+		return <PlaylistError text={tr('読み込みに失敗しました')} />
 	}
 
 	return (
@@ -148,8 +124,8 @@ export default function SearchResultsPage() {
 				<Appbar.Content
 					title={
 						selectMode
-							? `${selected.size}\u2009曲を選択中`
-							: `検索結果\u2009-\u2009${query}`
+							? `${selected.size}${tr('\u2009曲を選択中')}`
+							: `${tr('検索結果\u2009-\u2009')}${query}`
 					}
 					onPress={handleDoubleTap}
 				/>
@@ -178,18 +154,6 @@ export default function SearchResultsPage() {
 					<Appbar.BackAction onPress={() => router.back()} />
 				)}
 			</Appbar.Header>
-
-			<SegmentedButtons
-				style={styles.filterRow}
-				density='small'
-				value={filter}
-				onValueChange={(value) => setStoredFilter(value)}
-				buttons={[
-					{ value: 'all', label: 'すべて' },
-					{ value: 'music', label: '音楽' },
-					{ value: 'nonMusic', label: '音楽以外' },
-				]}
-			/>
 
 			<View style={styles.listContainer}>
 				<TrackList
@@ -224,9 +188,7 @@ export default function SearchResultsPage() {
 											styles.videoSectionTitle,
 											{ color: colors.onSurface },
 										]}
-									>
-										関連動画
-									</Text>
+									>{tr('関連動画')}</Text>
 									<ActivityIndicator
 										size='small'
 										style={{ marginLeft: 8 }}
@@ -244,8 +206,7 @@ export default function SearchResultsPage() {
 									{ color: colors.onSurfaceVariant },
 								]}
 							>
-								&ldquo;{query}&rdquo;&thinsp;に関する結果が見つかりません
-							</Text>
+								&ldquo;{query}{tr('&rdquo;\u2009に関する結果が見つかりません')}</Text>
 						)
 					}
 				/>
@@ -260,10 +221,6 @@ const styles = StyleSheet.create({
 	},
 	listContainer: {
 		flex: 1,
-	},
-	filterRow: {
-		marginHorizontal: 16,
-		marginVertical: 8,
 	},
 	emptyListText: {
 		paddingVertical: 32,

@@ -4,6 +4,7 @@ import { useEffect, useReducer } from 'react'
 
 import {
 	clearObsoleteLegacyMigrationKeys,
+	migrateAccountRemoved,
 	migrateIndependentAccountReset,
 	migratePlayHistory,
 	migratePlayHistoryToMs,
@@ -70,6 +71,7 @@ export const useFastMigrations = (
 				migrateSortKeysV3()
 				migratePlayHistory()
 				migrateIndependentAccountReset()
+				migrateAccountRemoved()
 				migratePlayHistoryToMs()
 				dispatch({ type: 'migrated', payload: true })
 			} catch (error) {

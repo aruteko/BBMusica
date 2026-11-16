@@ -6,6 +6,7 @@ import { immer } from 'zustand/middleware/immer'
 
 import type { ModalInstance, ModalKey, ModalPropsMap } from '@/types/navigation'
 import toast from '@/utils/toast'
+import { t } from '@/i18n'
 
 interface ModalState {
 	modals: ModalInstance[]
@@ -36,7 +37,7 @@ export const useModalStore = create<ModalState>()(
 			const exists = get().modals.some((m) => m.key === key)
 
 			if (exists) {
-				toast.error(`${key} はすでに開いています`)
+				toast.error(`${key}${t(' はすでに開いています')}`)
 				return
 			}
 

@@ -1,4 +1,3 @@
-import { DownloadState } from '@bbplayer/orpheus'
 import { StyleSheet, View } from 'react-native'
 import { Text } from 'react-native-paper'
 import Animated from 'react-native-reanimated'
@@ -7,37 +6,37 @@ import type { SharedValue } from 'react-native-reanimated'
 import IconButton from '@/components/common/IconButton'
 import { usePlayerHeaderAnimation } from '@/features/player/hooks/usePlayerHeaderAnimation'
 import useCurrentTrack from '@/hooks/player/useCurrentTrack'
-import { useBatchDownloadStatus } from '@/hooks/queries/orpheus'
+import { t } from '@/i18n'
 
 export function PlayerHeader({
 	onMorePress,
 	onBack,
 	index,
+	mainIndex = 0,
 	scrollX,
 }: {
 	onMorePress: () => void
 	onBack: () => void
 	index: number
+	/** メインページの位置（音楽モードは 1、ポッドキャストモードは 0） */
+	mainIndex?: number
 	scrollX?: SharedValue<number>
 }) {
 	const currentTrack = useCurrentTrack()
-	const { data: downloadStatus } = useBatchDownloadStatus(
-		currentTrack?.uniqueKey ? [currentTrack.uniqueKey] : [],
+	const title = currentTrack?.title ?? t('再生中')
+	const statusText = t('再生中')
+
+	const { titleStyle, statusStyle } = usePlayerHeaderAnimation(
+		index,
+		scrollX,
+		mainIndex,
 	)
-
-	const title = currentTrack?.title ?? '再生中'
-	const statusText =
-		downloadStatus?.[currentTrack?.uniqueKey ?? ''] === DownloadState.COMPLETED
-			? '再生中 (キャッシュ済み)'
-			: '再生中'
-
-	const { titleStyle, statusStyle } = usePlayerHeaderAnimation(index, scrollX)
 
 	return (
 		<View style={styles.container}>
 			{
 				<IconButton
-					icon={index === 0 ? 'chevron-down' : 'chevron-left'}
+					icon={index === mainIndex ? 'chevron-down' : 'chevron-left'}
 					size={24}
 					onPress={onBack}
 				/>

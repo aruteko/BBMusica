@@ -15,6 +15,7 @@ import type { BilibiliSearchVideo } from '@/types/apis/bilibili'
 import type { GenericTrack } from '@/types/external_playlist'
 import type { ListRenderItemInfoWithExtraData } from '@/types/legendlist'
 import { formatDurationToHHMMSS } from '@/utils/time'
+import { t as tr } from '@/i18n'
 
 const renderItem = ({
 	item,
@@ -25,7 +26,7 @@ const renderItem = ({
 		handlePressItem: (item: BilibiliSearchVideo) => void
 	}
 >) => {
-	if (!extraData) throw new Error('Extradata 不存在')
+	if (!extraData) throw new Error(tr('Extradata がありません'))
 	return (
 		<SearchItem
 			item={item}
@@ -164,19 +165,19 @@ export default function ManualMatchExternalSync({
 		}
 		return (
 			<View style={styles.centerContainer}>
-				<Text style={styles.centerText}>一致する動画が見つかりません</Text>
+				<Text style={styles.centerText}>{tr('一致する動画が見つかりません')}</Text>
 			</View>
 		)
 	}
 
 	return (
 		<>
-			<Dialog.Title>動画を手動で照合</Dialog.Title>
+			<Dialog.Title>{tr('動画を手動で照合')}</Dialog.Title>
 			<Dialog.Content>
 				<SearchBar
 					value={query}
 					onChangeText={setQuery}
-					placeholder='キーワードで検索'
+					placeholder={tr('キーワードで検索')}
 					onSubmitEditing={() => setFinalQuery(query)}
 				/>
 			</Dialog.Content>
@@ -184,7 +185,7 @@ export default function ManualMatchExternalSync({
 				{renderContent()}
 			</Dialog.ScrollArea>
 			<Dialog.Actions>
-				<Button onPress={() => close('ManualMatchExternalSync')}>キャンセル</Button>
+				<Button onPress={() => close('ManualMatchExternalSync')}>{tr('キャンセル')}</Button>
 			</Dialog.Actions>
 		</>
 	)

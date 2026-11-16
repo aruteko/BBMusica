@@ -19,6 +19,8 @@ import { useMenuActions } from '@/hooks/ui/useMenuActions'
 import type { Playlist } from '@/types/core/media'
 
 import LocalPlaylistItem from './LocalPlaylistItem'
+import { t } from '@/i18n'
+import { GRID_COLUMNS } from '@/components/common/GridCard'
 
 const CREATE_PLAYLIST_ICON = Icon.select({
 	ios: 'plus.rectangle.on.rectangle',
@@ -28,11 +30,6 @@ const CREATE_PLAYLIST_ICON = Icon.select({
 const IMPORT_PLAYLIST_ICON = Icon.select({
 	ios: 'link',
 	android: import('@expo/material-symbols/link.xml'),
-})
-
-const SUBSCRIBE_PLAYLIST_ICON = Icon.select({
-	ios: 'person.2',
-	android: import('@expo/material-symbols/group.xml'),
 })
 
 const MERGE_PLAYLIST_ICON = Icon.select({
@@ -76,7 +73,7 @@ const LocalPlaylistListComponent = memo(() => {
 		return [
 			{
 				id: 1145141919810,
-				title: 'あとで見る',
+				title: t('あとで見る'),
 				author: null,
 				description: null,
 				coverUrl: null,
@@ -102,23 +99,18 @@ const LocalPlaylistListComponent = memo(() => {
 
 	const menuActions = useMenuActions([
 		{
-			title: '新規プレイリスト',
+			title: t('新規プレイリスト'),
 			image: CREATE_PLAYLIST_ICON,
 			onPress: () =>
 				openModal('CreatePlaylist', { redirectToNewPlaylist: true }),
 		},
 		{
-			title: '外部プレイリストをインポート',
+			title: t('外部プレイリストをインポート'),
 			image: IMPORT_PLAYLIST_ICON,
 			onPress: () => openModal('InputExternalPlaylistInfo', undefined),
 		},
 		{
-			title: '共有プレイリストを購読',
-			image: SUBSCRIBE_PLAYLIST_ICON,
-			onPress: () => openModal('SubscribeToSharedPlaylist', undefined),
-		},
-		{
-			title: '動的マージプレイリスト',
+			title: t('動的マージプレイリスト'),
 			image: MERGE_PLAYLIST_ICON,
 			onPress: () => openModal('MergePlaylists', undefined),
 		},
@@ -131,7 +123,7 @@ const LocalPlaylistListComponent = memo(() => {
 	if (playlistsIsError) {
 		return (
 			<DataFetchingError
-				text='読み込みに失敗しました'
+				text={t('読み込みに失敗しました')}
 				onRetry={() => onRefresh()}
 			/>
 		)
@@ -143,25 +135,22 @@ const LocalPlaylistListComponent = memo(() => {
 				<Text
 					variant='titleMedium'
 					style={styles.headerTitle}
-				>
-					プレイリスト
-				</Text>
+				>{t('プレイリスト')}</Text>
 				<View style={styles.headerActionsContainer}>
 					<Text variant='bodyMedium'>
-						{playlists.length ?? 0}&thinsp;件のプレイリスト
-					</Text>
+						{playlists.length ?? 0}{t('\u2009件のプレイリスト')}</Text>
 					<MenuView {...menuActions}>
 						<IconButton
 							icon='plus'
 							testID='library-playlist-menu'
-							accessibilityLabel='プレイリスト操作'
+							accessibilityLabel={t('プレイリスト操作')}
 							size={20}
 						/>
 					</MenuView>
 				</View>
 			</View>
 			<Searchbar
-				placeholder='プレイリストを検索'
+				placeholder={t('プレイリストを検索')}
 				testID='library-playlist-search'
 				onChangeText={setSearchQuery}
 				value={searchQuery}
@@ -181,6 +170,7 @@ const LocalPlaylistListComponent = memo(() => {
 					data={finalPlaylists ?? []}
 					renderItem={renderPlaylistItem}
 					recycleItems
+					numColumns={GRID_COLUMNS}
 					refreshControl={
 						<RefreshControl
 							refreshing={refreshing || playlistsIsRefetching}
@@ -194,9 +184,7 @@ const LocalPlaylistListComponent = memo(() => {
 						<Text
 							testID='library-playlist-empty'
 							style={styles.emptyList}
-						>
-							プレイリストがありません
-						</Text>
+						>{t('プレイリストがありません')}</Text>
 					}
 				/>
 			</View>

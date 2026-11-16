@@ -15,6 +15,7 @@ import { useModalStore } from '@/hooks/stores/useModalStore'
 import type { UpdateDownloads } from '@/lib/services/updateService'
 import { storage } from '@/utils/mmkv'
 import toast from '@/utils/toast'
+import { t } from '@/i18n'
 
 export interface UpdateModalProps {
 	version: string
@@ -50,13 +51,13 @@ export default function UpdateAppModal({
 			const canInstall = await canRequestPackageInstallsAsync()
 			if (!canInstall) {
 				await openPackageInstallerSettingsAsync()
-				toast.info('BBPlayerに不明なアプリのインストールを許可してから、もう一度更新してください')
+				toast.info(t('不明なアプリのインストールを許可してから、もう一度お試しください'))
 				return
 			}
 
 			setIsUpdating(true)
-			toastId = toast.loading('アップデートをダウンロード中', {
-				description: 'ダウンロード後、システムのインストーラーが開きます',
+			toastId = toast.loading(t('アップデートをダウンロード中'), {
+				description: t('ダウンロード後、システムのインストーラーが開きます'),
 				duration: Infinity,
 			})
 			const downloadUrl = await resolveAndroidDownloadUrl()
@@ -69,13 +70,13 @@ export default function UpdateAppModal({
 			await downloadAndInstallApkAsync({
 				url: downloadUrl,
 				fileName: buildApkFileName(version),
-				title: `BBPlayer ${version}`,
-				description: 'ダウンロード後にアップデートをインストールします',
+				title: `BBMusica ${version}`,
+				description: t('ダウンロード後にアップデートをインストールします'),
 			})
-			toast.success('アップデートのダウンロードが完了しました', { id: toastId })
+			toast.success(t('アップデートのダウンロードが完了しました'), { id: toastId })
 			close()
 		} catch (e) {
-			toast.error('アップデートに失敗しました。ダウンロードのリンクをクリップボードにコピーしました', {
+			toast.error(t('アップデートに失敗しました。リンクをコピーしました'), {
 				description: String(e),
 				id: toastId,
 			})
@@ -89,7 +90,7 @@ export default function UpdateAppModal({
 			if (url) await WebBrowser.openBrowserAsync(url)
 		} catch (e) {
 			void Clipboard.setStringAsync(url)
-			toast.error('ブラウザを開けないため、リンクをクリップボードにコピーしました', {
+			toast.error(t('ブラウザを開けないため、リンクをクリップボードにコピーしました'), {
 				description: String(e),
 			})
 		}
@@ -117,14 +118,10 @@ export default function UpdateAppModal({
 
 	return (
 		<>
-			<Dialog.Title testID='update-app-title'>
-				新しいバージョン {version} があります
-			</Dialog.Title>
+			<Dialog.Title testID='update-app-title'>{t('新しいバージョン ')}{version}{t(' があります')}</Dialog.Title>
 			<Dialog.Content>
 				{forced ? (
-					<Text style={[styles.forcedText, { color: colors.error }]}>
-						このアップデートは必須です。インストールしないと、続けて使えません。
-					</Text>
+					<Text style={[styles.forcedText, { color: colors.error }]}>{t('このアップデートは必須です。インストールしないと、続けて使えません。')}</Text>
 				) : null}
 				{listed_notes && listed_notes.length > 0 ? (
 					listed_notes.map((note, index) => (
@@ -140,7 +137,7 @@ export default function UpdateAppModal({
 				) : (
 					<Text selectable>
 						{/* 小米对联，偷了！ */}
-						{notes?.trim() || '安定性と動作の滑らかさを改善しました'}
+						{notes?.trim() || t('安定性と動作の滑らかさを改善しました')}
 					</Text>
 				)}
 			</Dialog.Content>
@@ -149,9 +146,7 @@ export default function UpdateAppModal({
 					<Button
 						onPress={onSkip}
 						disabled={isUpdating}
-					>
-						このバージョンをスキップ
-					</Button>
+					>{t('このバージョンをスキップ')}</Button>
 				) : (
 					<View />
 				)}
@@ -160,14 +155,12 @@ export default function UpdateAppModal({
 						testID='update-app-cancel'
 						onPress={onCancel}
 						disabled={forced || isUpdating}
-					>
-						キャンセル
-					</Button>
+					>{t('キャンセル')}</Button>
 					<Button
 						onPress={onUpdate}
 						disabled={isUpdating}
 					>
-						{isUpdating ? 'ダウンロード中' : '更新する'}
+						{isUpdating ? t('ダウンロード中') : t('更新する')}
 					</Button>
 				</View>
 			</Dialog.Actions>
@@ -178,7 +171,7 @@ export default function UpdateAppModal({
 const isApkUrl = (value: string) => value.toLowerCase().includes('.apk')
 
 const buildApkFileName = (version: string) =>
-	`BBPlayer-${version}-${Date.now()}.apk`
+	`BBMusica-${version}-${Date.now()}.apk`
 
 const styles = StyleSheet.create({
 	forcedText: {

@@ -10,6 +10,7 @@ import {
 	type SharedValue,
 } from 'react-native-reanimated'
 import { Pie, PolarChart, type PieSliceData } from 'victory-native'
+import { t } from '@/i18n'
 
 export interface StorageSegment {
 	color: string
@@ -169,9 +170,7 @@ export default function StorageUsageChart({
 					<Text
 						variant='labelSmall'
 						style={{ color: colors.onSurfaceVariant }}
-					>
-						合計の使用量
-					</Text>
+					>{t('合計の使用量')}</Text>
 					<Text
 						variant='titleMedium'
 						style={styles.centerValue}

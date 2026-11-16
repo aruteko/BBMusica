@@ -18,6 +18,7 @@ import { analyticsService } from '@/lib/services/analyticsService'
 import { toastAndLogError } from '@/utils/error-handling'
 import * as Haptics from '@/utils/haptics'
 import { tintLottieSource } from '@/utils/lottie'
+import { t } from '@/i18n'
 
 const skipPrevSource =
 	require('@/assets/lottie/skip-prev.json') as AnimationObject
@@ -202,12 +203,12 @@ export function MainPlaybackControls({
 							void analyticsService.logPlayerAction('play')
 						}
 					} catch (e) {
-						toastAndLogError('再生操作に失敗しました', e, 'UI.Player.Controls')
+						toastAndLogError(t('再生操作に失敗しました'), e, 'UI.Player.Controls')
 					}
 				}}
 				testID={debouncedIsPlaying ? 'player-pause' : 'player-play'}
 				accessibilityRole='button'
-				accessibilityLabel={debouncedIsPlaying ? '一時停止' : '再生'}
+				accessibilityLabel={debouncedIsPlaying ? t('一時停止') : t('再生')}
 			>
 				{debouncedBuffering ? (
 					<ActivityIndicator
@@ -305,7 +306,7 @@ function PodcastSeekButton({
 			}}
 			testID={seconds < 0 ? 'player-rewind-15' : 'player-forward-15'}
 			accessibilityRole='button'
-			accessibilityLabel={seconds < 0 ? '15秒戻る' : '15秒進む'}
+			accessibilityLabel={seconds < 0 ? t('15秒戻る') : t('15秒進む')}
 			accessibilityState={{ disabled: !canSeek }}
 			disabled={!canSeek}
 			onPress={() => {
@@ -315,7 +316,7 @@ function PodcastSeekButton({
 				onInteraction?.()
 				void Haptics.performHaptics(Haptics.AndroidHaptics.Context_Click)
 				void seekWithinTrack(trackId, seconds, true).catch((error: unknown) => {
-					toastAndLogError('シークに失敗しました', error, 'Player.Controls')
+					toastAndLogError(t('シークに失敗しました'), error, 'Player.Controls')
 				})
 			}}
 		>

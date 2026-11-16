@@ -11,6 +11,7 @@ import type { GarbSkinSearchResult } from '@/lib/api/bilibili/garb'
 import { installSkin } from '@/lib/theme/SkinManager'
 import type { SkinDownloadProgress } from '@/lib/theme/types'
 import toast from '@/utils/toast'
+import { t } from '@/i18n'
 
 interface SkinDownloadProgressModalProps {
 	item: GarbSkinSearchResult
@@ -46,22 +47,22 @@ const SkinDownloadProgressModal = memo(function SkinDownloadProgressModal({
 								...previous,
 								completed: previous.total,
 								progress: 1,
-								label: 'ダウンロード完了',
+								label: t('ダウンロード完了'),
 							}
 						: {
 								completed: 1,
 								total: 1,
 								progress: 1,
-								label: 'ダウンロード完了',
+								label: t('ダウンロード完了'),
 							},
 				)
 				setIsFinished(true)
 				close('SkinDownloadProgress')
 				useModalStore.getState().doAfterModalHostClosed(() => {
-					alert('テーマのダウンロードが完了しました', 'このテーマを今すぐ有効にしますか？', [
-						{ text: 'あとで' },
+					alert(t('テーマのダウンロードが完了しました'), t('このテーマを今すぐ有効にしますか？'), [
+						{ text: t('あとで') },
 						{
-							text: '有効にする',
+							text: t('有効にする'),
 							onPress: () => router.replace('/settings/appearance'),
 						},
 					])
@@ -85,7 +86,7 @@ const SkinDownloadProgressModal = memo(function SkinDownloadProgressModal({
 	return (
 		<>
 			<Dialog.Title>
-				{hasError ? 'ダウンロードに失敗しました' : isFinished ? 'ダウンロードが完了しました' : 'テーマの素材をダウンロード中'}
+				{hasError ? t('ダウンロードに失敗しました') : isFinished ? t('ダウンロードが完了しました') : t('テーマの素材をダウンロード中')}
 			</Dialog.Title>
 			<Dialog.Content>
 				<View style={styles.content}>
@@ -94,7 +95,7 @@ const SkinDownloadProgressModal = memo(function SkinDownloadProgressModal({
 						numberOfLines={2}
 						style={{ color: colors.onSurfaceVariant }}
 					>
-						{progress?.label ?? 'ダウンロードの準備中'}
+						{progress?.label ?? t('ダウンロードの準備中')}
 					</Text>
 					<LinearProgressIndicator
 						progress={progress?.progress ?? 0}
@@ -107,7 +108,7 @@ const SkinDownloadProgressModal = memo(function SkinDownloadProgressModal({
 					>
 						{progress && progress.total > 0
 							? `${progress.completed}/${progress.total}`
-							: '素材の一覧を取得中'}
+							: t('素材の一覧を取得中')}
 					</Text>
 				</View>
 			</Dialog.Content>
@@ -116,7 +117,7 @@ const SkinDownloadProgressModal = memo(function SkinDownloadProgressModal({
 					onPress={() => close('SkinDownloadProgress')}
 					disabled={!canClose}
 				>
-					{canClose ? '閉じる' : 'お待ちください'}
+					{canClose ? t('閉じる') : t('お待ちください')}
 				</Button>
 			</Dialog.Actions>
 		</>

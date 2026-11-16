@@ -22,6 +22,7 @@ import {
 	type BilibiliCdnNode,
 } from '@/lib/services/bilibiliCdnService'
 import { toastAndLogError } from '@/utils/error-handling'
+import { t } from '@/i18n'
 
 interface NodeResult {
 	node: BilibiliCdnNode
@@ -55,7 +56,7 @@ export default function CdnSettingsPage() {
 			setPreferredBilibiliCdn(option.id)
 			setPreferred(option.id)
 		} catch (error) {
-			toastAndLogError('優先CDNの設定に失敗しました', error, 'Settings.CDN')
+			toastAndLogError(t('優先CDNの設定に失敗しました'), error, 'Settings.CDN')
 		}
 	}
 
@@ -68,8 +69,9 @@ export default function CdnSettingsPage() {
 			items.map((item) => ({
 				...item,
 				status:
-					item.status === '速度テスト待ち' || item.status === '速度テスト中…'
-						? 'キャンセルしました'
+					item.status === t('速度テスト待ち') ||
+					item.status === t('速度テスト中…')
+						? t('キャンセルしました')
 						: item.status,
 			})),
 		)
@@ -85,12 +87,12 @@ export default function CdnSettingsPage() {
 		setPreparing(true)
 		setResults([])
 		const track = currentTrack?.source === 'bilibili' ? currentTrack : null
-		setSampleName(track?.title ?? 'プリセット動画 BV1fK4y1t7hj')
+		setSampleName(track?.title ?? t('プリセット動画 BV1fK4y1t7hj'))
 		try {
 			const nodes = await getCdnTestNodes(track, controller.signal)
 			if (!active()) return
 			setPreparing(false)
-			setResults(nodes.map((node) => ({ node, status: '速度テスト待ち' })))
+			setResults(nodes.map((node) => ({ node, status: t('速度テスト待ち') })))
 			for (const node of nodes) {
 				if (!active()) break
 				const update = (status: string) => {
@@ -101,18 +103,18 @@ export default function CdnSettingsPage() {
 						),
 					)
 				}
-				update('速度テスト中…')
+				update(t('速度テスト中…'))
 				try {
 					const result = await measureCdnSpeed(node.url, controller.signal)
 					update(
-						`${result.megabytesPerSecond.toFixed(2)} MB/s · 応答 ${Math.round(result.latencyMs)} ms`,
+						`${result.megabytesPerSecond.toFixed(2)}${t(' MB/s · 応答 ')}${Math.round(result.latencyMs)} ms`,
 					)
 				} catch (error) {
-					update(error instanceof Error ? error.message : '速度テストに失敗しました')
+					update(error instanceof Error ? error.message : t('速度テストに失敗しました'))
 				}
 			}
 		} catch (error) {
-			if (active()) toastAndLogError('テスト用ノードの取得に失敗しました', error, 'Settings.CDN')
+			if (active()) toastAndLogError(t('テスト用ノードの取得に失敗しました'), error, 'Settings.CDN')
 		} finally {
 			if (operation.current === controller) {
 				operation.current = null
@@ -126,14 +128,14 @@ export default function CdnSettingsPage() {
 		if (id === 'auto' || !results.length) return undefined
 		return results.some(({ node }) => node.provider === id)
 			? undefined
-			: '今回はこのCDNノードが返されませんでした'
+			: t('今回はこのCDNノードが返されませんでした')
 	}
 
 	return (
 		<View style={[styles.container, { backgroundColor: colors.background }]}>
 			<Appbar.Header>
 				<Appbar.BackAction onPress={() => router.back()} />
-				<Appbar.Content title='CDN設定' />
+				<Appbar.Content title={t('CDN設定')} />
 			</Appbar.Header>
 			<ScrollView
 				contentContainerStyle={[
@@ -142,17 +144,13 @@ export default function CdnSettingsPage() {
 				]}
 			>
 				<SettingsSectionTitle
-					title='優先CDN'
+					title={t('優先CDN')}
 					first
 				/>
 				<Text
 					variant='bodySmall'
 					style={{ color: colors.onSurfaceVariant }}
-				>
-					選んだ事業者の通常ノードを優先し、次に他の通常ノード、最後に mcdn を試します。自動モードでは通常のCDNを優先します。以降の再生とダウンロードに適用され、キャッシュ済みの内容には影響しません。
-					
-					
-				</Text>
+				>{t('選んだ事業者を優先して使います')}</Text>
 				<RadioButton.Group
 					onValueChange={selectCdn}
 					value={preferred}
@@ -167,34 +165,30 @@ export default function CdnSettingsPage() {
 						/>
 					))}
 				</RadioButton.Group>
-				<SettingsSectionTitle title='CDN速度テスト' />
+				<SettingsSectionTitle title={t('CDN速度テスト')} />
 				<Text
 					variant='bodySmall'
 					style={{ color: colors.onSurfaceVariant }}
-				>
-					再生中のBilibiliの音声を優先して使い、なければプリセット動画を使います。実際に返されたノードを1つずつテストし、各ノードで最大約2 MBを取得します（タイムアウト8秒）。通信量を消費します。結果は参考値です。
-					
-					
-				</Text>
+				>{t('再生中の音声で、各ノードを最大約2 MB測定します。通信量がかかります。')}</Text>
 				<Button
 					mode='contained-tonal'
 					style={styles.button}
 					onPress={running ? cancel : () => void start()}
 				>
-					{running ? 'テストを中止' : 'テストを開始'}
+					{running ? t('テストを中止') : t('テストを開始')}
 				</Button>
 				{sampleName ? (
-					<Text variant='bodySmall'>テスト音源：{sampleName}</Text>
+					<Text variant='bodySmall'>{t('テスト音源：')}{sampleName}</Text>
 				) : null}
 				{preparing ? (
-					<Text style={styles.preparing}>音声ノードを取得中…</Text>
+					<Text style={styles.preparing}>{t('音声ノードを取得中…')}</Text>
 				) : null}
 				{results.map(({ node, status }) => (
 					<List.Item
 						key={node.host}
 						title={
 							node.provider === 'auto'
-								? 'Bilibiliの割り当てノード'
+								? t('Bilibiliの割り当てノード')
 								: BILIBILI_CDN_OPTIONS.find(
 										(option) => option.id === node.provider,
 									)?.label

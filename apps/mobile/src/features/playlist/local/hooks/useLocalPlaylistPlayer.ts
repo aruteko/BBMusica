@@ -11,6 +11,7 @@ import { storage } from '@/utils/mmkv'
 import { addToQueue } from '@/utils/player'
 import { getInternalPlayUri } from '@/utils/player'
 import toast from '@/utils/toast'
+import { t as tr } from '@/i18n'
 
 const SCOPE = 'UI.Playlist.Local.Player'
 
@@ -26,7 +27,7 @@ export function useLocalPlaylistPlayer(
 		async (startFromId?: string) => {
 			const tracksResult = await playlistService.getPlaylistTracks(playlistId)
 			if (tracksResult.isErr()) {
-				toastAndLogError('プレイリストの内容を取得できませんでした', tracksResult.error, SCOPE)
+				toastAndLogError(tr('プレイリストの内容を取得できませんでした'), tracksResult.error, SCOPE)
 				return
 			}
 			let tracks = tracksResult.value.filter((item) =>
@@ -68,11 +69,11 @@ export function useLocalPlaylistPlayer(
 				tracks = tracks.filter((t) => keys.has(t.uniqueKey))
 
 				if (tracks.length === 0) {
-					toast.show('オフラインのため、再生できるキャッシュ済みの曲がありません')
+					toast.show(tr('オフラインのため、再生できるキャッシュ済みの曲がありません'))
 					return
 				}
 				if (tracks.length < originalLength) {
-					toast.show('オフラインのため、再生可能なキャッシュ済みの曲のみキューに追加しました')
+					toast.show(tr('再生できる曲のみ追加しました'))
 				}
 			}
 
@@ -90,7 +91,7 @@ export function useLocalPlaylistPlayer(
 					playNext: false,
 				})
 			} catch (error) {
-				toastAndLogError('すべて再生に失敗しました', error, SCOPE)
+				toastAndLogError(tr('すべて再生に失敗しました'), error, SCOPE)
 			}
 		},
 		[playlistId, isOffline],
@@ -103,17 +104,17 @@ export function useLocalPlaylistPlayer(
 				playableOfflineKeys &&
 				!playableOfflineKeys.has(track.uniqueKey)
 			) {
-				toast.show('ネットワークに接続されていないため再生できません。ネットワーク設定を確認してください')
+				toast.show(tr('ネットワークに接続できません'))
 				return
 			}
 			if (!ignoreAlertReplacePlaylist) {
 				alert(
-					'プレイリストを置き換え',
-					'リスト内の曲をタップすると、現在の再生リストが置き換えられます。続けますか？（次回から表示しない）',
+					tr('プレイリストを置き換え'),
+					tr('再生リストを置き換えますか？'),
 					[
-						{ text: 'キャンセル' },
+						{ text: tr('キャンセル') },
 						{
-							text: 'OK',
+							text: tr('OK'),
 							onPress: () => {
 								setIgnoreAlertReplacePlaylist(true)
 								void playAll(track.uniqueKey)

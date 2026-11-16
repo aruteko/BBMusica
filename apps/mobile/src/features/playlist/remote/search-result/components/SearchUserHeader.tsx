@@ -10,6 +10,7 @@ import ActivityIndicator from '@/components/common/ActivityIndicator'
 import { useUserSearchResults } from '@/hooks/queries/bilibili/search'
 import useAppStore from '@/hooks/stores/useAppStore'
 import type { BilibiliSearchUser } from '@/types/apis/bilibili'
+import { t } from '@/i18n'
 
 interface SearchUserHeaderProps {
 	query: string
@@ -55,9 +56,7 @@ export function SearchUserHeader({ query }: SearchUserHeaderProps) {
 							styles.sectionTitle,
 							{ color: colors.onSurface, marginBottom: 0 },
 						]}
-					>
-						関連する投稿者
-					</Text>
+					>{t('関連する投稿者')}</Text>
 					<ActivityIndicator
 						size='small'
 						style={{ marginLeft: 8 }}
@@ -148,9 +147,7 @@ export function SearchUserHeader({ query }: SearchUserHeaderProps) {
 				<Text
 					variant='titleMedium'
 					style={[styles.sectionTitle, { color: colors.onSurface }]}
-				>
-					関連する投稿者
-				</Text>
+				>{t('関連する投稿者')}</Text>
 				<View
 					style={[
 						styles.singleCardWrapper,
@@ -207,7 +204,7 @@ export function SearchUserHeader({ query }: SearchUserHeaderProps) {
 										variant='bodySmall'
 										style={{ color: colors.onSurfaceVariant }}
 									>
-										{formatFansCount(user.fans)} フォロワー • {user.videos} 投稿
+										{formatFansCount(user.fans)}{t(' フォロワー • ')}{user.videos} 投稿
 									</Text>
 								</View>
 							</View>
@@ -238,9 +235,7 @@ export function SearchUserHeader({ query }: SearchUserHeaderProps) {
 				<Text
 					variant='titleMedium'
 					style={[styles.videoSectionTitle, { color: colors.onSurface }]}
-				>
-					関連動画
-				</Text>
+				>{t('関連動画')}</Text>
 			</View>
 		)
 	}
@@ -250,9 +245,7 @@ export function SearchUserHeader({ query }: SearchUserHeaderProps) {
 			<Text
 				variant='titleMedium'
 				style={[styles.sectionTitle, { color: colors.onSurface }]}
-			>
-				関連する投稿者
-			</Text>
+			>{t('関連する投稿者')}</Text>
 			<ScrollView
 				horizontal
 				showsHorizontalScrollIndicator={false}
@@ -303,8 +296,7 @@ export function SearchUserHeader({ query }: SearchUserHeaderProps) {
 									style={[styles.cardSub, { color: colors.onSurfaceVariant }]}
 									numberOfLines={1}
 								>
-									{formatFansCount(user.fans)} フォロワー
-								</Text>
+									{formatFansCount(user.fans)}{t(' フォロワー')}</Text>
 							</Touchable>
 						</View>
 					)
@@ -313,9 +305,7 @@ export function SearchUserHeader({ query }: SearchUserHeaderProps) {
 			<Text
 				variant='titleMedium'
 				style={[styles.videoSectionTitle, { color: colors.onSurface }]}
-			>
-				関連動画
-			</Text>
+			>{t('関連動画')}</Text>
 		</View>
 	)
 }

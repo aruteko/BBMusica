@@ -8,6 +8,7 @@ import { queryClient } from '@/lib/config/queryClient'
 import { playlistService } from '@/lib/services/playlistService'
 import type { Playlist } from '@/types/core/media'
 import { toastAndLogError } from '@/utils/error-handling'
+import { t } from '@/i18n'
 
 export function PlaylistPlayerPreferenceDialog({
 	playlist,
@@ -34,7 +35,7 @@ export function PlaylistPlayerPreferenceDialog({
 		},
 		onError: (error) =>
 			toastAndLogError(
-				'プレーヤー設定の保存に失敗しました',
+				t('プレーヤー設定の保存に失敗しました'),
 				error,
 				'Playlist.PlayerPreference',
 			),
@@ -45,11 +46,9 @@ export function PlaylistPlayerPreferenceDialog({
 				visible={visible}
 				onDismiss={onDismiss}
 			>
-				<Dialog.Title>プレーヤー設定</Dialog.Title>
+				<Dialog.Title>{t('プレーヤー設定')}</Dialog.Title>
 				<Dialog.Content>
-					<Text variant='bodyMedium'>
-						このプレイリストから始める新しい再生にのみ影響し、現在のプレーヤーは切り替わりません。
-					</Text>
+					<Text variant='bodyMedium'>{t('次の再生から適用されます')}</Text>
 					<RadioButton.Group
 						value={playlist.playerPreference}
 						onValueChange={(value) => {
@@ -63,23 +62,23 @@ export function PlaylistPlayerPreferenceDialog({
 					>
 						<RadioButton.Item
 							disabled={mutation.isPending}
-							label={`グローバル設定に従う（${defaultMode === 'podcast' ? 'ポッドキャスト' : '音楽'}）`}
+							label={t('グローバル設定に従う · {0}', defaultMode === 'podcast' ? t('ポッドキャスト') : t('音楽'))}
 							value='inherit'
 						/>
 						<RadioButton.Item
 							disabled={mutation.isPending}
-							label='音楽'
+							label={t('音楽')}
 							value='music'
 						/>
 						<RadioButton.Item
 							disabled={mutation.isPending}
-							label='ポッドキャスト'
+							label={t('ポッドキャスト')}
 							value='podcast'
 						/>
 					</RadioButton.Group>
 				</Dialog.Content>
 				<Dialog.Actions>
-					<Button onPress={onDismiss}>キャンセル</Button>
+					<Button onPress={onDismiss}>{t('キャンセル')}</Button>
 				</Dialog.Actions>
 			</Dialog>
 		</Portal>

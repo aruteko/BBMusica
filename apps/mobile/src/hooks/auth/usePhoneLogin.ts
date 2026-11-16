@@ -11,6 +11,7 @@ import { toastAndLogError } from '@/utils/error-handling'
 import toast from '@/utils/toast'
 
 import { useGeetest } from './useGeetest'
+import { t } from '@/i18n'
 
 export type Step = 'input_phone' | 'geetest_verify' | 'input_code' | 'success'
 
@@ -28,16 +29,16 @@ export const phoneFormModel = {
 	tel: {
 		validate(v: string): string {
 			const trimmed = v.trim()
-			if (!trimmed) return '電話番号を入力してください'
-			if (!/^\d{5,15}$/.test(trimmed)) return '電話番号の形式が正しくありません'
+			if (!trimmed) return t('電話番号を入力してください')
+			if (!/^\d{5,15}$/.test(trimmed)) return t('電話番号の形式が正しくありません')
 			return ''
 		},
 	},
 	smsCode: {
 		validate(v: string): string {
 			const trimmed = v.trim()
-			if (!trimmed) return '認証コードを入力してください'
-			if (!/^\d{4,8}$/.test(trimmed)) return '認証コードの形式が正しくありません'
+			if (!trimmed) return t('認証コードを入力してください')
+			if (!/^\d{4,8}$/.test(trimmed)) return t('認証コードの形式が正しくありません')
 			return ''
 		},
 	},
@@ -162,7 +163,7 @@ export function usePhoneLogin(options?: { onClose?: () => void }) {
 			const captchaResult = await bilibiliApi.getPhoneLoginCaptchaToken()
 			if (captchaResult.isErr()) {
 				toastAndLogError(
-					'認証コードの取得に失敗しました',
+					t('認証コードの取得に失敗しました'),
 					captchaResult.error,
 					'usePhoneLogin.getPhoneLoginCaptchaToken',
 				)
@@ -182,7 +183,7 @@ export function usePhoneLogin(options?: { onClose?: () => void }) {
 			})
 		} catch (error) {
 			toastAndLogError(
-				'認証コードの取得に失敗しました',
+				t('認証コードの取得に失敗しました'),
 				error,
 				'usePhoneLogin.handleRequestCode',
 			)
@@ -208,7 +209,7 @@ export function usePhoneLogin(options?: { onClose?: () => void }) {
 			if (loginResult.isErr()) {
 				let errorMessage = loginResult.error.message
 				if (!errorMessage) {
-					errorMessage = 'ログインに失敗しました。認証コードを確認してください'
+					errorMessage = t('ログインに失敗しました。認証コードを確認してください')
 				}
 				dispatch({
 					type: 'LOGIN_FAIL',
@@ -224,16 +225,16 @@ export function usePhoneLogin(options?: { onClose?: () => void }) {
 			)
 			const result = setCookie(finalCookieObject)
 			if (result.isErr()) {
-				toast.error('Cookieの保存に失敗しました：' + result.error.message)
+				toast.error(t('Cookieの保存に失敗しました：') + result.error.message)
 				Sentry.captureException(result.error, {
 					tags: { Hook: 'usePhoneLogin' },
 				})
-				dispatch({ type: 'LOGIN_FAIL', payload: 'Cookieの保存に失敗しました' })
+				dispatch({ type: 'LOGIN_FAIL', payload: t('Cookieの保存に失敗しました') })
 				return
 			}
 
 			dispatch({ type: 'LOGIN_SUCCESS' })
-			toast.success('ログインしました', { id: 'phone-login-success' })
+			toast.success(t('ログインしました'), { id: 'phone-login-success' })
 			await queryClient.cancelQueries()
 			await queryClient.invalidateQueries({
 				queryKey: favoriteListQueryKeys.all,
@@ -241,8 +242,8 @@ export function usePhoneLogin(options?: { onClose?: () => void }) {
 			await queryClient.invalidateQueries({ queryKey: userQueryKeys.all })
 			setTimeout(() => close(), 1000)
 		} catch (error) {
-			toastAndLogError('ログインに失敗しました', error, 'usePhoneLogin.handleLogin')
-			dispatch({ type: 'LOGIN_FAIL', payload: 'ログインに失敗しました' })
+			toastAndLogError(t('ログインに失敗しました'), error, 'usePhoneLogin.handleLogin')
+			dispatch({ type: 'LOGIN_FAIL', payload: t('ログインに失敗しました') })
 		}
 	}
 

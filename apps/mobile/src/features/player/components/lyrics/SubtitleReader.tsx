@@ -11,6 +11,7 @@ import type { SubtitleParagraph } from '@/features/player/utils/subtitles'
 
 import { SubtitleParagraphItem } from './SubtitleParagraphItem'
 import { SubtitleSearchToolbar } from './SubtitleSearchToolbar'
+import { t } from '@/i18n'
 
 export function SubtitleReaderToolbar({
 	store,
@@ -155,7 +156,7 @@ function SearchSubtitles({ store }: { store: SubtitleReaderStore }) {
 			viewabilityConfig={{ itemVisiblePercentThreshold: 1 }}
 			ListEmptyComponent={
 				<View style={styles.empty}>
-					<VariantPlainText>該当する字幕が見つかりません。別のキーワードをお試しください</VariantPlainText>
+					<VariantPlainText>{t('該当する字幕が見つかりません。別のキーワードをお試しください')}</VariantPlainText>
 				</View>
 			}
 			renderItem={({ item }) => (
@@ -231,7 +232,7 @@ export function SubtitleLocateButton({
 					Keyboard.dismiss()
 					store.resumeFollowing()
 				}}
-				accessibilityLabel='再生中の字幕に移動'
+				accessibilityLabel={t('再生中の字幕に移動')}
 				testID='subtitle-scroll-to-current'
 			/>
 		</View>

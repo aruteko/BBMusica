@@ -2,30 +2,11 @@ import { useMutation } from '@tanstack/react-query'
 
 import { videoDataQueryKeys } from '@/hooks/queries/bilibili/video'
 import { bilibiliApi } from '@/lib/api/bilibili/api'
-import { queryClient } from '@/lib/config/queryClient'
 import type { BilibiliToViewVideoList } from '@/types/apis/bilibili'
 import { toastAndLogError } from '@/utils/error-handling'
 import { returnOrThrowAsync } from '@/utils/neverthrow-utils'
 import toast from '@/utils/toast'
-
-export const useThumbUpVideo = () => {
-	return useMutation({
-		mutationFn: ({ bvid, like }: { bvid: string; like: boolean }) =>
-			returnOrThrowAsync(
-				bilibiliApi.thumbUpVideo({ bvid, like }).map((res) => res ?? undefined),
-			),
-		onSuccess: (_, { bvid, like }) => {
-			queryClient.setQueryData(
-				videoDataQueryKeys.getVideoIsThumbUp(bvid),
-				like ? 1 : 0,
-			)
-			toast.success(like ? 'いいねしました' : 'いいねを取り消しました')
-		},
-		onError: (err, { like }) => {
-			toastAndLogError(`${like ? 'いいね' : 'いいねの取り消し'}に失敗しました`, err, 'UI.Player')
-		},
-	})
-}
+import { t } from '@/i18n'
 
 export const useDeleteToViewVideo = () => {
 	return useMutation({
@@ -78,7 +59,7 @@ export const useDeleteToViewVideo = () => {
 		) => {
 			if (error) {
 				toastAndLogError(
-					deleteAllViewed ? 'あとで見るの消去に失敗しました' : '削除に失敗しました',
+					deleteAllViewed ? t('あとで見るの消去に失敗しました') : t('削除に失敗しました'),
 					error,
 					'Mutation.Bilibili.Video',
 				)
@@ -87,7 +68,7 @@ export const useDeleteToViewVideo = () => {
 					onMutateResult?.previousData,
 				)
 			} else {
-				toast.success(deleteAllViewed ? 'あとで見るを消去しました' : '削除しました')
+				toast.success(deleteAllViewed ? t('あとで見るを消去しました') : t('削除しました'))
 			}
 			await context.client.invalidateQueries({
 				queryKey: videoDataQueryKeys.getToViewVideoList(),
@@ -126,7 +107,7 @@ export const useClearToViewVideoList = () => {
 		onSettled: async (_d, error, _v, onMutateResult, context) => {
 			if (error) {
 				toastAndLogError(
-					'あとで見るの消去に失敗しました',
+					t('あとで見るの消去に失敗しました'),
 					error,
 					'Mutation.Bilibili.Video',
 				)
@@ -135,7 +116,7 @@ export const useClearToViewVideoList = () => {
 					onMutateResult?.previousData,
 				)
 			} else {
-				toast.success('あとで見るを消去しました')
+				toast.success(t('あとで見るを消去しました'))
 			}
 			await context.client.invalidateQueries({
 				queryKey: videoDataQueryKeys.getToViewVideoList(),

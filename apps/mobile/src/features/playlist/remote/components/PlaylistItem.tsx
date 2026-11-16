@@ -16,6 +16,7 @@ import {
 	LIST_ITEM_COVER_SIZE,
 } from '@/theme/dimensions'
 import { formatDurationToHHMMSS } from '@/utils/time'
+import { t } from '@/i18n'
 
 export interface TrackMenuItem {
 	title: string
@@ -197,7 +198,7 @@ export const TrackListItem = memo(function TrackListItem({
 										variant='bodySmall'
 										numberOfLines={1}
 									>
-										{data.artistName ?? '不明'}
+										{data.artistName ?? t('不明')}
 									</VariantPlainText>
 									<VariantPlainText
 										style={styles.dotSeparator}

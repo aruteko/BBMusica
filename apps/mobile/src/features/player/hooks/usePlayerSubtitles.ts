@@ -10,6 +10,7 @@ import useAppStore from '@/hooks/stores/useAppStore'
 import { bilibiliApi } from '@/lib/api/bilibili/api'
 import type { BilibiliSubtitleTrack } from '@/types/apis/bilibili'
 import { returnOrThrowAsync } from '@/utils/neverthrow-utils'
+import { t } from '@/i18n'
 
 export function usePlayerSubtitles(active: boolean) {
 	const player = useBilibiliPlayerInfo(active)
@@ -49,7 +50,7 @@ export function usePlayerSubtitles(active: boolean) {
 		selected,
 		lines,
 		trackId: player.trackId,
-		title: player.track?.title ?? 'Bilibiliの字幕',
+		title: player.track?.title ?? t('Bilibiliの字幕'),
 		isLocal: player.track?.source === 'local',
 		isLoading:
 			player.isLoading || (!!url && content.isPending && !content.isPaused),

@@ -18,6 +18,7 @@ import Animated, {
 import ActivityIndicator from '@/components/common/ActivityIndicator'
 import { useSearchSuggestions } from '@/hooks/queries/bilibili/search'
 import type { BilibiliSearchSuggestionItem } from '@/types/apis/bilibili'
+import { t } from '@/i18n'
 
 export interface SearchSuggestionsProps {
 	query: string
@@ -154,9 +155,7 @@ export default function SearchSuggestions({
 					ListEmptyComponent={
 						<Text
 							style={[styles.noHistoryText, { color: colors.onSurfaceVariant }]}
-						>
-							検索候補がありません。そのまま検索できます
-						</Text>
+						>{t('検索候補がありません。そのまま検索できます')}</Text>
 					}
 					data={parsedItems ?? []}
 					keyExtractor={keyExtractor}

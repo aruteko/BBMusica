@@ -2,6 +2,7 @@ import { StyleSheet, View } from 'react-native'
 import { Text, useTheme } from 'react-native-paper'
 
 import Button from '@/components/common/Button'
+import { t } from '@/i18n'
 
 interface DownloadHeaderProps {
 	taskCount: number
@@ -28,24 +29,18 @@ export default function DownloadHeader({
 			<Text
 				variant='bodyMedium'
 				style={{ color: colors.onSurfaceVariant }}
-			>
-				合計 {taskCount} 件のタスク
-			</Text>
+			>{t('合計 ')}{taskCount}{t(' 件のタスク')}</Text>
 			<View style={styles.buttonContainer}>
 				<Button
 					mode='outlined'
 					onPress={onRetryAll}
 					disabled={retryableCount === 0}
-				>
-					失敗を再試行
-				</Button>
+				>{t('失敗を再試行')}</Button>
 				<Button
 					mode='outlined'
 					onPress={onClearAll}
 					disabled={taskCount === 0}
-				>
-					すべて消去
-				</Button>
+				>{t('すべて消去')}</Button>
 			</View>
 		</View>
 	)

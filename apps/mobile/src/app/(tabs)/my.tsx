@@ -1,11 +1,8 @@
-import type { TrueSheet } from '@lodev09/react-native-true-sheet'
 import dayjs from 'dayjs'
-import { eq } from 'drizzle-orm'
-import { useLiveQuery } from 'drizzle-orm/expo-sqlite'
 import { Image } from 'expo-image'
 import { useObserve } from 'expo-observe'
 import { useRouter } from 'expo-router'
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native'
 import { Touchable } from 'react-native-gesture-handler'
 import { Icon, List, Text, useTheme } from 'react-native-paper'
@@ -15,7 +12,6 @@ import IconButton from '@/components/common/IconButton'
 import SettingsSectionTitle from '@/components/common/SettingsSectionTitle'
 import NativeTabPage from '@/components/NativeTabPage'
 import SkinAppbarBackground from '@/components/navigation/SkinAppbarBackground'
-import { SyncFailuresSheet } from '@/features/playlist/local/components/SyncFailuresSheet'
 import ListeningRecordSection from '@/features/profile/ListeningRecordSection'
 import useCurrentTrack from '@/hooks/player/useCurrentTrack'
 import { usePersonalInformation } from '@/hooks/queries/bilibili/user'
@@ -24,9 +20,8 @@ import { useModalStore } from '@/hooks/stores/useModalStore'
 import useSkinStore from '@/hooks/stores/useSkinStore'
 import useActiveSkin from '@/hooks/theme/useActiveSkin'
 import useSkinForegroundColor from '@/hooks/theme/useSkinForegroundColor'
-import db from '@/lib/db/db'
-import * as schema from '@/lib/db/schema'
 import { markPerfInteractive } from '@/lib/performance'
+import { t } from '@/i18n'
 
 function MyPageContent() {
 	const { colors } = useTheme()
@@ -37,20 +32,9 @@ function MyPageContent() {
 	const haveTrack = useCurrentTrack()
 	const hideStarPrompt = useAppStore((state) => state.settings.hideStarPrompt)
 	const openModal = useModalStore((state) => state.open)
-	const syncFailuresSheetRef = useRef<TrueSheet>(null)
-	const { data: syncFailures } = useLiveQuery(
-		db
-			.select({ id: schema.playlistSyncQueue.id })
-			.from(schema.playlistSyncQueue)
-			.where(eq(schema.playlistSyncQueue.status, 'failed'))
-			.limit(1),
-	)
-
 	const headerForegroundColor = useSkinForegroundColor()
 	const hasCookie = useAppStore((state) => state.hasBilibiliCookie())
 	const cachedProfile = useAppStore((state) => state.bilibiliUserInfo)
-	const account = useAppStore((state) => state.bbplayerAccount)
-	const token = useAppStore((state) => state.bbplayerToken)
 	const { data: personalInfo } = usePersonalInformation()
 	const profile = hasCookie ? (personalInfo ?? cachedProfile) : undefined
 	const activeSkin = useActiveSkin()
@@ -82,21 +66,19 @@ function MyPageContent() {
 				<Text
 					variant='headlineSmall'
 					style={[styles.bold, { color: headerForegroundColor }]}
-				>
-					マイページ
-				</Text>
+				>{t('マイページ')}</Text>
 				<View style={styles.headerActions}>
 					{!hideStarPrompt && (
 						<IconButton
 							icon='star-outline'
-							accessibilityLabel='GitHubでStarを付ける'
+							accessibilityLabel={t('GitHubでStarを付ける')}
 							iconColor={headerForegroundColor}
 							onPress={() => openModal('StarPrompt', undefined)}
 						/>
 					)}
 					<IconButton
 						icon='cog-outline'
-						accessibilityLabel='設定'
+						accessibilityLabel={t('設定')}
 						testID='profile-settings'
 						iconColor={headerForegroundColor}
 						onPress={() => router.navigate('/settings')}
@@ -114,7 +96,7 @@ function MyPageContent() {
 					<Touchable
 						accessibilityRole='button'
 						accessibilityLabel={
-							hasCookie ? 'Bilibiliアカウントを管理' : 'Bilibiliアカウントにログイン'
+							hasCookie ? t('Bilibiliアカウントを管理') : t('Bilibiliアカウントにログイン')
 						}
 						style={[styles.profile, compact && styles.compactProfile]}
 						onPress={() => router.navigate('/settings/bilibili-account')}
@@ -156,72 +138,29 @@ function MyPageContent() {
 								numberOfLines={1}
 							>
 								{hasCookie
-									? (profile?.name ?? 'Bilibiliユーザー')
-									: 'Bilibiliにログイン'}
+									? (profile?.name ?? t('Bilibiliユーザー'))
+									: t('Bilibiliにログイン')}
 							</Text>
 							<Text
 								variant='bodyMedium'
 								style={{ color: colors.onSurfaceVariant }}
 							>
 								{hasCookie
-									? 'Bilibiliアカウント'
-									: 'ログインするとお気に入り、フォロー、あとで見るを使えます'}
+									? t('Bilibiliアカウント')
+									: t('ログインするとお気に入り、フォロー、あとで見るを使えます')}
 							</Text>
 						</View>
-						{chevron()}
-					</Touchable>
-					<Touchable
-						accessibilityRole='button'
-						accessibilityLabel='BBPlayerアカウント'
-						style={[
-							styles.accountBar,
-							{ backgroundColor: colors.surfaceVariant },
-						]}
-						onPress={() => router.navigate('/settings/account')}
-					>
-						<Icon
-							source='link-variant'
-							size={20}
-							color={colors.onSurfaceVariant}
-						/>
-						<Text
-							variant='titleSmall'
-							style={{ color: colors.onSurfaceVariant }}
-						>
-							BBPlayerアカウント
-						</Text>
-						<Text
-							variant='bodySmall'
-							style={[styles.accountStatus, { color: colors.onSurfaceVariant }]}
-							numberOfLines={1}
-						>
-							{token ? (account?.name ?? 'ログイン済み') : '未ログイン'}
-						</Text>
 						{chevron()}
 					</Touchable>
 				</View>
 				<ListeningRecordSection compact={compact} />
 				<SettingsSectionTitle
-					title='マイコンテンツ'
+					title={t('マイコンテンツ')}
 					first
 				/>
 				<View>
-					{syncFailures.length > 0 && (
-						<List.Item
-							title='プレイリスト同期失敗'
-							left={(props) => (
-								<List.Icon
-									{...props}
-									icon='alert-circle-outline'
-									color={colors.error}
-								/>
-							)}
-							right={chevron}
-							onPress={() => void syncFailuresSheetRef.current?.present()}
-						/>
-					)}
 					<List.Item
-						title='よく聴いている曲'
+						title={t('よく聴いている曲')}
 						left={(props) => (
 							<List.Icon
 								{...props}
@@ -232,7 +171,7 @@ function MyPageContent() {
 						onPress={() => router.navigate('/playlist/recently')}
 					/>
 					<List.Item
-						title='フォロー中'
+						title={t('フォロー中')}
 						left={(props) => (
 							<List.Icon
 								{...props}
@@ -243,7 +182,7 @@ function MyPageContent() {
 						onPress={() => router.navigate('/following')}
 					/>
 					<List.Item
-						title='ダウンロード'
+						title={t('ダウンロード')}
 						left={(props) => (
 							<List.Icon
 								{...props}
@@ -254,7 +193,7 @@ function MyPageContent() {
 						onPress={() => router.navigate('/downloaded')}
 					/>
 					<List.Item
-						title='あとで見る'
+						title={t('あとで見る')}
 						left={(props) => (
 							<List.Icon
 								{...props}
@@ -271,7 +210,7 @@ function MyPageContent() {
 						}
 					/>
 					<List.Item
-						title='あの月の今日'
+						title={t('あの月の今日')}
 						left={(props) => (
 							<List.Icon
 								{...props}
@@ -287,7 +226,6 @@ function MyPageContent() {
 					/>
 				</View>
 			</ScrollView>
-			<SyncFailuresSheet ref={syncFailuresSheetRef} />
 		</View>
 	)
 }

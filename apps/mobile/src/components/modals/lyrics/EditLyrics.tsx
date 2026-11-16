@@ -14,6 +14,7 @@ import lyricService from '@/lib/services/lyricService'
 import type { LyricFileData } from '@/types/player/lyrics'
 import { toastAndLogError } from '@/utils/error-handling'
 import toast from '@/utils/toast'
+import { t } from '@/i18n'
 
 export default function EditLyricsModal({
 	uniqueKey,
@@ -31,9 +32,9 @@ export default function EditLyricsModal({
 
 	const [index, setIndex] = useState(0)
 	const [routes] = useState([
-		{ key: 'lrc', title: 'メイン歌詞' },
-		{ key: 'tlyric', title: '翻訳' },
-		{ key: 'romalrc', title: 'ローマ字' },
+		{ key: 'lrc', title: t('メイン歌詞') },
+		{ key: 'tlyric', title: t('翻訳') },
+		{ key: 'romalrc', title: t('ローマ字') },
 	])
 
 	const renderScene = ({ route }: { route: { key: string } }) => {
@@ -42,14 +43,14 @@ export default function EditLyricsModal({
 				return (
 					<View style={styles.inputContainer}>
 						<TextInput
-							label='メイン歌詞'
+							label={t('メイン歌詞')}
 							value={lrc}
 							onChangeText={setLrc}
 							mode='outlined'
 							multiline
 							style={styles.textInput}
 							textAlignVertical='top'
-							placeholder='LRC形式の歌詞を入力'
+							placeholder={t('LRC形式の歌詞を入力')}
 						/>
 					</View>
 				)
@@ -57,14 +58,14 @@ export default function EditLyricsModal({
 				return (
 					<View style={styles.inputContainer}>
 						<TextInput
-							label='翻訳'
+							label={t('翻訳')}
 							value={tlyric}
 							onChangeText={setTlyric}
 							mode='outlined'
 							multiline
 							style={styles.textInput}
 							textAlignVertical='top'
-							placeholder='翻訳の歌詞を入力'
+							placeholder={t('翻訳の歌詞を入力')}
 						/>
 					</View>
 				)
@@ -72,14 +73,14 @@ export default function EditLyricsModal({
 				return (
 					<View style={styles.inputContainer}>
 						<TextInput
-							label='ローマ字'
+							label={t('ローマ字')}
 							value={romalrc}
 							onChangeText={setRomalrc}
 							mode='outlined'
 							multiline
 							style={styles.textInput}
 							textAlignVertical='top'
-							placeholder='ローマ字の歌詞を入力'
+							placeholder={t('ローマ字の歌詞を入力')}
 						/>
 					</View>
 				)
@@ -103,7 +104,7 @@ export default function EditLyricsModal({
 
 		if (result.isErr()) {
 			toastAndLogError(
-				'歌詞の保存に失敗しました',
+				t('歌詞の保存に失敗しました'),
 				result.error,
 				'Components.EditLyricsModal',
 			)
@@ -114,7 +115,7 @@ export default function EditLyricsModal({
 			lyricsQueryKeys.smartFetchLyrics(uniqueKey),
 			result.value,
 		)
-		toast.success('歌詞を保存しました')
+		toast.success(t('歌詞を保存しました'))
 		close('EditLyrics')
 	}
 
@@ -124,17 +125,17 @@ export default function EditLyricsModal({
 			await saveLyrics()
 		} else {
 			alert(
-				'歌詞の形式が正しくありません',
-				`${result.error.line} 行目にエラーがあります: ${result.error.message}`,
+				t('歌詞の形式が正しくありません'),
+				`${result.error.line}${t(' 行目にエラーがあります: ')}${result.error.message}`,
 				[
 					{
-						text: 'キャンセル',
+						text: t('キャンセル'),
 						onPress: () => {
 							// do nothing
 						},
 					},
 					{
-						text: 'このまま保存',
+						text: t('このまま保存'),
 						onPress: saveLyrics,
 						afterModalHostClosed: false,
 					},
@@ -145,18 +146,18 @@ export default function EditLyricsModal({
 
 	const clearLyrics = () => {
 		alert(
-			'歌詞を消去しますか？',
-			'消去すると、この曲は歌詞の自動取得を行わなくなり、デスクトップ歌詞やステータスバー歌詞などの表示もすぐに隠れます。',
+			t('歌詞を消去しますか？'),
+			t('消去すると、この曲の歌詞は表示されません'),
 			[
-				{ text: 'キャンセル' },
+				{ text: t('キャンセル') },
 				{
-					text: '消去',
+					text: t('消去'),
 					afterModalHostClosed: false,
 					onPress: async () => {
 						const result = await lyricService.skipLyric(uniqueKey)
 						if (result.isErr()) {
 							toastAndLogError(
-								'歌詞の消去に失敗しました',
+								t('歌詞の消去に失敗しました'),
 								result.error,
 								'Components.EditLyricsModal',
 							)
@@ -171,11 +172,11 @@ export default function EditLyricsModal({
 								tlyric: undefined,
 								romalrc: undefined,
 								manualSkip: true,
-								errorMessage: '歌詞の取得をスキップしましたが、再検索や編集はできます',
+								errorMessage: t('歌詞の取得をスキップしましたが、再検索や編集はできます'),
 								misc: undefined,
 							},
 						)
-						toast.success('歌詞を消去しました')
+						toast.success(t('歌詞を消去しました'))
 						close('EditLyrics')
 					},
 				},
@@ -185,12 +186,10 @@ export default function EditLyricsModal({
 
 	return (
 		<>
-			<Dialog.Title>歌詞を編集</Dialog.Title>
+			<Dialog.Title>{t('歌詞を編集')}</Dialog.Title>
 			<Dialog.Content style={styles.content}>
 				<View style={styles.header}>
-					<Text style={{ color: theme.colors.onSurfaceVariant }}>
-						歌詞はSPL(LRC)の仕様に従います。
-					</Text>
+					<Text style={{ color: theme.colors.onSurfaceVariant }}>{t('SPL形式に従います')}</Text>
 					<Text
 						style={{
 							color: theme.colors.primary,
@@ -201,9 +200,7 @@ export default function EditLyricsModal({
 								'https://moriafly.com/standards/spl.html',
 							)
 						}
-					>
-						タップして仕様の詳細を見る
-					</Text>
+					>{t('タップして仕様の詳細を見る')}</Text>
 				</View>
 				<TabView
 					navigationState={{ index, routes }}
@@ -226,8 +223,8 @@ export default function EditLyricsModal({
 				/>
 			</Dialog.Content>
 			<Dialog.Actions>
-				<Button onPress={clearLyrics}>歌詞を消去</Button>
-				<Button onPress={() => close('EditLyrics')}>キャンセル</Button>
+				<Button onPress={clearLyrics}>{t('歌詞を消去')}</Button>
+				<Button onPress={() => close('EditLyrics')}>{t('キャンセル')}</Button>
 				<Button onPress={handleConfirm}>OK</Button>
 			</Dialog.Actions>
 		</>

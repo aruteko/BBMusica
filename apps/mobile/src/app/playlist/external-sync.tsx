@@ -38,6 +38,7 @@ import {
 import type { GenericTrack } from '@/types/external_playlist'
 import type { ListRenderItemInfoWithExtraData } from '@/types/legendlist'
 import toast from '@/utils/toast'
+import { t } from '@/i18n'
 
 const ItemSeparator = () => <Divider />
 
@@ -94,8 +95,7 @@ const SyncTrackItem = memo(
 										fontWeight: 'bold',
 										marginBottom: 2,
 									}}
-								>
-									一致:{' '}
+								>{t('一致:')}{' '}
 									{result.matchedVideo.title
 										.replace(/<em class="keyword">/g, '')
 										.replace(/<\/em>/g, '')}
@@ -103,8 +103,7 @@ const SyncTrackItem = memo(
 								<Text
 									variant='bodySmall'
 									style={{ color: theme.colors.onSurfaceVariant }}
-								>
-									投稿者: {result.matchedVideo.author}
+								>{t('投稿者: ')}{result.matchedVideo.author}
 								</Text>
 							</View>
 						)}
@@ -231,15 +230,15 @@ const ExternalPlaylistSyncPageInner = () => {
 	const hasResults = Object.keys(results).length > 0 && !isExiting
 	usePreventRemove(hasResults, () => {
 		openModal('Alert', {
-			title: '終了しますか？',
+			title: t('終了しますか？'),
 			message:
-				'現在の照合結果は一時保存されました。次回このプレイリストを開くと、続きから照合できます。照合が終わったら、手動でローカルのプレイリストに保存してください。',
+				t('照合結果は一時保存されました。次回、続きから照合できます。'),
 			buttons: [
 				{
-					text: 'キャンセル',
+					text: t('キャンセル'),
 				},
 				{
-					text: '終了',
+					text: t('終了'),
 					onPress: () => {
 						setIsExiting(true)
 						useModalStore.getState().doAfterModalHostClosed(() => router.back())
@@ -255,7 +254,7 @@ const ExternalPlaylistSyncPageInner = () => {
 			.map((_, index) => results[index])
 			.filter((result) => result !== undefined)
 		if (matchResults.length === 0) {
-			toast.error('保存できる内容がありません')
+			toast.error(t('保存できる内容がありません'))
 			return
 		}
 
@@ -266,7 +265,7 @@ const ExternalPlaylistSyncPageInner = () => {
 		const unprocessedCount = data.tracks.length - matchResults.length
 
 		const proceedSave = async () => {
-			const loadingToast = toast.loading('ローカルに保存中...')
+			const loadingToast = toast.loading(t('ローカルに保存中...'))
 			const coverUrl = data.playlist.coverUrl ?? ''
 			const description = data.playlist.description ?? ''
 			try {
@@ -280,9 +279,9 @@ const ExternalPlaylistSyncPageInner = () => {
 				)
 
 				if (saveResult.isErr()) {
-					toast.error(`保存に失敗しました: ${saveResult.error.message}`)
+					toast.error(`${t('保存に失敗しました: ')}${saveResult.error.message}`)
 				} else {
-					toast.success('プレイリストをローカルに保存しました')
+					toast.success(t('プレイリストをローカルに保存しました'))
 					await queryClient.invalidateQueries({
 						queryKey: playlistKeys.playlistLists(),
 					})
@@ -295,7 +294,7 @@ const ExternalPlaylistSyncPageInner = () => {
 						)
 				}
 			} catch {
-				toast.error('保存に失敗しました')
+				toast.error(t('保存に失敗しました'))
 			}
 			toast.dismiss(loadingToast)
 		}
@@ -303,21 +302,21 @@ const ExternalPlaylistSyncPageInner = () => {
 		if (unmatchedCount > 0 || unprocessedCount > 0) {
 			const messages = []
 			if (unprocessedCount > 0) {
-				messages.push(`まだ照合していない曲が ${unprocessedCount} 曲あります`)
+				messages.push(`${t('まだ照合していない曲が ')}${unprocessedCount}${t(' 曲あります')}`)
 			}
 			if (unmatchedCount > 0) {
-				messages.push(`動画が見つからなかった曲が ${unmatchedCount} 曲あります`)
+				messages.push(`${t('動画が見つからなかった曲が ')}${unmatchedCount}${t(' 曲あります')}`)
 			}
 
 			openModal('Alert', {
-				title: '未完了の項目があります',
-				message: `${messages.join('、')}。続けると、照合済みの曲だけが保存され、未照合の曲は無視されます。照合を完了するか、残りを手動で照合することをおすすめします。`,
+				title: t('未完了の項目があります'),
+				message: `${messages.join('、')}${t('。照合済みの曲だけが保存されます。')}`,
 				buttons: [
 					{
-						text: '手動で照合する',
+						text: t('手動で照合する'),
 					},
 					{
-						text: 'このまま保存',
+						text: t('このまま保存'),
 						onPress: proceedSave,
 					},
 				],
@@ -336,14 +335,14 @@ const ExternalPlaylistSyncPageInner = () => {
 		.map((_, index) => index)
 		.filter((index) => !Object.hasOwn(results, index))
 	const syncButtonText = syncing
-		? '一時停止'
+		? t('一時停止')
 		: !hasProcessedAny
-			? '照合を開始'
+			? t('照合を開始')
 			: unprocessedIndexes.length > 0
-				? '照合を再開'
+				? t('照合を再開')
 				: failedIndexes.length > 0
-					? '失敗した項目を再照合'
-					: 'すべて照合し直す'
+					? t('失敗した項目を再照合')
+					: t('すべて照合し直す')
 
 	const handleSync = async () => {
 		if (!data?.tracks) return
@@ -352,7 +351,7 @@ const ExternalPlaylistSyncPageInner = () => {
 			abortControllerRef.current?.abort()
 			setSyncing(false)
 			setEtaSeconds(null)
-			toast.info('照合を一時停止しました')
+			toast.info(t('照合を一時停止しました'))
 			return
 		}
 
@@ -404,10 +403,10 @@ const ExternalPlaylistSyncPageInner = () => {
 		setEtaSeconds(null)
 		if (result.isErr()) {
 			if (result.error.message !== 'Aborted') {
-				toast.error(`照合でエラーが発生しました: ${result.error.message}`)
+				toast.error(`${t('照合でエラーが発生しました: ')}${result.error.message}`)
 			}
 		} else {
-			toast.success('照合が完了しました')
+			toast.success(t('照合が完了しました'))
 		}
 	}
 
@@ -434,8 +433,7 @@ const ExternalPlaylistSyncPageInner = () => {
 	if (error || !data) {
 		return (
 			<View style={styles.center}>
-				<Text style={{ color: theme.colors.error }}>
-					読み込みに失敗しました: {error?.message ?? '不明なエラー'}
+				<Text style={{ color: theme.colors.error }}>{t('読み込みに失敗しました: ')}{error?.message ?? t('不明なエラー')}
 				</Text>
 			</View>
 		)
@@ -446,7 +444,7 @@ const ExternalPlaylistSyncPageInner = () => {
 			<Appbar.Header>
 				<Appbar.BackAction onPress={router.back} />
 				<Appbar.Content
-					title='外部プレイリストの照合'
+					title={t('外部プレイリストの照合')}
 					onPress={handleDoubleTap}
 				/>
 				<Appbar.Action
@@ -459,14 +457,12 @@ const ExternalPlaylistSyncPageInner = () => {
 				visible={hasResults}
 				actions={[
 					{
-						label: '今すぐ保存',
+						label: t('今すぐ保存'),
 						onPress: handleSave,
 					},
 				]}
 				icon='information'
-			>
-				照合の進み具合は一時保存されています。完了したら、右上または下の保存ボタンでローカルのプレイリストに書き込んでください。
-			</Banner>
+			>{t('進み具合は一時保存されています。完了後に保存してください。')}</Banner>
 			<LegendList
 				ref={listRef}
 				data={tracks}
@@ -489,7 +485,7 @@ const ExternalPlaylistSyncPageInner = () => {
 						cover={data.playlist.coverUrl ?? ''}
 						subtitles={[
 							data.playlist.author.name,
-							`${data.playlist.trackCount} 曲`,
+							`${data.playlist.trackCount}${t(' 曲')}`,
 						]}
 						mainButtonIcon='check'
 						mainButtonText='保存'
@@ -528,9 +524,9 @@ const ExternalPlaylistSyncFooter = ({
 	const etaText =
 		etaSeconds !== null
 			? etaSeconds > 60
-				? `残り約 ${(etaSeconds / 60).toFixed(1)} 分`
-				: `残り約 ${etaSeconds.toFixed(0)} 秒`
-			: '計算中...'
+				? `${t('残り約 ')}${(etaSeconds / 60).toFixed(1)}${t(' 分')}`
+				: `${t('残り約 ')}${etaSeconds.toFixed(0)}${t(' 秒')}`
+			: t('計算中...')
 
 	return (
 		<View
@@ -553,8 +549,7 @@ const ExternalPlaylistSyncFooter = ({
 						<View style={{ flexDirection: 'row', alignItems: 'center' }}>
 							<ActivityIndicator color={theme.colors.primary} />
 							<View style={{ marginLeft: 12 }}>
-								<Text variant='bodyMedium'>
-									照合中... {(progress * 100).toFixed(0)}%
+								<Text variant='bodyMedium'>{t('照合中... ')}{(progress * 100).toFixed(0)}%
 								</Text>
 								<Text
 									variant='bodySmall'
@@ -568,9 +563,7 @@ const ExternalPlaylistSyncFooter = ({
 							icon='pause'
 							mode='contained-tonal'
 							onPress={onSync}
-						>
-							一時停止
-						</Button>
+						>{t('一時停止')}</Button>
 					</View>
 				) : (
 					<TouchableRipple

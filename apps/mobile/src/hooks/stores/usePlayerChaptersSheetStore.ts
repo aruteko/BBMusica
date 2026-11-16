@@ -3,6 +3,7 @@ import { create } from 'zustand'
 
 import { usePlayerQueueSheetStore } from '@/hooks/stores/usePlayerQueueSheetStore'
 import { toastAndLogError } from '@/utils/error-handling'
+import { t } from '@/i18n'
 
 interface PlayerChaptersSheetState {
 	isOpen: boolean
@@ -27,7 +28,7 @@ export const usePlayerChaptersSheetStore = create<PlayerChaptersSheetState>(
 					await TrueSheet.present('playerChaptersSheet')
 				} catch (error) {
 					set({ isOpen: false })
-					toastAndLogError('チャプターを開けませんでした', error, 'Player.Chapters')
+					toastAndLogError(t('チャプターを開けませんでした'), error, 'Player.Chapters')
 				}
 			})
 			return transition
@@ -40,7 +41,7 @@ export const usePlayerChaptersSheetStore = create<PlayerChaptersSheetState>(
 				try {
 					await TrueSheet.dismiss('playerChaptersSheet')
 				} catch (error) {
-					toastAndLogError('チャプターを閉じられませんでした', error, 'Player.Chapters')
+					toastAndLogError(t('チャプターを閉じられませんでした'), error, 'Player.Chapters')
 				}
 			})
 			return transition
