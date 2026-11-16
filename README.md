@@ -2,8 +2,8 @@
 <img src="./apps/mobile/assets/images/icon-bbmusica.png" alt="BBMusica" width="96" />
 <h1>BBMusica</h1>
 
-Bilibili の音楽を、軽く気持ちよく聴くための Android 向けプレーヤーです。
-アカウント登録は要りません。日本語と中国語に対応しています。
+BiliBili向けサードパーティー音楽クライアントです．
+日本語/中国語対応．
 
 **[ダウンロード ➔ www.aruteko.com/BBmusica](https://www.aruteko.com/BBmusica)**
 
@@ -48,56 +48,40 @@ Bilibili の音楽を、軽く気持ちよく聴くための Android 向けプ�
   </tr>
   <tr>
     <td align="center">丸いカバー · 波形のシークバー · いいね</td>
-    <td align="center">ローマ字 · 翻訳 · 自動で追従</td>
+    <td align="center">自動で追従</td>
   </tr>
   <tr>
-    <th align="center" colspan="2">MV（動画）の再生</th>
+    <th align="center" colspan="2">MVの再生</th>
   </tr>
   <tr>
     <td align="center" colspan="2"><img src="./assets/screenshots/mv-player.gif" alt="MV の再生：プレーヤーの画面を横にスワイプすると、丸いカバーが動画に切り替わる" width="280" /></td>
   </tr>
   <tr>
-    <td align="center" colspan="2">プレーヤーの画面を横にスワイプすると、MV（動画）を見られます</td>
+    <td align="center" colspan="2">MV視聴可能</td>
   </tr>
 </table>
 
-<p align="center"><sub>上は、Android 版の画面です（中国語の表示。日本語の表示にも対応しています）。MV のデモには、Bilibili の「《明日方舟》EP - 酸橙色信笺」（明日方舟）を使っています。</sub></p>
+## 主要機能
 
-## 特長
-
-- **ログインなしで使える**: 検索、再生、投稿者のページは、Bilibili にログインしなくても使えます。ログインすると、お気に入り、フォロー、あとで見る、いいねも使えます。
-- **ステーション**: ホームの大きな画像の曲から始めて、似た曲を続けて流します。
+- **ログインなしで使える**: 基本的な機能の利用にはBiliBiliへのログインは不要です．
+- **ステーション**: よく聞く曲を起点にし，関連性の高い曲を自動で推薦して流します．
 - **プレイリスト**: ローカルのプレイリスト、Bilibili のお気に入り・コレクション・分割P動画の同期、外部プレイリストの取り込みができます。
-- **歌詞**: 逐字歌詞、翻訳、ローマ字、デスクトップ歌詞に対応しています。
 - **MV**: プレーヤーの画面を横にスワイプして、動画を見られます。
-- **ダウンロードとバックアップ**: 曲を端末に保存できます。データは、1つの zip にまとめて書き出せます。
-- **見た目**: ライト / ダーク、Bilibili のテーマ（装扮）に合わせた配色、波形のシークバー、イコライザー。
+- **ダウンロード**: 曲を端末に保存できます。
+- **見た目**: ライト / ダーク、Bilibili の装扮が利用できます．
 - **日本語 / 中国語**: 端末の言語に合わせます。設定で切り替えられます。
 
 ## 注意
 
-BBMusica は、個人が作った非公式のアプリです。Bilibili とは関係ありません。
+BBMusica は、個人作成の非公式のアプリです。Bilibili とは関係ありません。
 Bilibili の利用規約を守って、自分の責任で使ってください。
 
 ## 元になったプロジェクト
 
-BBMusica は、Roitium さんの **[BBPlayer](https://github.com/bbplayer-app/BBPlayer)**（MIT ライセンス）をもとに作りました。
+BBMusica は、Roitium 氏の **[BBPlayer](https://github.com/bbplayer-app/BBPlayer)**をもとに作成しました．
 素晴らしいプロジェクトを公開してくださったことに、敬意と感謝を込めて。
 
 変更した主な点は、[NOTICE.md](./NOTICE.md) にまとめています。
-
-## 作る
-
-Windows のパソコンで、APK を作る手順です。
-
-```bash
-corepack pnpm install
-corepack pnpm type-check
-corepack pnpm lint
-```
-
-APK の作り方は、[scripts/build-local.ps1](./scripts/build-local.ps1) の先頭に書いてあります。
-リリース用の署名鍵は、リポジトリには入れず、自分の `~/.gradle/gradle.properties` に書きます（`BBMUSICA_STORE_FILE` など）。
 
 ## プライバシー
 
