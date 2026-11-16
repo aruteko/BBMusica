@@ -4,61 +4,58 @@
 
 ## 日本語
 
-BBMusica（以下「本アプリ」）は、aruteko が公開しているオープンソースのアプリです。
+BBMusica（以下「本アプリ」）は，aruteko が公開するオープンソースのアプリケーションである．本アプリにおける情報の取り扱いは，以下のとおりとする．
 
-### 本アプリが持つデータ
+### 1. 端末内に保存する情報
 
-- プレイリスト、再生履歴、設定、ダウンロードした曲は、**すべてあなたの端末の中**に保存します。
-- Bilibili にログインすると、その Cookie を端末の中に保存します。Cookie は、Bilibili に通信するときだけ使います。開発者や、ほかの人には送りません。
-- 本アプリには、アカウント登録も、開発者のサーバーもありません。
+- プレイリスト，再生履歴，設定およびダウンロードした楽曲は，すべて利用者の端末内に保存される．開発者がこれらを取得することはない．
+- Bilibili にログインした場合，ログイン情報（Cookie）を端末内に保存し，Bilibili との通信にのみ使用する．開発者または第三者へ送信することはない．
+- 本アプリは，独自のアカウント機構および開発者が運用するサーバーを持たない．
 
-### 通信する先
+### 2. 通信先
 
-本アプリは、機能のために、次の相手と通信します。
+本アプリは，機能の提供のため，以下の相手先と通信する．
 
-- **Bilibili**: 検索、再生、画像、お気に入り、いいね、テーマ（装扮）など。
-- **歌詞の提供元**: 設定で選んだ歌詞ソースから、歌詞を取得します。
-- **WebDAV のサーバー**: あなたが設定したときだけ。バックアップの保存先です。
+- **Bilibili**: 検索，再生，画像の取得，お気に入り，いいね，テーマ（装扮）等．
+- **歌詞の提供元**: 設定で選択した歌詞ソースからの歌詞の取得．
+- **WebDAV サーバー**: 利用者が設定した場合に限り，バックアップの保存先として使用する．
 
-通信の内容には、IP アドレスなど、通信に必ず含まれる情報が含まれます。
+これらの通信には，IP アドレス等，通信の性質上必ず含まれる情報が含まれる．
 
-### 利用状況の統計（任意・初期設定はオフ）
+### 3. 利用状況の統計（任意）
 
-設定の「一般設定」で、匿名の利用状況の統計（Firebase Analytics）を、あなたがオンにしたときだけ送ります。初期設定はオフで、オンにしない限り、送りません。
-Google のポリシーは、[こちら](https://policies.google.com/privacy)です。
+利用者が設定の「一般設定」で有効にした場合に限り，匿名の利用状況の統計（Firebase Analytics）を送信する．初期設定は無効であり，有効にしない限り送信されない．Google のプライバシーポリシーは [こちら](https://policies.google.com/privacy) を参照．
+クラッシュレポートは送信しない．
 
-クラッシュレポートは、送りません。
+### 4. 情報の削除
 
-### データの削除
+本アプリを端末から削除すると，本アプリが端末内に保存した情報も削除される．キャッシュおよびダウンロードは，設定から削除することも可能．
 
-端末から本アプリを削除すると、本アプリが持つデータは、端末から消えます。
-設定からも、キャッシュやダウンロードを消せます。
+### 5. 子どもの情報
 
-### 子どもについて
+本アプリは，13 歳未満の子どもから意図して情報を収集しない．
 
-本アプリは、13 歳未満の子どもから、意図して情報を集めません。
+### 6. 改定
 
-### 変更
+本ポリシーを改定する場合は，本ページを更新する．
 
-この文書を変えるときは、このページを更新します。
+### 7. お問い合わせ
 
-### 連絡先
-
-[www.aruteko.com/BBmusica](https://www.aruteko.com/BBmusica) または、GitHub の issue へ。
+[www.aruteko.com/BBmusica](https://www.aruteko.com/BBmusica) または GitHub の issue にて受け付ける．
 
 ---
 
 ## English
 
-BBMusica ("the App") is an open-source app published by aruteko.
+BBMusica ("the App") is an open-source application published by aruteko.
 
-**Data the App keeps.** Playlists, play history, settings and downloaded songs are stored **only on your device**. If you log in to Bilibili, its cookie is stored on your device and is used only to talk to Bilibili. It is never sent to the developer or anyone else. The App has no account system and no developer-run server.
+**Information stored on your device.** Playlists, play history, settings and downloaded songs are stored only on your device, and the developer does not collect them. If you log in to Bilibili, the login cookie is stored on your device and is used solely to communicate with Bilibili; it is never sent to the developer or to any third party. The App has no account system and no developer-operated server.
 
-**Who the App talks to.** Bilibili (search, playback, images, favourites, likes, themes), the lyrics provider you choose in Settings, and a WebDAV server only if you set one up for backups. Network requests naturally include information such as your IP address.
+**Communication.** The App communicates with Bilibili (search, playback, images, favourites, likes and themes), with the lyrics provider selected in Settings, and, only if you configure it, with a WebDAV server used for backups. Such communication inherently includes information such as your IP address.
 
-**Optional anonymous statistics (off by default).** Anonymous usage statistics (Firebase Analytics) are sent only if you turn them on under Settings → General. Crash reports are not sent.
+**Optional anonymous statistics.** Anonymous usage statistics (Firebase Analytics) are sent only if you enable them under Settings → General. They are disabled by default. Crash reports are not sent.
 
-**Deleting data.** Uninstalling the App removes its data from your device.
+**Deletion.** Uninstalling the App removes the information it stored on your device.
 
 **Children.** The App does not knowingly collect information from children under 13.
 

@@ -109,7 +109,7 @@ React Native で作った、ローカル優先の Bilibili 音声プレーヤー
 - **UI**: ライト / ダークモードに対応します。UI は Material Design 3 に深く合わせてあり、Material You（Monet）の色取りにも対応します。
 - **便利な道具**: スリープタイマー、再生履歴の統計（ランキング）などがあります。
 
-ほかにも、たくさんの機能と驚きがあります。ぜひ[公式サイト](https://bbplayer.roitium.com)で見てみてにゃ！
+ほかにも、たくさんの機能と驚きがあります。ぜひ[公式サイト](https://bbplayer.roitium.com)をご覧ください．
 
 ## 技術スタック
 
