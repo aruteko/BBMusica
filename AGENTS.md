@@ -31,9 +31,6 @@ pnpm type-check             # TypeScript type checking
 ### /apps
 
 - mobile - React Native 移动应用（技术栈：Expo + Drizzle ORM + Material Design 3 + Zustand + TanStack Query）
-- backend - 后端服务，主要提供歌单共享与软件更新查询（技术栈：Hono + ArkType + Drizzle ORM + CloudFlare Worker）
-- docs - VuePress 文档网站
-- update-publisher - 用于发布更新的工具
 
 ### /packages
 

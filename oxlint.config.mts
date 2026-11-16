@@ -39,7 +39,6 @@ export default defineConfig({
 		'**/package-lock.json',
 		'**/pnpm-lock.yaml',
 		'.agents/**',
-		'apps/update-server/web/src/components/ui/**', // shadcn/ui 组件，不考虑它的报错
 	],
 	rules: {
 		'react/react-in-jsx-scope': 'off',
@@ -121,12 +120,6 @@ export default defineConfig({
 		},
 		{
 			files: ['packages/**/*.{ts,tsx,js,jsx}'],
-			rules: {
-				'no-console': 'allow',
-			},
-		},
-		{
-			files: ['apps/hot-update-cli/**/*.{ts,js}'],
 			rules: {
 				'no-console': 'allow',
 			},

@@ -3,7 +3,6 @@
 	"private": true,
 	"workspaces": [
 		"apps/*",
-		"apps/*/web",
 		"packages/*",
 		"packages/*/example"
 	],
@@ -14,7 +13,6 @@
 		"lint": "oxlint --type-aware",
 		"lint:fix": "oxlint --type-aware --fix",
 		"postinstall": "lefthook install",
-		"publish:update": "pnpm --filter @bbplayer/update-publisher start",
 		"test:e2e": "e2e run --target android",
 		"test:e2e:android": "e2e run --target android",
 		"test:e2e:doctor": "e2e doctor --target android",
