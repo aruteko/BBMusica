@@ -43,7 +43,7 @@ Bilibili 向けのサードパーティー製音楽クライアント．
     <th align="center">歌詞</th>
   </tr>
   <tr>
-    <td align="center"><img src="./assets/screenshots/music-player.jpg" alt="音楽プレーヤー：丸いカバー，波形のシークバー，ハート（いいね）" width="280" /></td>
+    <td align="center"><img src="./assets/screenshots/music-player.jpg" alt="音楽プレーヤー：丸いカバー，波形のシークバー，ハートによるいいね" width="280" /></td>
     <td align="center"><img src="./assets/screenshots/lyrics.jpg" alt="歌詞：ローマ字つきの歌詞を，再生に合わせて強調して表示" width="280" /></td>
   </tr>
   <tr>
@@ -68,7 +68,7 @@ Bilibili 向けのサードパーティー製音楽クライアント．
 - **プレイリスト**: ローカルのプレイリストに加え，Bilibili のお気に入り・コレクション・分割P動画の同期，外部プレイリストのインポートに対応．
 - **MV**: プレーヤー画面を横方向にスワイプすることで，動画を表示．
 - **ダウンロード**: 楽曲を端末に保存．
-- **外観**: ライト / ダークテーマに対応．Bilibili の装扮（テーマ）の適用が可能．
+- **外観**: ライト / ダークテーマに対応．Bilibili の装扮の適用が可能．
 - **多言語対応**: 日本語・中国語に対応．端末の言語設定に追従し，設定画面からの変更も可能．
 
 ## 技術スタック
@@ -76,16 +76,16 @@ Bilibili 向けのサードパーティー製音楽クライアント．
 - **フレームワーク**: React Native，Expo
 - **状態管理**: Zustand
 - **データ取得**: React Query
-- **UI**: Material Design 3（React Native Paper + ExpoUI）
-- **再生ライブラリ**: [@bbplayer/orpheus](./packages/orpheus)（Media3 ベース）
+- **UI**: Material Design 3，React Native Paper，ExpoUI
+- **再生ライブラリ**: Media3 ベースの [@bbplayer/orpheus](./packages/orpheus)
 - **ORM**: Drizzle ORM
 
-## プロジェクトの構成（モノレポ）
+## プロジェクトの構成
 
 - **[apps/mobile](./apps/mobile)**: BBMusica 本体（モバイルアプリ）のコード．
 - **[packages/](./packages)**: 共有ライブラリおよびツール．
   - **[@bbplayer/splash](./packages/splash)**: 歌詞の解析・変換ライブラリ．
-  - **[@bbplayer/eslint-plugin](./packages/eslint-plugin)**: プロジェクト固有の lint ルール（oxlint の jsPlugins 経由で実行）．
+  - **[@bbplayer/eslint-plugin](./packages/eslint-plugin)**: プロジェクト固有の lint ルール．oxlint の jsPlugins 経由で実行．
   - **[@bbplayer/orpheus](./packages/orpheus)**: Media3 ベースの音声再生エンジン．
   - **[@bbplayer/logs](./packages/logs)**: ロギングライブラリ．
   - **[@bbplayer/image-theme-colors](./packages/image-theme-colors)**: 画像（カバー）からのテーマカラー抽出モジュール．
@@ -97,7 +97,7 @@ Bilibili 向けのサードパーティー製音楽クライアント．
 
 本アプリは，個人が開発した非公式のアプリケーションであり，Bilibili およびその運営会社とは一切関係がない．
 利用者は，Bilibili の利用規約および関連法令を遵守するものとする．
-本アプリの利用により生じた損害（アカウントの制限・停止を含む）について，開発者は一切の責任を負わない．利用は，利用者自身の責任において行うものとする．
+アカウントの制限や停止を含め，本アプリの利用により生じた損害について，開発者は一切の責任を負わない．利用は，利用者自身の責任において行うものとする．
 再生されるコンテンツの著作権は，各権利者に帰属する．
 
 ## 元になったプロジェクト
@@ -121,7 +121,7 @@ BBMusica は，Roitium 氏による **[BBPlayer](https://github.com/bbplayer-app
 <summary>English</summary>
 
 BBMusica is an unofficial Android player for Bilibili music, built on top of
-[BBPlayer](https://github.com/bbplayer-app/BBPlayer) by Roitium (MIT).
+[BBPlayer](https://github.com/bbplayer-app/BBPlayer) by Roitium under the MIT license.
 No account is needed. The UI is available in Japanese and Chinese.
 Download: <https://www.aruteko.com/BBmusica>. It is not affiliated with Bilibili.
 
